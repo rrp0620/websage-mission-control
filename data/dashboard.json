@@ -23,11 +23,26 @@
       "statusLabel": "🟡 Demo built & tested — awaiting Twilio for live demo number",
       "price": 350,
       "hypothesis": "Real estate agents will pay $350/month for a 60-second AI lead follow-up bot. First client within 14 days.",
-      "daysActive": 1,
+      "daysActive": 2,
       "metric": "paying clients",
       "metricValue": 0,
       "successTarget": 1,
       "killDate": "2026-04-02"
+    },
+    {
+      "name": "OpenClaw Agent Setup as a Service",
+      "platform": "Inbound + warm outreach",
+      "status": "planning",
+      "statusLabel": "🟢 Greenlighted — building templates, closing first pilots",
+      "price": 350,
+      "setupFee": 500,
+      "hypothesis": "Business owners will pay $500 setup + $350/month to have a custom OpenClaw AI agent built and deployed for their business. Inbound demand already exists.",
+      "daysActive": 0,
+      "metric": "paying pilots",
+      "metricValue": 0,
+      "successTarget": 3,
+      "killDate": "2026-04-20",
+      "notes": "Templatized per vertical (Real Estate, HVAC, General SMB). Rishi handles intake/sales calls, Goku+Vegeta build. 30-day target: 3 pilots = $1,050 MRR."
     }
   ],
   "tasks": [
@@ -106,6 +121,13 @@
       "type": "strategic_signal",
       "status": "noted — shapes sales strategy",
       "capturedAt": "2026-03-20T16:02:00Z"
+    },
+    {
+      "id": 4,
+      "summary": "OpenClaw Agent Setup as a Service — people are already asking for help setting up Claude/OpenClaw. Sell custom agent builds per vertical: $500 setup + $350/month. Real estate, HVAC, general SMB. Rishi handles sales, Goku+Vegeta build.",
+      "type": "revenue_idea",
+      "status": "🟢 greenlighted — templates in progress, first pilots targeted within 14 days",
+      "capturedAt": "2026-03-20T22:00:00Z"
     }
   ]
 }
