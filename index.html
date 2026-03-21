@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Websage HQ — Mission Control</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d0f14;--sidebar:#12141c;--card:#171a26;--card2:#1a1d2b;
+  --border:#222640;--border2:#2a2e48;
+  --text:#e2e4ea;--muted:#8b8fa3;--dim:#5c607a;
+  --accent:#f97316;--accent2:#3b82f6;--purple:#a855f7;
+  --green:#22c55e;--yellow:#eab308;--red:#ef4444;--gray:#6b7280;
+  --header:#10121a;
+  --glow-orange:rgba(249,115,22,.12);--glow-blue:rgba(59,130,246,.12);
+  --glow-green:rgba(34,197,94,.1);--glow-red:rgba(239,68,68,.1);
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* Layout */
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 42px 1fr;height:100vh}
+
+/* Header */
+.header{grid-column:1/-1;background:var(--header);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.header-left{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;letter-spacing:-.3px}
+.header-left .logo{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),#fb923c);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.header-right{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+.mrr-badge{background:var(--glow-red);color:var(--red);padding:3px 10px;border-radius:20px;font-weight:600;font-size:11px;border:1px solid rgba(239,68,68,.2)}
+.gap-badge{background:rgba(234,179,8,.08);color:var(--yellow);padding:3px 10px;border-radius:20px;font-weight:600;font-size:11px;border:1px solid rgba(234,179,8,.15)}
+.clock{font-variant-numeric:tabular-nums;color:var(--text);font-weight:500;font-size:12px;opacity:.9}
+.header-btn{background:rgba(249,115,22,.15);color:var(--accent);border:1px solid rgba(249,115,22,.3);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.header-btn:hover{background:rgba(249,115,22,.25)}
+
+/* Agent Bar */
+.agent-bar{grid-column:1/-1;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;font-size:12px;overflow-x:auto}
+.agent-bar-label{color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:10px;white-space:nowrap}
+.agent-chip{display:flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:default;white-space:nowrap;transition:all .15s}
+.agent-chip:hover{background:rgba(255,255,255,.06);border-color:var(--border2)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot.building{background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse-dot 1.2s infinite}
+.dot.standby{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.dot.offline{background:var(--gray)}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.agent-chip .an{font-weight:600;color:var(--text);font-size:12px}
+.agent-chip .ar{color:var(--dim);font-size:11px}
+
+/* Sidebar */
+.sidebar{background:var(--sidebar);border-right:1px solid var(--border);padding:10px 0;overflow-y:auto;display:flex;flex-direction:column}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .15s;border-left:3px solid transparent;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.03);color:var(--text)}
+.nav-item.active{background:var(--glow-orange);color:var(--accent);border-left-color:var(--accent)}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-label{font-weight:500}
+.nav-section{padding:5px 18px;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-top:12px}
+.sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);line-height:1.5}
+.sidebar-footer strong{color:var(--muted)}
+
+/* Content */
+.content{overflow-y:auto;padding:24px 32px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Page fade */
+.page{animation:fadein .18s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DASHBOARD ── */
+.widget-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.widget{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:border-color .15s}
+.widget:hover{border-color:var(--border2)}
+.widget-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:8px}
+.widget-value{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.widget-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.widget.red .widget-value{color:var(--red)}
+.widget.yellow .widget-value{color:var(--yellow)}
+.widget.blue .widget-value{color:var(--accent2)}
+.widget.green .widget-value{color:var(--green)}
+.widget.orange .widget-value{color:var(--accent)}
+
+/* Progress bar */
+.pbar-wrap{background:rgba(255,255,255,.06);border-radius:99px;height:6px;margin-top:8px;overflow:hidden}
+.pbar{height:100%;border-radius:99px;transition:width .4s ease}
+.pbar.green{background:var(--green)}
+.pbar.orange{background:var(--accent)}
+.pbar.red{background:var(--red)}
+.pbar.blue{background:var(--accent2)}
+
+/* Feed */
+.feed-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.feed-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:12px}
+.feed-item{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;align-items:flex-start}
+.feed-item:last-child{border-bottom:none}
+.feed-time{color:var(--dim);font-size:11px;white-space:nowrap;min-width:120px;font-family:'SF Mono',Monaco,monospace}
+.feed-text{color:var(--text);line-height:1.4}
+
+/* Revenue bar chart */
+.rev-chart{display:flex;align-items:flex-end;gap:16px;height:80px;margin-top:10px}
+.rev-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.rev-bar{width:100%;border-radius:4px 4px 0 0;position:relative;min-height:4px;transition:height .4s}
+.rev-bar-label{font-size:10px;color:var(--dim)}
+.rev-bar-val{font-size:11px;font-weight:600}
+.rev-target-line{border-top:2px dashed var(--yellow);width:100%;position:relative}
+.rev-target-line::after{content:'Target $200';position:absolute;right:0;top:-16px;font-size:9px;color:var(--yellow)}
+
+/* Sprint countdown */
+.sprint-card{background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(249,115,22,.03));border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.sprint-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.sprint-days{font-size:36px;font-weight:800;color:var(--accent);letter-spacing:-1px}
+.sprint-sub{font-size:12px;color:var(--muted)}
+.sprint-goal{font-size:13px;color:var(--text);font-weight:500}
+
+/* ── PROJECTS ── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.proj-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all .2s}
+.proj-card:hover{border-color:var(--border2);background:var(--card2)}
+.proj-card.expanded{grid-column:1/-1;cursor:default}
+.proj-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.proj-name{font-size:15px;font-weight:700;color:var(--text)}
+.proj-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
+.status-inprogress{background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.status-queued{background:rgba(107,114,128,.1);color:var(--gray);border:1px solid rgba(107,114,128,.2)}
+.status-blocked{background:var(--glow-red);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.status-done{background:var(--glow-green);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.proj-owners{font-size:12px;color:var(--dim);margin-bottom:8px}
+.proj-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.proj-detail{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.proj-detail h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin:14px 0 6px}
+.proj-detail h4:first-child{margin-top:0}
+.proj-task{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;color:var(--text)}
+.proj-milestone{font-size:13px;color:var(--muted);padding:3px 0;display:flex;gap:8px}
+.proj-milestone span:first-child{color:var(--dim);font-size:11px;font-family:'SF Mono',Monaco,monospace;min-width:90px}
+.blocker-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 12px;margin-top:4px;font-size:13px;color:var(--red)}
+.resource-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent2);text-decoration:none;padding:3px 8px;border-radius:4px;border:1px solid rgba(59,130,246,.2);margin:3px 3px 3px 0;transition:all .15s}
+.resource-link:hover{background:rgba(59,130,246,.1)}
+.collapse-btn{font-size:11px;color:var(--dim);cursor:pointer;border:1px solid var(--border);padding:3px 10px;border-radius:6px;background:transparent;margin-top:12px;transition:all .15s}
+.collapse-btn:hover{border-color:var(--border2);color:var(--muted)}
+
+/* ── AGENTS ── */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+.agent-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color .15s}
+.agent-card:hover{border-color:var(--border2)}
+.agent-card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.agent-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.agent-info{flex:1}
+.agent-info .name{font-size:15px;font-weight:700}
+.agent-info .role{font-size:12px;color:var(--muted)}
+.agent-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500}
+.tag.model{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.tag.cost1{background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.tag.cost2{background:rgba(234,179,8,.08);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.tag.cost3{background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.tag.status-on{background:var(--glow-green);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.tag.status-build{background:rgba(249,115,22,.1);color:var(--accent);border:1px solid rgba(249,115,22,.2)}
+.tag.status-sb{background:rgba(234,179,8,.08);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.agent-activity{font-size:12px;color:var(--muted);font-style:italic}
+
+.cost-breakdown{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px}
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px}
+.cost-row:last-child{border-bottom:none}
+.cost-provider{color:var(--muted)}
+.cost-amount{font-weight:600;color:var(--text)}
+.cost-note{font-size:11px;color:var(--dim)}
+.policy-note{background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.15);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:16px}
+.policy-note strong{color:var(--accent)}
+
+/* ── OFFICE ── */
+.office-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.zone{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:200px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.zone-label{position:absolute;top:10px;left:12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600}
+.zone-agent{font-size:40px;margin-bottom:8px;position:relative;z-index:2}
+.zone-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.zone-status{font-size:12px;color:var(--muted)}
+
+/* Goku: thought bubbles */
+.bubble{position:absolute;font-size:18px;animation:float-bubble 3s ease-in-out infinite;opacity:0}
+.bubble:nth-child(1){left:20%;animation-delay:0s}
+.bubble:nth-child(2){left:55%;animation-delay:1s;font-size:14px}
+.bubble:nth-child(3){left:35%;animation-delay:2s;font-size:22px}
+@keyframes float-bubble{0%{opacity:0;transform:translateY(0)}20%{opacity:.8}80%{opacity:.8}100%{opacity:0;transform:translateY(-60px)}}
+
+/* Vegeta: code lines */
+.code-screen{background:#0a0c12;border:1px solid var(--border);border-radius:6px;padding:8px;width:80%;font-family:'SF Mono',Monaco,monospace;font-size:10px;margin-top:8px;text-align:left}
+.code-line{color:var(--green);opacity:0;animation:type-in 4s ease infinite}
+.code-line:nth-child(1){animation-delay:0s;color:#f97316}
+.code-line:nth-child(2){animation-delay:.6s;color:#3b82f6}
+.code-line:nth-child(3){animation-delay:1.2s;color:#a855f7}
+.code-line:nth-child(4){animation-delay:1.8s;color:#22c55e}
+.code-line:nth-child(5){animation-delay:2.4s}
+@keyframes type-in{0%{opacity:0;transform:translateX(-4px)}10%{opacity:1;transform:translateX(0)}70%{opacity:1}80%{opacity:0}100%{opacity:0}}
+.cursor{display:inline-block;width:6px;height:12px;background:var(--green);margin-left:2px;animation:blink .8s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Bulma: ZZZ */
+.zzz{position:absolute;font-weight:800;color:var(--dim);animation:float-zzz 2.5s ease-in-out infinite;opacity:0}
+.zzz:nth-child(1){font-size:14px;left:30%;animation-delay:0s}
+.zzz:nth-child(2){font-size:18px;left:50%;animation-delay:.8s}
+.zzz:nth-child(3){font-size:22px;left:42%;animation-delay:1.6s}
+@keyframes float-zzz{0%{opacity:0;transform:translateY(0) rotate(-5deg)}20%{opacity:.6}80%{opacity:.6}100%{opacity:0;transform:translateY(-50px) rotate(5deg)}}
+
+/* Frieza: bar chart */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:50px;margin-top:10px}
+.chart-bar{width:16px;border-radius:3px 3px 0 0;background:var(--purple);animation:pulse-bar 1.5s ease-in-out infinite}
+.chart-bar:nth-child(1){height:30px;animation-delay:0s}
+.chart-bar:nth-child(2){height:45px;animation-delay:.3s}
+.chart-bar:nth-child(3){height:25px;animation-delay:.6s}
+.chart-bar:nth-child(4){height:40px;animation-delay:.9s}
+.chart-bar:nth-child(5){height:50px;animation-delay:1.2s}
+@keyframes pulse-bar{0%,100%{opacity:.5;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+
+/* Launch Pad */
+.launchpad{opacity:.4;font-size:13px;color:var(--dim)}
+.launchpad .rocket{font-size:36px;animation:hover-rocket 3s ease-in-out infinite}
+@keyframes hover-rocket{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Office status table */
+.office-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.office-table th{text-align:left;padding:10px 14px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+.office-table td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--text)}
+.office-table tr:last-child td{border-bottom:none}
+.office-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── IDEAS ── */
+.ideas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.ideas-controls{display:flex;gap:8px}
+.sort-btn{font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.sort-btn.active{border-color:var(--accent);color:var(--accent);background:var(--glow-orange)}
+.idea-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;transition:border-color .15s}
+.idea-card:hover{border-color:var(--border2)}
+.idea-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.idea-title{font-size:14px;font-weight:600;color:var(--text)}
+.idea-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.badge{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500}
+.badge.product{background:rgba(59,130,246,.1);color:var(--accent2);border:1px solid rgba(59,130,246,.2)}
+.badge.process{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.badge.feature{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.badge.marketing{background:rgba(249,115,22,.1);color:var(--accent);border:1px solid rgba(249,115,22,.2)}
+.badge.other{background:rgba(107,114,128,.1);color:var(--gray);border:1px solid rgba(107,114,128,.2)}
+.badge.prio-critical{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.badge.prio-high{background:rgba(249,115,22,.1);color:var(--accent);border:1px solid rgba(249,115,22,.2)}
+.badge.prio-medium{background:rgba(234,179,8,.08);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.badge.prio-low{background:rgba(107,114,128,.1);color:var(--gray);border:1px solid rgba(107,114,128,.2)}
+.idea-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.idea-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.idea-time{font-size:11px;color:var(--dim)}
+.vote-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:6px;cursor:pointer;background:transparent;transition:all .15s}
+.vote-btn:hover,.vote-btn.voted{border-color:var(--accent);color:var(--accent);background:var(--glow-orange)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--dim)}
+.empty-state .icon{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:28px;width:480px;max-width:95vw;animation:modal-in .2s ease}
+@keyframes modal-in{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal h2{font-size:18px;font-weight:700;margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:#0a0c14;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:inherit;transition:border-color .15s;resize:vertical}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{min-height:80px}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#ea6c10}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+
+/* ── MARKDOWN (for docs/team/memories/calendar/tasks) ── */
+.md{max-width:900px;line-height:1.7}
+.md h1{font-size:24px;font-weight:700;margin:0 0 6px;border-bottom:1px solid var(--border);padding-bottom:10px;letter-spacing:-.3px}
+.md h2{font-size:17px;font-weight:600;margin:22px 0 8px;color:var(--accent);display:flex;align-items:center;gap:8px}
+.md h3{font-size:14px;font-weight:600;margin:16px 0 7px;color:var(--accent2)}
+.md p{margin:5px 0;color:var(--text);font-size:13px}
+.md strong{color:#fff;font-weight:600}
+.md em{color:var(--muted);font-style:italic}
+.md hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.md a{color:var(--accent2);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.md blockquote{border-left:3px solid var(--yellow);background:rgba(234,179,8,.05);padding:8px 14px;margin:10px 0;border-radius:0 6px 6px 0;color:var(--muted);font-size:13px}
+.md ul,.md ol{margin:6px 0 6px 22px}
+.md li{margin:2px 0;color:var(--text);font-size:13px}
+.md code{background:rgba(168,85,247,.1);padding:2px 6px;border-radius:4px;font-size:12px;font-family:'SF Mono',Monaco,monospace;color:var(--purple)}
+.md pre{background:#0a0c12;border:1px solid var(--border);border-radius:8px;padding:14px;margin:10px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:12px;line-height:1.5;color:var(--text)}
+.md pre code{background:none;padding:0;color:inherit}
+.md table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.md thead{background:rgba(255,255,255,.03)}
+.md th{text-align:left;padding:8px 12px;font-weight:600;color:var(--dim);text-transform:uppercase;font-size:10px;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+.md td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text)}
+.md tbody tr:hover{background:rgba(255,255,255,.02)}
+.file-link{color:var(--purple)!important;cursor:pointer;border-bottom:1px dashed rgba(168,85,247,.3)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:52px 42px auto 1fr}
+  .sidebar{display:flex;overflow-x:auto;padding:8px;border-right:none;border-bottom:1px solid var(--border);flex-direction:row}
+  .nav-item{padding:7px 12px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap}
+  .nav-item.active{border-left-color:transparent;border-bottom-color:var(--accent)}
+  .nav-label{display:none}
+  .nav-section,.sidebar-footer{display:none}
+  .content{padding:14px}
+  .office-wrap{grid-template-columns:1fr}
+  .widget-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">W</div>
+      Websage HQ
+    </div>
+    <div class="header-right">
+      <button class="header-btn" onclick="openModal()">💡 Submit Idea</button>
+      <div class="clock" id="clock"></div>
+      <div class="mrr-badge" id="mrr-badge">$0 MRR</div>
+      <div class="gap-badge" id="gap-badge">$200 Gap</div>
+    </div>
+  </header>
+
+  <!-- AGENT BAR -->
+  <div class="agent-bar">
+    <span class="agent-bar-label">Agents</span>
+    <div class="agent-chip"><span class="dot online"></span><span class="an">Goku 🟠</span><span class="ar">Chief of Staff</span></div>
+    <div class="agent-chip"><span class="dot building"></span><span class="an">Vegeta ⚡</span><span class="ar">Engineering</span></div>
+    <div class="agent-chip"><span class="dot standby"></span><span class="an">Bulma 🔵</span><span class="ar">Research</span></div>
+    <div class="agent-chip"><span class="dot standby"></span><span class="an">Frieza 👽</span><span class="ar">CFO</span></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-s="dashboard"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></div>
+    <div class="nav-item" data-s="projects"><span class="nav-icon">🗂️</span><span class="nav-label">Projects</span></div>
+    <div class="nav-item" data-s="agents"><span class="nav-icon">🤖</span><span class="nav-label">Agents</span></div>
+    <div class="nav-item" data-s="ideas"><span class="nav-icon">💡</span><span class="nav-label">Ideas</span></div>
+    <div class="nav-section">Operations</div>
+    <div class="nav-item" data-s="tasks"><span class="nav-icon">📋</span><span class="nav-label">Tasks</span></div>
+    <div class="nav-item" data-s="calendar"><span class="nav-icon">📅</span><span class="nav-label">Calendar</span></div>
+    <div class="nav-section">Workspace</div>
+    <div class="nav-item" data-s="office"><span class="nav-icon">🏢</span><span class="nav-label">Office</span></div>
+    <div class="nav-item" data-s="team"><span class="nav-icon">👥</span><span class="nav-label">Team</span></div>
+    <div class="nav-item" data-s="memories"><span class="nav-icon">🧠</span><span class="nav-label">Memories</span></div>
+    <div class="nav-item" data-s="docs"><span class="nav-icon">📄</span><span class="nav-label">Docs</span></div>
+    <div class="sidebar-footer">
+      <strong>Websage Inc.</strong><br>
+      Delaware S-Corp · Day 3<br>
+      Revenue Sprint Active 🔥
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content"><div id="content"></div></main>
+
+</div>
+
+<!-- IDEA MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h2>💡 Submit an Idea</h2>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="idea-title" placeholder="What's the idea?">
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="idea-cat">
+        <option value="product">🚀 Product</option>
+        <option value="feature">✨ Feature</option>
+        <option value="process">⚙️ Process</option>
+        <option value="marketing">📣 Marketing</option>
+        <option value="other">💬 Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Priority</label>
+      <select id="idea-prio">
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">🔴 Critical</option>
+        <option value="low">Low</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="idea-desc" placeholder="Describe the idea..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitIdea()">Submit Idea</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKSPACE = '/Users/mint/.openclaw/workspace';
+
+// ── DATA ──
+const PROJECTS = [
+  {
+    id:'realestate', name:'Real Estate Lead Bot', pct:60, status:'inprogress', statusLabel:'🟡 In Progress',
+    owners:'Rishi + Goku', updated:'Mar 20, 2026',
+    desc:'SMS-powered AI lead bot for real estate agents. Qualifies leads, books appointments, follows up automatically.',
+    tasks:[
+      {done:true, text:'Build bot (SMS + Twilio)'},
+      {done:true, text:'Write sales playbook'},
+      {done:true, text:'Set up Gumroad payment links'},
+      {done:true, text:'Add Calendly booking link'},
+      {done:'blocked', text:'Twilio A2P campaign approval'},
+      {done:false, text:'Build lead list (30 agents)'},
+      {done:false, text:'Send first LinkedIn outreach'},
+      {done:false, text:'Book first demo call'},
+      {done:false, text:'Close first client ($500/mo)'},
+    ],
+    milestones:[
+      {date:'~Mar 21', label:'Twilio A2P approved'},
+      {date:'Mar 21', label:'Lead list built (30 agents)'},
+      {date:'Mar 22-23', label:'First demo calls'},
+      {date:'Mar 26', label:'🎯 First client signed'},
+    ],
+    blockers:['Twilio A2P campaign under carrier review — SMS cannot be sent until approved (~24-48h from Mar 19)'],
+    resources:[
+      {label:'Demo Bot', url:'file:///Users/mint/.openclaw/workspace/demos/realestate-lead-bot/'},
+      {label:'Sales Playbook', url:'file:///Users/mint/.openclaw/workspace/sales/outreach-playbook.md'},
+      {label:'Gumroad Setup', url:'https://websageai.gumroad.com/l/nmyzxg'},
+      {label:'Gumroad Monthly', url:'https://websageai.gumroad.com/l/vkavk'},
+      {label:'Calendly', url:'https://calendly.com/rrp0620/websage'},
+    ]
+  },
+  {
+    id:'brand', name:'Websage AI Brand', pct:40, status:'inprogress', statusLabel:'🟡 In Progress',
+    owners:'Rishi', updated:'Mar 20, 2026',
+    desc:'Professional brand identity and web presence for Websage Inc.',
+    tasks:[
+      {done:true, text:'Gumroad storefront live'},
+      {done:true, text:'Calendly live'},
+      {done:false, text:'Domain: websage.ai'},
+      {done:false, text:'Simple landing page'},
+      {done:false, text:'LinkedIn company page'},
+    ],
+    milestones:[
+      {date:'TBD', label:'Domain purchased'},
+      {date:'Week 2', label:'Landing page live'},
+    ],
+    blockers:[],
+    resources:[
+      {label:'Gumroad Store', url:'https://websageai.gumroad.com'},
+      {label:'Calendly', url:'https://calendly.com/rrp0620/websage'},
+    ]
+  },
+  {
+    id:'splitt', name:'Splitt Fintech App', pct:30, status:'inprogress', statusLabel:'🟡 Economics Review',
+    owners:'Rishi + Frieza', updated:'Mar 20, 2026',
+    desc:'Virtual Lithic card that splits charges across multiple credit cards to maximize rewards/cashback. ~85% built, blocked on unit economics viability.',
+    tasks:[
+      {done:true, text:'Core app built (~85%)'},
+      {done:true, text:'Frieza briefed on economics problem'},
+      {done:'inprogress', text:'Bulma researching Lithic/Stripe fees'},
+      {done:false, text:'Frieza builds unit economics model'},
+      {done:false, text:'Decision: launch / adjust pricing / pivot'},
+      {done:false, text:'Wire up web + mobile frontend'},
+    ],
+    milestones:[
+      {date:'Mar 21', label:'Bulma research complete'},
+      {date:'Mar 22', label:'Frieza unit economics memo'},
+      {date:'Mar 23', label:'Go/no-go decision'},
+    ],
+    blockers:['Lithic issuance + Stripe per-leg fees may make unit economics negative at current pricing — awaiting Frieza analysis'],
+    resources:[
+      {label:'Full Audit', url:'file:///Users/mint/.openclaw/workspace/products/splitt/Splitt_Full_Audit_Report.md'},
+      {label:'Frieza Agent', url:'file:///Users/mint/.openclaw/workspace/agents/frieza/AGENT.md'},
+    ]
+  },
+  {
+    id:'subdocs', name:'SubDocs', pct:5, status:'queued', statusLabel:'⬜ Queued',
+    owners:'Rishi', updated:'Mar 20, 2026',
+    desc:'Concept under review. Details TBD.',
+    tasks:[
+      {done:false, text:'Review concept docs'},
+      {done:false, text:'Define MVP scope'},
+      {done:false, text:'Assign to Vegeta'},
+    ],
+    milestones:[{date:'Week 2+', label:'Concept review'}],
+    blockers:[],
+    resources:[
+      {label:'Product Folder', url:'file:///Users/mint/.openclaw/workspace/products/subdocs/'},
+    ]
+  }
+];
+
+const AGENTS_DATA = [
+  {emoji:'🟠', name:'Goku', role:'Chief of Staff', model:'claude-sonnet-4-6', provider:'Anthropic',
+   status:'online', statusLabel:'ONLINE', costTier:3, costLabel:'💰💰💰',
+   activity:'Coordinating dashboard rebuild, managing team',
+   optimized:'Strategic decisions, Rishi-facing comms, complex multi-step reasoning'},
+  {emoji:'⚡', name:'Vegeta', role:'Engineering Lead', model:'openai/gpt-5.4', provider:'OpenAI',
+   status:'building', statusLabel:'BUILDING', costTier:3, costLabel:'💰💰💰',
+   activity:'Rebuilding Mission Control dashboard',
+   optimized:'High-value dev tasks, complex builds, architecture decisions'},
+  {emoji:'🔵', name:'Bulma', role:'Research Lead', model:'qwen/qwen3-235b-a22b', provider:'Qwen/OpenRouter',
+   status:'standby', statusLabel:'STANDBY', costTier:1, costLabel:'💰',
+   activity:'Runs daily at 8 AM ET — morning brief',
+   optimized:'Bulk research, trend analysis, large-context reading'},
+  {emoji:'👽', name:'Frieza', role:'CFO / Financial Strategist', model:'claude-sonnet-4-6', provider:'Anthropic',
+   status:'standby', statusLabel:'STANDBY', costTier:3, costLabel:'💰💰💰',
+   activity:'Splitt unit economics analysis (queued)',
+   optimized:'Financial modeling, pricing strategy, unit economics'},
+];
+
+const COST_DATA = {
+  mtd: 12.16, budget: 100,
+  today: 10.96, avgDaily: 4,
+  breakdown: [
+    {provider:'Anthropic', agents:'Goku + Frieza', models:'claude-sonnet-4-6', mtd:11.20},
+    {provider:'OpenAI', agents:'Vegeta', models:'gpt-5.4', mtd:0.85},
+    {provider:'Qwen / OpenRouter', agents:'Bulma', models:'qwen3-235b-a22b', mtd:0.11},
+  ]
+};
+
+const ACTIVITY = [
+  {time:'2026-03-20 12:34', text:'✅ Dashboard redesign kicked off — Vegeta building v2'},
+  {time:'2026-03-20 08:00', text:'🔵 Bulma morning brief delivered → research/'},
+  {time:'2026-03-19 22:44', text:'✅ Rishi submitted Twilio A2P campaign — under review'},
+  {time:'2026-03-19 22:21', text:'✅ Gumroad products created (setup + monthly)'},
+  {time:'2026-03-19 21:52', text:'✅ Bulma cron registered (ID: a212fadb)'},
+  {time:'2026-03-19 21:41', text:'🚀 Revenue sprint launched'},
+];
+
+// Markdown sections (existing content)
+const MD_SECTIONS = {
+  tasks:`# 📋 Task Board — Websage Inc.
+_Last updated: 2026-03-20 12:34 ET_
+
+---
+
+## 🔴 Blocked
+
+| Task | Owner | Blocked By |
+|------|-------|-----------|
+| Demo bot SMS delivery | Goku | Twilio A2P approval (~24-48h) |
+
+---
+
+## 🟡 In Progress
+
+| Task | Owner | Due | Notes |
+|------|-------|-----|-------|
+| Revenue Sprint — first client | Rishi + Goku | Mar 26 | First close target |
+| A2P 10DLC Registration | Rishi | ~Mar 21 | Under carrier review |
+| Dashboard rebuild v2 | Vegeta | Today | Mission Control upgrade |
+
+---
+
+## ⬜ Backlog
+
+| Task | Owner | Priority |
+|------|-------|----------|
+| LinkedIn lead list (30 agents) | Goku | 🔴 High |
+| Write 10 personalized LinkedIn DMs | Goku | 🔴 High |
+| Book first demo call | Rishi | 🔴 High |
+| Close first client | Rishi | 🔴 High |
+| Domain: websage.ai | Rishi | 🟡 Medium |
+| Deploy bot to VPS | Vegeta | 🟢 Low |
+
+---
+
+## ✅ Done
+
+| Task | Completed |
+|------|-----------|
+| Build real estate lead bot | 2026-03-18 |
+| Write sales playbook | 2026-03-18 |
+| Initialize financial tracker | 2026-03-18 |
+| Set up Mission Control | 2026-03-19 |
+| Configure Twilio credentials | 2026-03-19 |
+| Set up Gumroad products | 2026-03-19 |
+| Create Bulma research agent | 2026-03-19 |
+| Submit A2P 10DLC registration | 2026-03-19 |
+| Add Calendly to bot | 2026-03-19 |`,
+
+  calendar:`# 📅 Calendar — Websage Inc.
+_Last updated: 2026-03-20 ET_
+
+---
+
+## 🤖 Cron Schedule
+
+| ID | Name | Schedule | Status |
+|----|------|----------|--------|
+| a212fadb | 🔵 Bulma Morning Brief | Daily 8:00 AM ET | ✅ Active |
+| 7b5c9a77 | 📓 Nightly Journal | Daily 10:00 PM ET | ✅ Active |
+| 329cf88c | 💡 Idea Inbox Check | Every 2 hours | ✅ Active |
+| b9ef6870 | 📊 Sunday Weekly Report | Sundays 9:00 AM ET | 🟡 Idle |
+| 30ac6d04 | 📰 News Monitor | 9 AM, 1 PM, 6 PM ET | 🔴 Error |
+
+> ⚠️ **News Monitor** is in error state — investigate next session.
+
+---
+
+## 📆 Upcoming Milestones
+
+| Date | Event | Owner |
+|------|-------|-------|
+| ~Mar 21 | Twilio A2P approval | Carriers |
+| Mar 21 | Build lead list (30 agents) | Goku |
+| Mar 22-23 | First demo calls | Rishi |
+| Mar 26 | 🎯 First client signed | Rishi |
+| Mar 31 | Month-end review | Goku + Rishi |`,
+
+  memories:`# 🧠 Memories — Websage Inc.
+_Searchable journal of key decisions and insights_
+
+---
+
+## 📅 2026-03-20 — Engineering Session
+
+**Topics:** Mission Control v2 rebuild, API cost tracking, animated office, Agents tab
+
+**Key decisions:**
+- Dashboard getting full rebuild: Projects page, Agents tab, animated office, Ideas board
+- API cost tracking broken out by provider (Anthropic/OpenAI/Qwen)
+- Vegeta = clone-on-demand model for now; full persistent ACP agent planned
+
+---
+
+## 📅 2026-03-19 — Evening Session
+
+**Topics:** Agent org chart, Bulma setup, revenue sprint, Twilio fix, Gumroad, Mission Control
+
+**Key decisions:**
+- Bulma created as research subagent (Qwen, 8 AM daily)
+- Revenue sprint launched: target first client by Mar 26
+- Twilio A2P campaign submitted — awaiting carrier approval
+- Gumroad products: $250 setup + $250/month
+- Mission Control v1 built
+
+---
+
+## 📅 2026-03-18 — Day 0
+
+**Topics:** Bootstrap, identity, initial setup
+
+**Key decisions:**
+- Agent named Goku 🟠
+- Role: Chief of Staff
+- Mission: $10k MRR → $50k → $100k
+- Revenue opportunity research started
+
+---
+
+## 🔍 Quick Reference
+
+| Thing | Value |
+|-------|-------|
+| Bot phone | +1 (302) 496-3679 |
+| Gumroad setup | https://websageai.gumroad.com/l/nmyzxg |
+| Gumroad monthly | https://websageai.gumroad.com/l/vkavk |
+| Calendly | https://calendly.com/rrp0620/websage |
+| Bulma cron ID | a212fadb |`,
+
+  docs:`# 📄 Docs Index — Websage Inc.
+
+---
+
+## Sales & Outreach
+| Document | Path |
+|----------|------|
+| Sales Playbook | \`sales/outreach-playbook.md\` |
+| Revenue Sprint | \`sales/REVENUE-SPRINT.md\` |
+
+## Research
+| Document | Path |
+|----------|------|
+| Revenue Opportunities | \`research/2026-03-18-revenue-opportunities.md\` |
+| Morning Brief (Bulma) | \`research/YYYY-MM-DD-morning-brief.md\` |
+
+## Mission Control
+| Document | Path |
+|----------|------|
+| Task Board | \`mission-control/TASK-BOARD.md\` |
+| Projects | \`mission-control/PROJECTS.md\` |
+| Calendar | \`mission-control/CALENDAR.md\` |
+| Team | \`mission-control/TEAM.md\` |
+
+## Products
+| Product | Path | Status |
+|---------|------|--------|
+| Real Estate Lead Bot | \`demos/realestate-lead-bot/\` | ✅ Live |
+| Splitt | \`products/splitt/\` | 🟡 Review |
+| SubDocs | \`products/subdocs/\` | ⬜ Queued |`,
+
+  team:`# 👥 Team — Websage Inc.
+
+---
+
+## Rishi Patel — Founder & CEO
+- Vision, sales, relationships, legal, final approvals
+- Channels: Discord, Telegram
+- Superpower: Sales-led founder — comfortable being the face and closer
+
+---
+
+## Goku 🟠 — Chief of Staff
+- **Model:** claude-sonnet-4-6
+- Strategy, ops, research coordination, memory, orchestration
+- Primary interface between Rishi and the agent team
+
+## Vegeta ⚡ — Engineering Lead
+- **Model:** openai/gpt-5.4
+- All software development and technical builds
+- Takes specs from Goku, ships code
+
+## Bulma 🔵 — Research Lead
+- **Model:** qwen/qwen3-235b-a22b
+- Daily 8 AM ET research brief
+- AI news · Vibe coding · AI agents — every story tied to a monetization angle
+
+## Frieza 👽 — CFO / Financial Strategist
+- **Model:** claude-sonnet-4-6
+- Unit economics, financial modeling, pricing strategy
+- Current: Splitt app unit economics
+
+---
+
+## Org Chart
+
+\`\`\`
+Rishi Patel (Founder/CEO)
+    └── Goku 🟠 (Chief of Staff)
+            ├── Vegeta ⚡ (Engineering)
+            ├── Bulma 🔵 (Research)
+            └── Frieza 👽 (CFO)
+\`\`\``
+};
+
+// ── HELPERS ──
+function sprintDays() {
+  const goal = new Date('2026-03-26T23:59:00-04:00');
+  const now = new Date();
+  const diff = Math.ceil((goal - now) / 86400000);
+  return Math.max(0, diff);
+}
+
+function fmtTime(ts) {
+  return ts.replace('2026-03-','Mar ').replace(' ',', ');
+}
+
+function taskIcon(done) {
+  if(done===true) return '<span style="color:var(--green)">✅</span>';
+  if(done==='blocked') return '<span style="color:var(--red)">🔴</span>';
+  if(done==='inprogress') return '<span style="color:var(--yellow)">🟡</span>';
+  return '<span style="color:var(--gray)">⬜</span>';
+}
+
+// ── MARKDOWN PARSER ──
+function md(text) {
+  let h = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const cb=[]; h=h.replace(/```([\s\S]*?)```/g,(_,c)=>{cb.push(c.replace(/^\n/,'').replace(/\n$/,''));return`%%CB${cb.length-1}%%`});
+  const ic=[]; h=h.replace(/`([^`]+)`/g,(_,c)=>{ic.push(c);return`%%IC${ic.length-1}%%`});
+  // tables
+  h=h.replace(/((?:\|.+\|\n?)+)/g,block=>{
+    const rows=block.trim().split('\n').filter(r=>r.trim());
+    if(rows.length<2||!/^\|[\s\-:|]+\|$/.test(rows[1].trim()))return block;
+    const pr=r=>r.split('|').slice(1,-1).map(c=>c.trim());
+    let t='<table><thead><tr>'+pr(rows[0]).map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
+    for(let i=2;i<rows.length;i++)t+='<tr>'+pr(rows[i]).map(c=>`<td>${c}</td>`).join('')+'</tr>';
+    return t+'</tbody></table>';
+  });
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  h=h.replace(/^---+$/gm,'<hr>');
+  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/(?<!\w)_(.+?)_(?!\w)/g,'<em>$1</em>');
+  h=h.replace(/((?:^- .+$\n?)+)/gm,b=>'<ul>'+b.trim().split('\n').map(l=>`<li>${l.replace(/^- /,'')}</li>`).join('')+'</ul>');
+  h=h.replace(/((?:^\d+\. .+$\n?)+)/gm,b=>'<ol>'+b.trim().split('\n').map(l=>`<li>${l.replace(/^\d+\. /,'')}</li>`).join('')+'</ol>');
+  h=h.replace(/(https?:\/\/[^\s<)"]+)/g,'<a href="$1" target="_blank">$1</a>');
+  h=h.replace(/^(?!<[a-z\/]|%%)((?!<).+)$/gm,'<p>$1</p>');
+  cb.forEach((c,i)=>h=h.replace(`%%CB${i}%%`,`<pre><code>${c}</code></pre>`));
+  ic.forEach((c,i)=>{
+    const isPath=/^[~\/\w][\w\/\-.*{}]+\.\w+$/.test(c)||/^[~\/\w][\w\/\-.*{}]+\/$/.test(c);
+    const fp=isPath?(c.startsWith('~/')?c.replace('~','/Users/mint'):WORKSPACE+'/'+c):null;
+    h=h.replace(`%%IC${i}%%`,isPath?`<a class="file-link" href="file://${fp}">${c}</a>`:`<code>${c}</code>`);
+  });
+  return h;
+}
+
+// ── RENDER SECTIONS ──
+let expandedProject = null;
+
+function renderDashboard() {
+  const days = sprintDays();
+  const pct = Math.round((COST_DATA.mtd/COST_DATA.budget)*100);
+  const feedHtml = ACTIVITY.map(e=>`<div class="feed-item"><span class="feed-time">${e.time}</span><span class="feed-text">${e.text}</span></div>`).join('');
+  return `
+    <div class="page">
+      <div class="sprint-card">
+        <div>
+          <div class="sprint-label">Sprint Countdown</div>
+          <div class="sprint-days">${days}</div>
+          <div class="sprint-sub">days until first client goal</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sprint-goal">🎯 Mar 26, 2026</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Real Estate Lead Bot — First Close</div>
+        </div>
+      </div>
+
+      <div class="widget-grid">
+        <div class="widget red">
+          <div class="widget-title">💰 Monthly Revenue</div>
+          <div class="widget-value">$0</div>
+          <div class="widget-sub">Target: $200/mo survival</div>
+          <div class="pbar-wrap"><div class="pbar red" style="width:0%"></div></div>
+        </div>
+        <div class="widget yellow">
+          <div class="widget-title">📉 Revenue Gap</div>
+          <div class="widget-value">$200</div>
+          <div class="widget-sub">$500 needed for first client</div>
+        </div>
+        <div class="widget blue">
+          <div class="widget-title">👥 Active Clients</div>
+          <div class="widget-value">0</div>
+          <div class="widget-sub">Goal: 3 clients @ $500/mo</div>
+        </div>
+        <div class="widget orange">
+          <div class="widget-title">🔋 API Budget MTD</div>
+          <div class="widget-value">$12.16</div>
+          <div class="widget-sub">of $100 budget (${pct}% used)</div>
+          <div class="pbar-wrap"><div class="pbar orange" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="widget">
+          <div class="widget-title">📊 Revenue vs Target</div>
+          <div style="display:flex;align-items:flex-end;gap:20px;height:70px;margin-top:10px;padding:0 10px">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:100%;background:var(--red);border-radius:3px 3px 0 0;height:4px"></div>
+              <span style="font-size:10px;color:var(--dim)">Actual</span>
+              <span style="font-size:11px;font-weight:600;color:var(--red)">$0</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:100%;background:rgba(234,179,8,.3);border:2px dashed var(--yellow);border-radius:3px 3px 0 0;height:40px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--yellow)">TARGET</div>
+              <span style="font-size:10px;color:var(--dim)">Target</span>
+              <span style="font-size:11px;font-weight:600;color:var(--yellow)">$200</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+              <div style="width:100%;background:rgba(34,197,94,.2);border:2px dashed var(--green);border-radius:3px 3px 0 0;height:60px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green)">GOAL</div>
+              <span style="font-size:10px;color:var(--dim)">Goal</span>
+              <span style="font-size:11px;font-weight:600;color:var(--green)">$10k</span>
+            </div>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-title">🤖 API Costs by Provider</div>
+          ${COST_DATA.breakdown.map(b=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">
+              <span style="color:var(--muted)">${b.provider}</span>
+              <span style="font-weight:600">$${b.mtd.toFixed(2)}</span>
+            </div>
+          `).join('')}
+          <div style="margin-top:8px;font-size:11px;color:var(--dim)">Total MTD: <strong style="color:var(--text)">$${COST_DATA.mtd}</strong> / $${COST_DATA.budget}</div>
+        </div>
+      </div>
+
+      <div class="feed-card">
+        <div class="feed-title">🔴 Live Activity Feed</div>
+        ${feedHtml}
+      </div>
+    </div>`;
+}
+
+function renderProjects() {
+  const cards = PROJECTS.map(p=>{
+    const isExpanded = expandedProject===p.id;
+    const statusCls = p.status==='queued'?'status-queued':p.blockers.length?'status-blocked':'status-inprogress';
+    const tasksHtml = p.tasks.map(t=>`<div class="proj-task">${taskIcon(t.done)}<span style="${t.done===true?'color:var(--dim);text-decoration:line-through':''}">${t.text}</span></div>`).join('');
+    const milestonesHtml = p.milestones.map(m=>`<div class="proj-milestone"><span>${m.date}</span><span>${m.label}</span></div>`).join('');
+    const blockersHtml = p.blockers.length ? p.blockers.map(b=>`<div class="blocker-box">🔴 ${b}</div>`).join('') : '<span style="color:var(--dim);font-size:13px">None</span>';
+    const resourcesHtml = p.resources.map(r=>`<a class="resource-link" href="${r.url}" target="_blank">🔗 ${r.label}</a>`).join('');
+    const detail = isExpanded ? `
+      <div class="proj-detail">
+        <h4>Description</h4>
+        <p style="font-size:13px;color:var(--muted)">${p.desc}</p>
+        <h4>Tasks</h4>
+        ${tasksHtml}
+        <h4>Milestones</h4>
+        ${milestonesHtml}
+        <h4>Blockers</h4>
+        ${blockersHtml}
+        <h4>Resources</h4>
+        ${resourcesHtml}
+        <br><button class="collapse-btn" onclick="toggleProject('${p.id}')">▲ Collapse</button>
+      </div>` : '';
+    return `
+      <div class="proj-card ${isExpanded?'expanded':''}" ${!isExpanded?`onclick="toggleProject('${p.id}')"`:''}>
+        <div class="proj-header">
+          <div class="proj-name">${p.name}</div>
+          <span class="proj-status ${statusCls}">${p.statusLabel}</span>
+        </div>
+        <div class="proj-owners">👤 ${p.owners} · ${p.updated}</div>
+        <div class="proj-progress-label"><span>Progress</span><span style="font-weight:600">${p.pct}%</span></div>
+        <div class="pbar-wrap"><div class="pbar ${p.pct>50?'green':'orange'}" style="width:${p.pct}%"></div></div>
+        ${detail}
+      </div>`;
+  }).join('');
+  return `<div class="page"><h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🗂️ Projects</h2><div class="proj-grid">${cards}</div></div>`;
+}
+
+function toggleProject(id) {
+  expandedProject = expandedProject===id ? null : id;
+  render(currentSection);
+}
+
+function renderAgents() {
+  const cards = AGENTS_DATA.map(a=>{
+    const costCls = a.costTier===1?'cost1':a.costTier===2?'cost2':'cost3';
+    const statusCls = a.status==='online'?'status-on':a.status==='building'?'status-build':'status-sb';
+    const dotCls = a.status==='building'?'building':a.status==='online'?'online':'standby';
+    return `
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar">${a.emoji}</div>
+          <div class="agent-info">
+            <div class="name">${a.name} ${a.emoji}</div>
+            <div class="role">${a.role}</div>
+          </div>
+          <span class="dot ${dotCls}" style="margin-left:auto"></span>
+        </div>
+        <div class="agent-meta">
+          <span class="tag model">${a.model}</span>
+          <span class="tag ${costCls}">${a.costLabel}</span>
+          <span class="tag ${statusCls}">${a.statusLabel}</span>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-bottom:6px">Provider: ${a.provider}</div>
+        <div class="agent-activity">🔄 ${a.activity}</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px">Optimized for: ${a.optimized}</div>
+      </div>`;
+  }).join('');
+
+  const pct = Math.round((COST_DATA.mtd/COST_DATA.budget)*100);
+  const bRows = COST_DATA.breakdown.map(b=>`
+    <div class="cost-row">
+      <div><div class="cost-provider">${b.provider}</div><div class="cost-note">${b.agents} · ${b.models}</div></div>
+      <div class="cost-amount">$${b.mtd.toFixed(2)}</div>
+    </div>`).join('');
+
+  return `<div class="page">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">🤖 Agents</h2>
+    <div class="policy-note"><strong>Model Policy enforced by Goku:</strong> Each agent runs the right model for its task — strategic reasoning on Sonnet, bulk research on Qwen (10× cheaper), dev on GPT-5.4. Prevents cost bloat as team scales.</div>
+    <div class="agents-grid">${cards}</div>
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent)">💰 API Cost Breakdown (March 2026 MTD)</h3>
+    <div class="cost-breakdown">
+      ${bRows}
+      <div style="padding:10px 0 0;display:flex;align-items:center;justify-content:space-between;font-size:13px">
+        <span style="color:var(--muted)">Total MTD: <strong style="color:var(--text)">$${COST_DATA.mtd} / $${COST_DATA.budget}</strong></span>
+        <span style="color:var(--dim);font-size:11px">Yesterday: $${COST_DATA.today} (high context day)</span>
+      </div>
+      <div class="pbar-wrap" style="margin-top:8px"><div class="pbar orange" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px">${pct}% of monthly budget used · ${100-pct}% remaining</div>
+    </div>
+  </div>`;
+}
+
+function renderOffice() {
+  return `<div class="page">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🏢 The Office — Websage HQ</h2>
+    <div class="office-wrap">
+
+      <!-- Ideation Corner: Goku -->
+      <div class="zone" style="border-color:rgba(249,115,22,.3);background:linear-gradient(135deg,rgba(249,115,22,.05),var(--card))">
+        <div class="zone-label">💡 Ideation Corner</div>
+        <div class="bubble" style="top:30px">💭</div>
+        <div class="bubble" style="top:20px">💭</div>
+        <div class="bubble" style="top:25px">💭</div>
+        <div class="zone-agent">🟠</div>
+        <div class="zone-name">Goku</div>
+        <div class="zone-status">Chief of Staff · Online</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">Strategizing next sprint...</div>
+      </div>
+
+      <!-- Build Station: Vegeta -->
+      <div class="zone" style="border-color:rgba(59,130,246,.3);background:linear-gradient(135deg,rgba(59,130,246,.05),var(--card))">
+        <div class="zone-label">🔨 Build Station</div>
+        <div class="zone-agent">⚡</div>
+        <div class="zone-name">Vegeta</div>
+        <div class="zone-status">Engineering · Building</div>
+        <div class="code-screen">
+          <div class="code-line">import Dashboard from './mission'</div>
+          <div class="code-line">const render = (section) => {</div>
+          <div class="code-line">  &nbsp;&nbsp;return sections[section]</div>
+          <div class="code-line">  &nbsp;&nbsp;.map(buildComponent)</div>
+          <div class="code-line">}<span class="cursor"></span></div>
+        </div>
+      </div>
+
+      <!-- War Room: Frieza -->
+      <div class="zone" style="border-color:rgba(168,85,247,.3);background:linear-gradient(135deg,rgba(168,85,247,.05),var(--card))">
+        <div class="zone-label">📊 War Room</div>
+        <div class="zone-agent">👽</div>
+        <div class="zone-name">Frieza</div>
+        <div class="zone-status">CFO · Analyzing</div>
+        <div class="chart-bars">
+          <div class="chart-bar"></div>
+          <div class="chart-bar"></div>
+          <div class="chart-bar"></div>
+          <div class="chart-bar"></div>
+          <div class="chart-bar"></div>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px;font-style:italic">Splitt unit economics...</div>
+      </div>
+
+      <!-- Launch Pad + Bulma sleeping -->
+      <div class="zone" style="position:relative">
+        <div class="zone-label">🚀 Launch Pad</div>
+        <div class="launchpad">
+          <div class="rocket">🚀</div>
+          <p style="margin-top:8px">Ready for launch</p>
+          <p style="font-size:11px;margin-top:4px">First client incoming</p>
+        </div>
+        <!-- Bulma sleeping in corner -->
+        <div style="position:absolute;bottom:14px;right:14px;text-align:center;opacity:.7">
+          <div class="zzz" style="position:relative">Z</div>
+          <div class="zzz" style="position:relative">Z</div>
+          <div class="zzz" style="position:relative">Z</div>
+          <div style="font-size:22px">🔵</div>
+          <div style="font-size:10px;color:var(--dim)">Bulma · Sleeping<br>(wakes 8 AM)</div>
+        </div>
+      </div>
+
+    </div>
+
+    <table class="office-table">
+      <thead><tr><th>Agent</th><th>Zone</th><th>Status</th><th>Current Task</th></tr></thead>
+      <tbody>
+        <tr><td>🟠 Goku</td><td>💡 Ideation</td><td><span style="color:var(--green)">● Online</span></td><td>Coordinating dashboard rebuild, sprint planning</td></tr>
+        <tr><td>⚡ Vegeta</td><td>🔨 Build Station</td><td><span style="color:var(--accent)">● Building</span></td><td>Mission Control v2 dashboard</td></tr>
+        <tr><td>👽 Frieza</td><td>📊 War Room</td><td><span style="color:var(--yellow)">● Standby</span></td><td>Splitt unit economics (queued)</td></tr>
+        <tr><td>🔵 Bulma</td><td>🚀 Launch Pad (corner)</td><td><span style="color:var(--dim)">● Sleeping</span></td><td>Wakes at 8 AM ET for daily brief</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:10px">🏆 Wall of Wins</div>
+      <div style="font-size:13px;color:var(--dim);font-style:italic">Empty for now — first win incoming soon 🔜</div>
+    </div>
+  </div>`;
+}
+
+function getIdeas() {
+  try { return JSON.parse(localStorage.getItem('websage-ideas')||'[]'); }
+  catch(e) { return []; }
+}
+function saveIdeas(ideas) { localStorage.setItem('websage-ideas', JSON.stringify(ideas)); }
+
+let ideaSort = 'newest';
+function renderIdeas() {
+  let ideas = getIdeas();
+  if(ideaSort==='votes') ideas = [...ideas].sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const cards = ideas.length===0
+    ? `<div class="empty-state"><div class="icon">💡</div><p>No ideas yet — submit the first one!</p></div>`
+    : ideas.map((idea,i)=>`
+      <div class="idea-card">
+        <div class="idea-card-header">
+          <div class="idea-title">${escHtml(idea.title)}</div>
+        </div>
+        <div class="idea-badges">
+          <span class="badge ${idea.category}">${idea.category}</span>
+          <span class="badge prio-${idea.priority}">${idea.priority}</span>
+        </div>
+        <div class="idea-desc">${escHtml(idea.desc)}</div>
+        <div class="idea-footer">
+          <span class="idea-time">${new Date(idea.ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+          <button class="vote-btn ${idea.voted?'voted':''}" onclick="voteIdea(${i})">👍 ${idea.votes||0}</button>
+        </div>
+      </div>`).join('');
+  return `<div class="page">
+    <div class="ideas-header">
+      <h2 style="font-size:20px;font-weight:700">💡 Ideas Board</h2>
+      <div class="ideas-controls">
+        <button class="sort-btn ${ideaSort==='newest'?'active':''}" onclick="setSort('newest')">Newest</button>
+        <button class="sort-btn ${ideaSort==='votes'?'active':''}" onclick="setSort('votes')">Top Voted</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:5px 14px" onclick="openModal()">+ Submit Idea</button>
+      </div>
+    </div>
+    ${cards}
+  </div>`;
+}
+
+function setSort(s) { ideaSort=s; render(currentSection); }
+function escHtml(s='') { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function voteIdea(idx) {
+  const ideas = getIdeas();
+  if(!ideas[idx]) return;
+  ideas[idx].voted = !ideas[idx].voted;
+  ideas[idx].votes = (ideas[idx].votes||0) + (ideas[idx].voted?1:-1);
+  saveIdeas(ideas);
+  render(currentSection);
+}
+
+// Modal
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('idea-title').focus();
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===document.getElementById('modal')) closeModal(); }
+
+function submitIdea() {
+  const title = document.getElementById('idea-title').value.trim();
+  const cat = document.getElementById('idea-cat').value;
+  const prio = document.getElementById('idea-prio').value;
+  const desc = document.getElementById('idea-desc').value.trim();
+  if(!title) { document.getElementById('idea-title').focus(); return; }
+  const ideas = getIdeas();
+  ideas.unshift({title, category:cat, priority:prio, desc, ts:Date.now(), votes:0, voted:false});
+  saveIdeas(ideas);
+  document.getElementById('idea-title').value='';
+  document.getElementById('idea-desc').value='';
+  closeModal();
+  render('ideas');
+}
+
+// ── NAVIGATION ──
+let currentSection = 'dashboard';
+const contentEl = document.getElementById('content');
+const navItems = document.querySelectorAll('.nav-item');
+
+function render(section) {
+  currentSection = section;
+  navItems.forEach(n=>n.classList.toggle('active', n.dataset.s===section));
+  contentEl.parentElement.scrollTop = 0;
+  switch(section) {
+    case 'dashboard': contentEl.innerHTML = renderDashboard(); break;
+    case 'projects':  contentEl.innerHTML = renderProjects(); break;
+    case 'agents':    contentEl.innerHTML = renderAgents(); break;
+    case 'ideas':     contentEl.innerHTML = renderIdeas(); break;
+    case 'office':    contentEl.innerHTML = renderOffice(); break;
+    default:
+      if(MD_SECTIONS[section]) contentEl.innerHTML = `<div class="page"><div class="md">${md(MD_SECTIONS[section])}</div></div>`;
+      break;
+  }
+}
+
+navItems.forEach(n=>n.addEventListener('click',()=>render(n.dataset.s)));
+
+// Clock
+function tick() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true,timeZoneName:'short'});
+}
+setInterval(tick,1000); tick();
+
+// Init
+render('dashboard');
+</script>
+</body>
+</html>
