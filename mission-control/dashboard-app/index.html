@@ -351,6 +351,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','I
       <div class="clock" id="clock"></div>
       <div class="mrr-badge" id="mrr-badge">$0 MRR</div>
       <div class="gap-badge" id="gap-badge">$200 Gap</div>
+      <div id="data-mode-badge" style="padding:3px 10px;border-radius:20px;font-weight:600;font-size:10px;letter-spacing:1px"></div>
     </div>
   </header>
 
@@ -430,6 +431,27 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','I
 
 <script>
 const WORKSPACE = '/Users/mint/.openclaw/workspace';
+
+// ── SUPABASE CONFIG ──
+const SUPABASE_URL = '';
+const SUPABASE_ANON_KEY = '';
+
+async function supaFetch(table, options = {}) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+  try {
+    let url = `${SUPABASE_URL}/rest/v1/${table}?select=*`;
+    if (options.order) url += `&order=${options.order}`;
+    if (options.limit) url += `&limit=${options.limit}`;
+    if (options.eq) url += `&${options.eq[0]}=eq.${options.eq[1]}`;
+    const r = await fetch(url, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+function getDataMode() { return (SUPABASE_URL && SUPABASE_ANON_KEY) ? 'LIVE' : 'STATIC'; }
 
 // ── DATA ──
 const PROJECTS = [
@@ -599,6 +621,22 @@ let _dashCache = null;
 let _dashTimer = null;
 
 async function loadDashboard() {
+  // Try Supabase first
+  const metricsRows = await supaFetch('metrics');
+  if (metricsRows && metricsRows.length > 0) {
+    const m = {};
+    metricsRows.forEach(r => m[r.key] = r.value);
+    const actRows = await supaFetch('activity', { order: 'event_time.desc', limit: 20 });
+    const data = {
+      revenue: m.revenue || {},
+      expenses: m.expenses || {},
+      sprint: m.sprint || {},
+      activity: (actRows || []).map(r => ({ time: r.event_time.replace('T',' ').slice(0,16), text: r.text }))
+    };
+    _dashCache = data;
+    return data;
+  }
+  // Fall back to local JSON
   const data = await fetchData("./data/dashboard.json");
   if (data) _dashCache = data;
   return data;
@@ -737,6 +775,19 @@ let _projCache = null;
 let _projTimer = null;
 
 async function loadProjects() {
+  // Try Supabase first
+  const rows = await supaFetch('projects', { order: 'pct.desc' });
+  if (rows && rows.length > 0) {
+    const projects = rows.map(r => ({
+      id: r.id, name: r.name, emoji: r.emoji, pct: r.pct, status: r.status,
+      statusLabel: r.status_label, owners: r.owners, updated: new Date(r.updated_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      desc: r.description, tasks: r.tasks || [], milestones: r.milestones || [], blockers: r.blockers || [], resources: r.resources || []
+    }));
+    const data = { projects };
+    _projCache = data;
+    return data;
+  }
+  // Fall back to local JSON
   const data = await fetchData("./data/projects.json");
   if (data) _projCache = data;
   return data;
@@ -805,12 +856,29 @@ const AGENT_META = {};
 AGENTS_DATA.forEach(a => { AGENT_META[a.name.toLowerCase()] = a; });
 
 async function loadAgentsSection() {
-  const [agentData, dashData] = await Promise.all([
-    fetchData("./data/agent-status.json"),
-    fetchData("./data/dashboard.json")
-  ]);
+  // Try Supabase for agent data
+  const agentRows = await supaFetch('agent_status');
+  let agentData = null;
+  if (agentRows && agentRows.length > 0) {
+    const agents = {};
+    agentRows.forEach(r => {
+      agents[r.id] = { emoji: r.emoji, name: r.name, role: r.role, zone: r.zone, status: r.status, statusLabel: r.status_label, currentTask: r.current_task, mood: r.mood };
+    });
+    agentData = { agents };
+  } else {
+    agentData = await fetchData("./data/agent-status.json");
+  }
+  // Try Supabase for cost data
+  const metricsRows = await supaFetch('metrics', { eq: ['key', 'expenses'] });
+  let costData = null;
+  if (metricsRows && metricsRows.length > 0) {
+    costData = metricsRows[0].value;
+  } else {
+    const dashData = await fetchData("./data/dashboard.json");
+    if (dashData) costData = dashData.expenses;
+  }
   if (agentData) _agentStatusCache = agentData;
-  if (dashData) _agentsCostCache = dashData.expenses;
+  if (costData) _agentsCostCache = costData;
   return { agentData: agentData || _agentStatusCache, costData: _agentsCostCache };
 }
 
@@ -1227,6 +1295,19 @@ let _agentStatusTimer = null;
 let _agentStatusFetchedAt = null;
 
 async function loadAgentStatus() {
+  // Try Supabase first
+  const rows = await supaFetch('agent_status');
+  if (rows && rows.length > 0) {
+    const agents = {};
+    rows.forEach(r => {
+      agents[r.id] = { emoji: r.emoji, name: r.name, role: r.role, zone: r.zone, status: r.status, statusLabel: r.status_label, currentTask: r.current_task, mood: r.mood };
+    });
+    const data = { agents, wins: [] };
+    _agentStatusCache = data;
+    _agentStatusFetchedAt = Date.now();
+    return data;
+  }
+  // Fall back to local JSON
   try {
     const r = await fetch("./data/agent-status.json?t=" + Date.now());
     if (!r.ok) throw new Error("no data");
@@ -1499,6 +1580,25 @@ function tick() {
   document.getElementById('clock').textContent = now.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true,timeZoneName:'short'});
 }
 setInterval(tick,1000); tick();
+
+// Data mode badge
+(function() {
+  const mode = getDataMode();
+  const badge = document.getElementById('data-mode-badge');
+  if (badge) {
+    if (mode === 'LIVE') {
+      badge.textContent = '● LIVE';
+      badge.style.background = 'rgba(34,197,94,.12)';
+      badge.style.color = 'var(--green)';
+      badge.style.border = '1px solid rgba(34,197,94,.25)';
+    } else {
+      badge.textContent = '● STATIC';
+      badge.style.background = 'rgba(107,114,128,.12)';
+      badge.style.color = 'var(--gray)';
+      badge.style.border = '1px solid rgba(107,114,128,.25)';
+    }
+  }
+})();
 
 // Init
 render('dashboard');
