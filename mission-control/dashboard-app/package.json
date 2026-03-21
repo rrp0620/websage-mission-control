@@ -1,0 +1,6 @@
+{
+  "name": "websage-mission-control",
+  "scripts": {
+    "serve": "npx serve -p 4242 ../../"
+  }
+}

@@ -1,133 +1,42 @@
 {
-  "lastUpdated": "2026-03-19T09:33:00-04:00",
+  "lastUpdated": "2026-03-20T22:50:00-04:00",
   "phase": "Survival",
   "phaseTarget": "$200/month",
   "revenue": {
     "mtd": 0,
     "target": 200,
+    "goal": 10000,
     "currency": "USD"
   },
   "expenses": {
-    "mtd": 0,
-    "dailyLimit": 3
+    "mtd": 12.16,
+    "today": 10.96,
+    "avgDaily": 4,
+    "budget": 100,
+    "dailyLimit": 3,
+    "breakdown": [
+      { "provider": "Anthropic", "agents": "Goku + Frieza", "models": "claude-sonnet-4-6", "mtd": 11.20 },
+      { "provider": "OpenAI", "agents": "Vegeta", "models": "gpt-5.4", "mtd": 0.85 },
+      { "provider": "Qwen / OpenRouter", "agents": "Bulma", "models": "qwen3-235b-a22b", "mtd": 0.11 }
+    ]
   },
-  "status": "🟢 Executing — Day 2",
-  "currentTask": "Agent-as-a-Service: Real Estate Lead Bot built & tested. Awaiting Twilio keys to go live.",
-  "upworkStatus": "⏳ Paused — pivoted to Agent-as-a-Service",
-  "gumroadStatus": "⏸️ Paused — pivoted to Agent-as-a-Service",
-  "experiments": [
-    {
-      "name": "Agent-as-a-Service: Real Estate Lead Bot",
-      "platform": "Direct / LinkedIn outreach",
-      "status": "live",
-      "statusLabel": "🟡 Demo built & tested — awaiting Twilio for live demo number",
-      "price": 350,
-      "hypothesis": "Real estate agents will pay $350/month for a 60-second AI lead follow-up bot. First client within 14 days.",
-      "daysActive": 2,
-      "metric": "paying clients",
-      "metricValue": 0,
-      "successTarget": 1,
-      "killDate": "2026-04-02"
-    },
-    {
-      "name": "OpenClaw Agent Setup as a Service",
-      "platform": "Inbound + warm outreach",
-      "status": "planning",
-      "statusLabel": "🟢 Greenlighted — building templates, closing first pilots",
-      "price": 350,
-      "setupFee": 500,
-      "hypothesis": "Business owners will pay $500 setup + $350/month to have a custom OpenClaw AI agent built and deployed for their business. Inbound demand already exists.",
-      "daysActive": 0,
-      "metric": "paying pilots",
-      "metricValue": 0,
-      "successTarget": 3,
-      "killDate": "2026-04-20",
-      "notes": "Templatized per vertical (Real Estate, HVAC, General SMB). Rishi handles intake/sales calls, Goku+Vegeta build. 30-day target: 3 pilots = $1,050 MRR."
-    }
-  ],
-  "tasks": [
-    { "id": 1, "title": "Twilio setup → live demo number", "status": "blocked", "blockedBy": "Rishi sending Twilio SID + Auth Token", "priority": "high", "due": "today" },
-    { "id": 2, "title": "Start LinkedIn outreach (25 DMs/day)", "status": "in_progress", "priority": "high", "due": "today" },
-    { "id": 3, "title": "Deploy server to VPS (DigitalOcean)", "status": "blocked", "blockedBy": "Awaiting $6/mo spend approval", "priority": "high", "due": "today" },
-    { "id": 4, "title": "Build HVAC/Dental/MedSpa/Auto agent templates", "status": "queued", "priority": "medium", "due": "2026-03-20" },
-    { "id": 5, "title": "First demo call booked", "status": "queued", "priority": "high", "due": "2026-03-22" },
-    { "id": 6, "title": "Close first paying client", "status": "queued", "priority": "high", "due": "2026-04-02" },
-    { "id": 7, "title": "Rotate Anthropic API key (security)", "status": "queued", "priority": "medium", "due": "2026-03-22" }
-  ],
-  "recentActivity": [
-    { "time": "9:33 AM", "event": "LinkedIn DM sequence + target criteria docs written" },
-    { "time": "9:15 AM", "event": "Anthropic API key stored — agent tested and confirmed working" },
-    { "time": "8:55 AM", "event": "Real estate lead bot demo built (CLI + production server + Twilio webhook)" },
-    { "time": "8:30 AM", "event": "Agent-as-a-Service research batched and cached to file" },
-    { "time": "8:10 AM", "event": "Sales playbook written — pricing, objection handling, onboarding flow" },
-    { "time": "7:40 AM", "event": "Budget constraint confirmed: $3/day API limit, no subagents, batch everything" },
-    { "time": "7:36 AM", "event": "Video analyzed: Branson Pfiester $30k/weeks playbook = Agent-as-a-Service" },
-    { "time": "9:55 PM", "event": "Day 1: Infrastructure complete, Cold Email Vault ready to publish" }
-  ],
-  "newsAlerts": [
-    {
-      "headline": "GPT-5.4 mini & nano launch — near-flagship performance at fraction of cost",
-      "summary": "OpenAI released GPT-5.4 mini and nano on March 17. Mini runs 2x faster than GPT-5 mini — directly lowers COGS for our agent builds.",
-      "relevance": "HIGH — cheaper/faster models = better margins on Agent-as-a-Service",
-      "timestamp": "2026-03-19T13:00:00Z"
-    },
-    {
-      "headline": "Mystery 1T-parameter 'Hunter Alpha' on OpenRouter — possibly DeepSeek V4",
-      "summary": "Trillion-parameter model with 1M context appeared anonymously. April DeepSeek V4 launch rumored.",
-      "relevance": "MEDIUM — watch for April confirmation; potential content angle",
-      "timestamp": "2026-03-19T13:00:00Z"
-    },
-    {
-      "headline": "LinkedIn rebuilt its feed algorithm using LLMs — AI-generated content being actively penalized",
-      "summary": "LinkedIn has replaced its ranking system with LLM-based Generative Recommender models. Generic/template AI content is now detected and downranked. Company page organic reach has fallen 60-66% YoY; personal profiles down ~50%. Algorithm now rewards authentic expert-level content and 1:1 outreach. Former LinkedIn insider confirmed 'everything shifted in Feb 2026.'",
-      "relevance": "HIGH — directly impacts our LinkedIn DM outreach strategy (25 DMs/day). Actionable: avoid AI-sounding copy in DMs, lean into hyper-personalized 1:1 messages. Personal profile > company page for reach.",
-      "timestamp": "2026-03-20T13:00:00Z"
-    },
-    {
-      "headline": "GPT-5.4 (full) released — 1M context window, native computer use, Tool Search cuts token cost 50%",
-      "summary": "OpenAI shipped GPT-5.4 with a 1M-token context window, native computer use, and a Tool Search feature that halves token costs on tool-heavy workflows. Positioned directly against Claude Code. Could significantly reduce API costs for Agent-as-a-Service deployments with large context needs.",
-      "relevance": "HIGH — 50% token cost reduction on tool-heavy calls lowers our COGS; monitor for API pricing update. 1M context opens new agent capabilities (e.g., ingesting full CRM exports for lead bots).",
-      "timestamp": "2026-03-20T13:00:00Z"
-    },
-    {
-      "headline": "NYT covers AI agents going mainstream — 'personal digital assistants that use software on your behalf'",
-      "summary": "New York Times ran a feature (March 19) on AI agents doing real-world tasks for everyday people. Signals that non-technical buyers (our ICP: realtors, HVAC owners) are now reading mainstream AI agent coverage — increasing market readiness and reducing cold-pitch education burden.",
-      "relevance": "MEDIUM-HIGH — timing advantage: our targets are now pre-primed. Lead with 'you may have seen in the news' framing in outreach to reduce friction.",
-      "timestamp": "2026-03-20T17:00:00Z"
-    },
-    {
-      "headline": "Gumroad mass creator exodus — 10% flat fee killing platform's marketplace value",
-      "summary": "Multiple creator economy outlets (ThriveCart, DodoPayments, SchoolMaker) flagged this week that Gumroad's shift to a flat 10% transaction fee + removal of tiered pricing has triggered a mass migration of established creators to alternatives. Discover marketplace traffic weakening as seller count drops. In 2026, Gumroad's lack of storefront customization is also being cited as a brand liability.",
-      "relevance": "MEDIUM-HIGH — Websage has a Cold Email Vault product planned for Gumroad (currently paused). If the Discover marketplace degrades, organic discovery value drops. Consider Lemon Squeezy or Whop as alternatives when ready to launch digital products. Also a content angle: 'Where to sell AI prompts in 2026' could attract inbound.",
-      "timestamp": "2026-03-20T22:00:00Z"
-    }
-  ],
-  "ideas": [
-    {
-      "id": 1,
-      "summary": "Agent-as-a-Service for SMBs — custom AI agents, VPS-deployable, packaged offering",
-      "type": "revenue_idea",
-      "status": "active — executing now"
-    },
-    {
-      "id": 2,
-      "summary": "Cold Email Vault ($27 Gumroad product) — 50 cold email prompts",
-      "type": "revenue_idea",
-      "status": "paused — deprioritized for Agent-as-a-Service"
-    },
-    {
-      "id": 3,
-      "summary": "Rishi is willing to play the human sales role — he's open to being the face on calls, demos, outreach. Removes the 'who sells it?' blocker for Agent-as-a-Service.",
-      "type": "strategic_signal",
-      "status": "noted — shapes sales strategy",
-      "capturedAt": "2026-03-20T16:02:00Z"
-    },
-    {
-      "id": 4,
-      "summary": "OpenClaw Agent Setup as a Service — people are already asking for help setting up Claude/OpenClaw. Sell custom agent builds per vertical: $500 setup + $350/month. Real estate, HVAC, general SMB. Rishi handles sales, Goku+Vegeta build.",
-      "type": "revenue_idea",
-      "status": "🟢 greenlighted — templates in progress, first pilots targeted within 14 days",
-      "capturedAt": "2026-03-20T22:00:00Z"
-    }
+  "sprint": {
+    "goal": "First client signed",
+    "deadline": "2026-03-26",
+    "daysRemaining": 6
+  },
+  "status": "🟢 Executing — Day 3",
+  "activity": [
+    { "time": "2026-03-20 22:50", "text": "⚡ Vegeta building live office page + data wiring" },
+    { "time": "2026-03-20 22:46", "text": "🔵 Bulma tasked: passive income ideas research" },
+    { "time": "2026-03-20 22:36", "text": "📋 SubDocs context loaded — Facebook inbound live" },
+    { "time": "2026-03-20 22:09", "text": "🔐 GitHub repo cleaned + pushed (scrubbed API keys from history)" },
+    { "time": "2026-03-20 21:31", "text": "📣 Rishi: 10 LinkedIn DMs sent (real estate)" },
+    { "time": "2026-03-20 12:34", "text": "✅ Dashboard redesign kicked off — Vegeta building v2" },
+    { "time": "2026-03-20 08:00", "text": "🔵 Bulma morning brief delivered → research/" },
+    { "time": "2026-03-19 22:44", "text": "✅ Rishi submitted Twilio A2P campaign — under review" },
+    { "time": "2026-03-19 22:21", "text": "✅ Gumroad products created (setup + monthly)" },
+    { "time": "2026-03-19 21:52", "text": "✅ Bulma cron registered (ID: a212fadb)" },
+    { "time": "2026-03-19 21:41", "text": "🚀 Revenue sprint launched" }
   ]
 }

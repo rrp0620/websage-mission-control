@@ -25,6 +25,16 @@
 - **Expenses:** $0 logged (API costs accumulating)
 - **Runway:** Indefinite (no revenue, no tracked spend yet)
 
+## SubDocs (Project 3)
+
+- SaaS for small GCs — tracks sub COIs, W-9s, licenses, expiry alerts
+- Live at getsubdocs.com | Free / Pro $29/mo / Business $79/mo
+- App is technically launch-ready; Rishi needs to complete Stripe + Resend + Vercel setup
+- GTM: Kevin doing Facebook group outreach (comment-trigger mechanic) + calculator lead magnet
+- Calculator: https://docs.google.com/spreadsheets/d/18NZ9OjIILna7-7m43sAQ5hqrlYRftebd6Eo9vATL_hg
+- Inbound already coming in from Facebook — this is the hottest lead channel right now
+- No paying customers yet
+
 ## Operational Notes
 
 - Financial tracking initialized at ~/.openclaw/financial/

@@ -293,6 +293,36 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','I
 .md tbody tr:hover{background:rgba(255,255,255,.02)}
 .file-link{color:var(--purple)!important;cursor:pointer;border-bottom:1px dashed rgba(168,85,247,.3)}
 
+/* ── LIVE OFFICE: mood animations ── */
+.mood-sprite{font-size:40px;margin-bottom:8px;position:relative;z-index:2;display:inline-block}
+.mood-focused{animation:glow-pulse 2s ease-in-out infinite}
+@keyframes glow-pulse{0%,100%{filter:drop-shadow(0 0 4px rgba(249,115,22,.3))}50%{filter:drop-shadow(0 0 14px rgba(249,115,22,.7))}}
+.mood-shipping .code-screen{display:block}
+.mood-digging{animation:dig-bob 1.5s ease-in-out infinite}
+@keyframes dig-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mood-waiting{animation:idle-sway 3s ease-in-out infinite}
+@keyframes idle-sway{0%,100%{transform:rotate(0deg)}25%{transform:rotate(2deg)}75%{transform:rotate(-2deg)}}
+.mood-sleeping{opacity:.6}
+.search-dots{font-size:11px;color:var(--accent2);margin-top:6px;letter-spacing:2px}
+.search-dots::after{content:'...';animation:dots-cycle 1.5s steps(4) infinite}
+@keyframes dots-cycle{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.zzz-float{position:relative;display:inline-block;font-weight:800;color:var(--dim);animation:float-zzz 2.5s ease-in-out infinite;opacity:0}
+.zzz-float:nth-child(1){font-size:12px;animation-delay:0s}
+.zzz-float:nth-child(2){font-size:16px;animation-delay:.8s}
+.zzz-float:nth-child(3){font-size:20px;animation-delay:1.6s}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+.status-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
+.status-dot.building{background:var(--accent);box-shadow:0 0 6px var(--accent);animation:pulse-dot 1.2s infinite}
+.status-dot.running{background:var(--accent2);box-shadow:0 0 6px var(--accent2)}
+.status-dot.standby{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.status-dot.sleeping{background:var(--dim)}
+.status-dot.offline{background:var(--red);box-shadow:0 0 6px var(--red)}
+.office-updated{font-size:10px;color:var(--dim);text-align:right;margin-bottom:8px;font-style:italic}
+.wins-section{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.wins-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:10px}
+.win-item{display:flex;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);align-items:flex-start}
+.win-item:last-child{border-bottom:none}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .app{grid-template-columns:1fr;grid-template-rows:52px 42px auto 1fr}
@@ -554,6 +584,312 @@ const ACTIVITY = [
   {time:'2026-03-19 21:52', text:'✅ Bulma cron registered (ID: a212fadb)'},
   {time:'2026-03-19 21:41', text:'🚀 Revenue sprint launched'},
 ];
+
+// ── LIVE DATA FETCHING ──
+async function fetchData(path) {
+  try {
+    const r = await fetch(path + "?t=" + Date.now());
+    if (!r.ok) throw new Error();
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+// ── DASHBOARD LIVE DATA ──
+let _dashCache = null;
+let _dashTimer = null;
+
+async function loadDashboard() {
+  const data = await fetchData("../../data/dashboard.json");
+  if (data) _dashCache = data;
+  return data;
+}
+
+function startDashboardPolling() {
+  if (_dashTimer) return;
+  _dashTimer = setInterval(async () => {
+    if (currentSection !== 'dashboard') { stopDashboardPolling(); return; }
+    const data = await loadDashboard();
+    if (data) {
+      const el = document.getElementById('dashboard-live');
+      if (el) el.innerHTML = buildDashboardHTML(data);
+      updateHeaderBadges(data);
+    }
+  }, 60000);
+}
+
+function stopDashboardPolling() {
+  if (_dashTimer) { clearInterval(_dashTimer); _dashTimer = null; }
+}
+
+function updateHeaderBadges(data) {
+  const rev = data.revenue || {};
+  const mrrEl = document.getElementById('mrr-badge');
+  const gapEl = document.getElementById('gap-badge');
+  if (mrrEl) mrrEl.textContent = '$' + (rev.mtd || 0) + ' MRR';
+  if (gapEl) {
+    const gap = Math.max(0, (rev.target || 200) - (rev.mtd || 0));
+    gapEl.textContent = '$' + gap + ' Gap';
+  }
+}
+
+function buildDashboardHTML(data) {
+  const rev = data.revenue || {};
+  const exp = data.expenses || {};
+  const spr = data.sprint || {};
+  const activity = data.activity || ACTIVITY;
+
+  const days = spr.daysRemaining != null ? spr.daysRemaining : sprintDays();
+  const revMtd = rev.mtd || 0;
+  const revTarget = rev.target || 200;
+  const revGoal = rev.goal || 10000;
+  const gap = Math.max(0, revTarget - revMtd);
+  const expMtd = exp.mtd || COST_DATA.mtd;
+  const expBudget = exp.budget || COST_DATA.budget;
+  const pct = Math.round((expMtd / expBudget) * 100);
+  const breakdown = exp.breakdown || COST_DATA.breakdown;
+  const revPct = revTarget > 0 ? Math.round((revMtd / revTarget) * 100) : 0;
+
+  const feedHtml = activity.map(e =>
+    `<div class="feed-item"><span class="feed-time">${escHtml(e.time)}</span><span class="feed-text">${escHtml(e.text)}</span></div>`
+  ).join('');
+
+  const breakdownHtml = breakdown.map(b => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">
+      <span style="color:var(--muted)">${escHtml(b.provider)}</span>
+      <span style="font-weight:600">$${Number(b.mtd).toFixed(2)}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="sprint-card">
+      <div>
+        <div class="sprint-label">Sprint Countdown</div>
+        <div class="sprint-days">${days}</div>
+        <div class="sprint-sub">days until first client goal</div>
+      </div>
+      <div style="text-align:right">
+        <div class="sprint-goal">🎯 ${escHtml(spr.deadline || 'Mar 26, 2026')}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${escHtml(spr.goal || 'First client signed')}</div>
+      </div>
+    </div>
+
+    <div class="widget-grid">
+      <div class="widget ${revMtd > 0 ? 'green' : 'red'}">
+        <div class="widget-title">💰 Monthly Revenue</div>
+        <div class="widget-value">$${revMtd}</div>
+        <div class="widget-sub">Target: $${revTarget}/mo survival</div>
+        <div class="pbar-wrap"><div class="pbar ${revMtd > 0 ? 'green' : 'red'}" style="width:${revPct}%"></div></div>
+      </div>
+      <div class="widget yellow">
+        <div class="widget-title">📉 Revenue Gap</div>
+        <div class="widget-value">$${gap}</div>
+        <div class="widget-sub">$500 needed for first client</div>
+      </div>
+      <div class="widget blue">
+        <div class="widget-title">👥 Active Clients</div>
+        <div class="widget-value">0</div>
+        <div class="widget-sub">Goal: 3 clients @ $500/mo</div>
+      </div>
+      <div class="widget orange">
+        <div class="widget-title">🔋 API Budget MTD</div>
+        <div class="widget-value">$${expMtd}</div>
+        <div class="widget-sub">of $${expBudget} budget (${pct}% used)</div>
+        <div class="pbar-wrap"><div class="pbar orange" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="widget">
+        <div class="widget-title">📊 Revenue vs Target</div>
+        <div style="display:flex;align-items:flex-end;gap:20px;height:70px;margin-top:10px;padding:0 10px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:var(--red);border-radius:3px 3px 0 0;height:${Math.max(4, Math.round(revMtd/revGoal*60))}px"></div>
+            <span style="font-size:10px;color:var(--dim)">Actual</span>
+            <span style="font-size:11px;font-weight:600;color:var(--red)">$${revMtd}</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:rgba(234,179,8,.3);border:2px dashed var(--yellow);border-radius:3px 3px 0 0;height:40px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--yellow)">TARGET</div>
+            <span style="font-size:10px;color:var(--dim)">Target</span>
+            <span style="font-size:11px;font-weight:600;color:var(--yellow)">$${revTarget}</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:rgba(34,197,94,.2);border:2px dashed var(--green);border-radius:3px 3px 0 0;height:60px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green)">GOAL</div>
+            <span style="font-size:10px;color:var(--dim)">Goal</span>
+            <span style="font-size:11px;font-weight:600;color:var(--green)">$${revGoal >= 1000 ? (revGoal/1000) + 'k' : revGoal}</span>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">🤖 API Costs by Provider</div>
+        ${breakdownHtml}
+        <div style="margin-top:8px;font-size:11px;color:var(--dim)">Total MTD: <strong style="color:var(--text)">$${expMtd}</strong> / $${expBudget}</div>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-title">🔴 Live Activity Feed</div>
+      ${feedHtml}
+    </div>`;
+}
+
+// ── PROJECTS LIVE DATA ──
+let _projCache = null;
+let _projTimer = null;
+
+async function loadProjects() {
+  const data = await fetchData("../../data/projects.json");
+  if (data) _projCache = data;
+  return data;
+}
+
+function startProjectsPolling() {
+  if (_projTimer) return;
+  _projTimer = setInterval(async () => {
+    if (currentSection !== 'projects') { stopProjectsPolling(); return; }
+    const data = await loadProjects();
+    if (data) {
+      const el = document.getElementById('projects-live');
+      if (el) el.innerHTML = buildProjectsHTML(data.projects || []);
+    }
+  }, 60000);
+}
+
+function stopProjectsPolling() {
+  if (_projTimer) { clearInterval(_projTimer); _projTimer = null; }
+}
+
+function buildProjectsHTML(projects) {
+  return projects.map(p => {
+    const isExpanded = expandedProject === p.id;
+    const statusCls = p.status==='queued'?'status-queued':p.status==='blocked'?'status-blocked':p.status==='done'?'status-done':p.status==='planning'?'status-inprogress':'status-inprogress';
+    const tasks = p.tasks || [];
+    const milestones = p.milestones || [];
+    const blockers = p.blockers || [];
+    const resources = p.resources || [];
+    const tasksHtml = tasks.map(t => `<div class="proj-task">${taskIcon(t.done)}<span style="${t.done===true?'color:var(--dim);text-decoration:line-through':''}">${escHtml(t.text)}</span></div>`).join('');
+    const milestonesHtml = milestones.map(m => `<div class="proj-milestone"><span>${escHtml(m.date)}</span><span>${escHtml(m.label)}</span></div>`).join('');
+    const blockersHtml = blockers.length ? blockers.map(b => `<div class="blocker-box">🔴 ${escHtml(b)}</div>`).join('') : '<span style="color:var(--dim);font-size:13px">None</span>';
+    const resourcesHtml = resources.map(r => `<a class="resource-link" href="${escHtml(r.url)}" target="_blank">🔗 ${escHtml(r.label)}</a>`).join('');
+    const detail = isExpanded ? `
+      <div class="proj-detail">
+        <h4>Description</h4>
+        <p style="font-size:13px;color:var(--muted)">${escHtml(p.desc || '')}</p>
+        <h4>Tasks</h4>
+        ${tasksHtml}
+        <h4>Milestones</h4>
+        ${milestonesHtml}
+        <h4>Blockers</h4>
+        ${blockersHtml}
+        <h4>Resources</h4>
+        ${resourcesHtml}
+        <br><button class="collapse-btn" onclick="toggleProject('${p.id}')">▲ Collapse</button>
+      </div>` : '';
+    return `
+      <div class="proj-card ${isExpanded?'expanded':''}" ${!isExpanded?`onclick="toggleProject('${p.id}')"`:''}>
+        <div class="proj-header">
+          <div class="proj-name">${p.emoji ? p.emoji + ' ' : ''}${escHtml(p.name)}</div>
+          <span class="proj-status ${statusCls}">${escHtml(p.statusLabel)}</span>
+        </div>
+        <div class="proj-owners">👤 ${escHtml(p.owners || '')} · ${escHtml(p.updated || '')}</div>
+        <div class="proj-progress-label"><span>Progress</span><span style="font-weight:600">${p.pct || 0}%</span></div>
+        <div class="pbar-wrap"><div class="pbar ${(p.pct||0)>50?'green':'orange'}" style="width:${p.pct || 0}%"></div></div>
+        ${detail}
+      </div>`;
+  }).join('');
+}
+
+// ── AGENTS LIVE DATA ──
+let _agentsTimer = null;
+let _agentsCostCache = null;
+const AGENT_META = {};
+AGENTS_DATA.forEach(a => { AGENT_META[a.name.toLowerCase()] = a; });
+
+async function loadAgentsSection() {
+  const [agentData, dashData] = await Promise.all([
+    fetchData("../../data/agent-status.json"),
+    fetchData("../../data/dashboard.json")
+  ]);
+  if (agentData) _agentStatusCache = agentData;
+  if (dashData) _agentsCostCache = dashData.expenses;
+  return { agentData: agentData || _agentStatusCache, costData: _agentsCostCache };
+}
+
+function startAgentsPolling() {
+  if (_agentsTimer) return;
+  _agentsTimer = setInterval(async () => {
+    if (currentSection !== 'agents') { stopAgentsPolling(); return; }
+    const { agentData, costData } = await loadAgentsSection();
+    if (agentData) {
+      const el = document.getElementById('agents-live');
+      if (el) el.innerHTML = buildAgentsHTML(agentData, costData);
+    }
+  }, 30000);
+}
+
+function stopAgentsPolling() {
+  if (_agentsTimer) { clearInterval(_agentsTimer); _agentsTimer = null; }
+}
+
+function buildAgentsHTML(agentData, costData) {
+  const agents = Object.values(agentData.agents);
+  const cards = agents.map(a => {
+    const meta = AGENT_META[a.name.toLowerCase()] || {};
+    const model = meta.model || '';
+    const provider = meta.provider || '';
+    const costTier = meta.costTier || 1;
+    const costLabel = meta.costLabel || '💰';
+    const optimized = meta.optimized || '';
+    const costCls = costTier===1?'cost1':costTier===2?'cost2':'cost3';
+    const statusCls = a.status==='online'?'status-on':a.status==='building'?'status-build':'status-sb';
+    const dotCls = a.status==='building'?'building':a.status==='online'?'online':a.status==='running'?'online':'standby';
+    return `
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar">${a.emoji}</div>
+          <div class="agent-info">
+            <div class="name">${escHtml(a.name)} ${a.emoji}</div>
+            <div class="role">${escHtml(a.role)}</div>
+          </div>
+          <span class="dot ${dotCls}" style="margin-left:auto"></span>
+        </div>
+        <div class="agent-meta">
+          ${model ? `<span class="tag model">${escHtml(model)}</span>` : ''}
+          <span class="tag ${costCls}">${costLabel}</span>
+          <span class="tag ${statusCls}">${escHtml(a.statusLabel)}</span>
+        </div>
+        ${provider ? `<div style="font-size:11px;color:var(--dim);margin-bottom:6px">Provider: ${escHtml(provider)}</div>` : ''}
+        <div class="agent-activity">🔄 ${escHtml(a.currentTask)}</div>
+        ${optimized ? `<div style="font-size:11px;color:var(--dim);margin-top:6px">Optimized for: ${escHtml(optimized)}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  const exp = costData || COST_DATA;
+  const expMtd = exp.mtd || COST_DATA.mtd;
+  const expBudget = exp.budget || COST_DATA.budget;
+  const expToday = exp.today || COST_DATA.today;
+  const breakdown = exp.breakdown || COST_DATA.breakdown;
+  const pct = Math.round((expMtd / expBudget) * 100);
+
+  const bRows = breakdown.map(b => `
+    <div class="cost-row">
+      <div><div class="cost-provider">${escHtml(b.provider)}</div><div class="cost-note">${escHtml(b.agents || '')} · ${escHtml(b.models || '')}</div></div>
+      <div class="cost-amount">$${Number(b.mtd).toFixed(2)}</div>
+    </div>`).join('');
+
+  return `
+    <div class="policy-note"><strong>Model Policy enforced by Goku:</strong> Each agent runs the right model for its task — strategic reasoning on Sonnet, bulk research on Qwen (10× cheaper), dev on GPT-5.4. Prevents cost bloat as team scales.</div>
+    <div class="agents-grid">${cards}</div>
+    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent)">💰 API Cost Breakdown (March 2026 MTD)</h3>
+    <div class="cost-breakdown">
+      ${bRows}
+      <div style="padding:10px 0 0;display:flex;align-items:center;justify-content:space-between;font-size:13px">
+        <span style="color:var(--muted)">Total MTD: <strong style="color:var(--text)">$${expMtd} / $${expBudget}</strong></span>
+        <span style="color:var(--dim);font-size:11px">Yesterday: $${expToday} (high context day)</span>
+      </div>
+      <div class="pbar-wrap" style="margin-top:8px"><div class="pbar orange" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px">${pct}% of monthly budget used · ${100-pct}% remaining</div>
+    </div>`;
+}
 
 // Markdown sections (existing content)
 const MD_SECTIONS = {
@@ -819,263 +1155,240 @@ function md(text) {
 let expandedProject = null;
 
 function renderDashboard() {
-  const days = sprintDays();
-  const pct = Math.round((COST_DATA.mtd/COST_DATA.budget)*100);
-  const feedHtml = ACTIVITY.map(e=>`<div class="feed-item"><span class="feed-time">${e.time}</span><span class="feed-text">${e.text}</span></div>`).join('');
-  return `
-    <div class="page">
-      <div class="sprint-card">
-        <div>
-          <div class="sprint-label">Sprint Countdown</div>
-          <div class="sprint-days">${days}</div>
-          <div class="sprint-sub">days until first client goal</div>
-        </div>
-        <div style="text-align:right">
-          <div class="sprint-goal">🎯 Mar 26, 2026</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Real Estate Lead Bot — First Close</div>
-        </div>
-      </div>
-
-      <div class="widget-grid">
-        <div class="widget red">
-          <div class="widget-title">💰 Monthly Revenue</div>
-          <div class="widget-value">$0</div>
-          <div class="widget-sub">Target: $200/mo survival</div>
-          <div class="pbar-wrap"><div class="pbar red" style="width:0%"></div></div>
-        </div>
-        <div class="widget yellow">
-          <div class="widget-title">📉 Revenue Gap</div>
-          <div class="widget-value">$200</div>
-          <div class="widget-sub">$500 needed for first client</div>
-        </div>
-        <div class="widget blue">
-          <div class="widget-title">👥 Active Clients</div>
-          <div class="widget-value">0</div>
-          <div class="widget-sub">Goal: 3 clients @ $500/mo</div>
-        </div>
-        <div class="widget orange">
-          <div class="widget-title">🔋 API Budget MTD</div>
-          <div class="widget-value">$12.16</div>
-          <div class="widget-sub">of $100 budget (${pct}% used)</div>
-          <div class="pbar-wrap"><div class="pbar orange" style="width:${pct}%"></div></div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-        <div class="widget">
-          <div class="widget-title">📊 Revenue vs Target</div>
-          <div style="display:flex;align-items:flex-end;gap:20px;height:70px;margin-top:10px;padding:0 10px">
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-              <div style="width:100%;background:var(--red);border-radius:3px 3px 0 0;height:4px"></div>
-              <span style="font-size:10px;color:var(--dim)">Actual</span>
-              <span style="font-size:11px;font-weight:600;color:var(--red)">$0</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-              <div style="width:100%;background:rgba(234,179,8,.3);border:2px dashed var(--yellow);border-radius:3px 3px 0 0;height:40px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--yellow)">TARGET</div>
-              <span style="font-size:10px;color:var(--dim)">Target</span>
-              <span style="font-size:11px;font-weight:600;color:var(--yellow)">$200</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-              <div style="width:100%;background:rgba(34,197,94,.2);border:2px dashed var(--green);border-radius:3px 3px 0 0;height:60px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green)">GOAL</div>
-              <span style="font-size:10px;color:var(--dim)">Goal</span>
-              <span style="font-size:11px;font-weight:600;color:var(--green)">$10k</span>
-            </div>
-          </div>
-        </div>
-        <div class="widget">
-          <div class="widget-title">🤖 API Costs by Provider</div>
-          ${COST_DATA.breakdown.map(b=>`
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">
-              <span style="color:var(--muted)">${b.provider}</span>
-              <span style="font-weight:600">$${b.mtd.toFixed(2)}</span>
-            </div>
-          `).join('')}
-          <div style="margin-top:8px;font-size:11px;color:var(--dim)">Total MTD: <strong style="color:var(--text)">$${COST_DATA.mtd}</strong> / $${COST_DATA.budget}</div>
-        </div>
-      </div>
-
-      <div class="feed-card">
-        <div class="feed-title">🔴 Live Activity Feed</div>
-        ${feedHtml}
-      </div>
-    </div>`;
+  const shell = `<div class="page"><div id="dashboard-live"><div style="text-align:center;padding:40px;color:var(--dim)">Loading dashboard...</div></div></div>`;
+  (async () => {
+    const data = await loadDashboard();
+    const el = document.getElementById('dashboard-live');
+    if (!el) return;
+    if (data) {
+      el.innerHTML = buildDashboardHTML(data);
+      updateHeaderBadges(data);
+    } else {
+      el.innerHTML = buildDashboardHTML({
+        revenue: { mtd: 0, target: 200, goal: 10000 },
+        expenses: COST_DATA,
+        sprint: { goal: 'First client signed', deadline: 'Mar 26, 2026', daysRemaining: sprintDays() },
+        activity: ACTIVITY
+      });
+    }
+    startDashboardPolling();
+  })();
+  return shell;
 }
 
 function renderProjects() {
-  const cards = PROJECTS.map(p=>{
-    const isExpanded = expandedProject===p.id;
-    const statusCls = p.status==='queued'?'status-queued':p.blockers.length?'status-blocked':'status-inprogress';
-    const tasksHtml = p.tasks.map(t=>`<div class="proj-task">${taskIcon(t.done)}<span style="${t.done===true?'color:var(--dim);text-decoration:line-through':''}">${t.text}</span></div>`).join('');
-    const milestonesHtml = p.milestones.map(m=>`<div class="proj-milestone"><span>${m.date}</span><span>${m.label}</span></div>`).join('');
-    const blockersHtml = p.blockers.length ? p.blockers.map(b=>`<div class="blocker-box">🔴 ${b}</div>`).join('') : '<span style="color:var(--dim);font-size:13px">None</span>';
-    const resourcesHtml = p.resources.map(r=>`<a class="resource-link" href="${r.url}" target="_blank">🔗 ${r.label}</a>`).join('');
-    const detail = isExpanded ? `
-      <div class="proj-detail">
-        <h4>Description</h4>
-        <p style="font-size:13px;color:var(--muted)">${p.desc}</p>
-        <h4>Tasks</h4>
-        ${tasksHtml}
-        <h4>Milestones</h4>
-        ${milestonesHtml}
-        <h4>Blockers</h4>
-        ${blockersHtml}
-        <h4>Resources</h4>
-        ${resourcesHtml}
-        <br><button class="collapse-btn" onclick="toggleProject('${p.id}')">▲ Collapse</button>
-      </div>` : '';
-    return `
-      <div class="proj-card ${isExpanded?'expanded':''}" ${!isExpanded?`onclick="toggleProject('${p.id}')"`:''}>
-        <div class="proj-header">
-          <div class="proj-name">${p.name}</div>
-          <span class="proj-status ${statusCls}">${p.statusLabel}</span>
-        </div>
-        <div class="proj-owners">👤 ${p.owners} · ${p.updated}</div>
-        <div class="proj-progress-label"><span>Progress</span><span style="font-weight:600">${p.pct}%</span></div>
-        <div class="pbar-wrap"><div class="pbar ${p.pct>50?'green':'orange'}" style="width:${p.pct}%"></div></div>
-        ${detail}
-      </div>`;
-  }).join('');
-  return `<div class="page"><h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🗂️ Projects</h2><div class="proj-grid">${cards}</div></div>`;
+  const shell = `<div class="page"><h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🗂️ Projects</h2><div class="proj-grid" id="projects-live"><div style="text-align:center;padding:40px;color:var(--dim);grid-column:1/-1">Loading projects...</div></div></div>`;
+  (async () => {
+    const data = await loadProjects();
+    const el = document.getElementById('projects-live');
+    if (!el) return;
+    if (data && data.projects) {
+      el.innerHTML = buildProjectsHTML(data.projects);
+    } else {
+      el.innerHTML = buildProjectsHTML(PROJECTS);
+    }
+    startProjectsPolling();
+  })();
+  return shell;
 }
 
 function toggleProject(id) {
   expandedProject = expandedProject===id ? null : id;
-  render(currentSection);
+  // Re-render projects in-place using cached data (avoid full page re-render)
+  const el = document.getElementById('projects-live');
+  if (el) {
+    const projects = (_projCache && _projCache.projects) ? _projCache.projects : PROJECTS;
+    el.innerHTML = buildProjectsHTML(projects);
+  }
 }
 
 function renderAgents() {
-  const cards = AGENTS_DATA.map(a=>{
-    const costCls = a.costTier===1?'cost1':a.costTier===2?'cost2':'cost3';
-    const statusCls = a.status==='online'?'status-on':a.status==='building'?'status-build':'status-sb';
-    const dotCls = a.status==='building'?'building':a.status==='online'?'online':'standby';
-    return `
-      <div class="agent-card">
-        <div class="agent-card-header">
-          <div class="agent-avatar">${a.emoji}</div>
-          <div class="agent-info">
-            <div class="name">${a.name} ${a.emoji}</div>
-            <div class="role">${a.role}</div>
-          </div>
-          <span class="dot ${dotCls}" style="margin-left:auto"></span>
-        </div>
-        <div class="agent-meta">
-          <span class="tag model">${a.model}</span>
-          <span class="tag ${costCls}">${a.costLabel}</span>
-          <span class="tag ${statusCls}">${a.statusLabel}</span>
-        </div>
-        <div style="font-size:11px;color:var(--dim);margin-bottom:6px">Provider: ${a.provider}</div>
-        <div class="agent-activity">🔄 ${a.activity}</div>
-        <div style="font-size:11px;color:var(--dim);margin-top:6px">Optimized for: ${a.optimized}</div>
-      </div>`;
+  const shell = `<div class="page"><h2 style="font-size:20px;font-weight:700;margin-bottom:6px">🤖 Agents</h2><div id="agents-live"><div style="text-align:center;padding:40px;color:var(--dim)">Loading agents...</div></div></div>`;
+  (async () => {
+    const { agentData, costData } = await loadAgentsSection();
+    const el = document.getElementById('agents-live');
+    if (!el) return;
+    if (agentData) {
+      el.innerHTML = buildAgentsHTML(agentData, costData);
+    } else {
+      // Fallback to static AGENTS_DATA rendered via the old pattern
+      const fallbackAgentData = { agents: {} };
+      AGENTS_DATA.forEach(a => { fallbackAgentData.agents[a.name.toLowerCase()] = { emoji:a.emoji, name:a.name, role:a.role, zone:'', status:a.status, statusLabel:a.statusLabel, currentTask:a.activity, mood:'' }; });
+      el.innerHTML = buildAgentsHTML(fallbackAgentData, COST_DATA);
+    }
+    startAgentsPolling();
+  })();
+  return shell;
+}
+
+// ── LIVE OFFICE STATUS ──
+let _agentStatusCache = null;
+let _agentStatusTimer = null;
+let _agentStatusFetchedAt = null;
+
+async function loadAgentStatus() {
+  try {
+    const r = await fetch("../../data/agent-status.json?t=" + Date.now());
+    if (!r.ok) throw new Error("no data");
+    const data = await r.json();
+    _agentStatusCache = data;
+    _agentStatusFetchedAt = Date.now();
+    return data;
+  } catch(e) {
+    return null;
+  }
+}
+
+function startOfficePolling() {
+  if (_agentStatusTimer) return;
+  _agentStatusTimer = setInterval(async () => {
+    if (currentSection !== 'office') { stopOfficePolling(); return; }
+    const data = await loadAgentStatus();
+    if (data) {
+      const el = document.getElementById('office-live');
+      if (el) el.innerHTML = buildOfficeHTML(data);
+    }
+  }, 30000);
+}
+
+function stopOfficePolling() {
+  if (_agentStatusTimer) { clearInterval(_agentStatusTimer); _agentStatusTimer = null; }
+}
+
+const ZONE_COLORS = {
+  '💡 Ideation Corner': {border:'rgba(249,115,22,.3)',bg:'linear-gradient(135deg,rgba(249,115,22,.05),var(--card))'},
+  '🔨 Build Station': {border:'rgba(59,130,246,.3)',bg:'linear-gradient(135deg,rgba(59,130,246,.05),var(--card))'},
+  '📊 War Room': {border:'rgba(168,85,247,.3)',bg:'linear-gradient(135deg,rgba(168,85,247,.05),var(--card))'},
+  '📡 Research Pod': {border:'rgba(59,130,246,.3)',bg:'linear-gradient(135deg,rgba(59,130,246,.08),var(--card))'},
+};
+
+const STATUS_COLORS = {online:'var(--green)',building:'var(--accent)',running:'var(--accent2)',standby:'var(--yellow)',sleeping:'var(--dim)',offline:'var(--red)'};
+
+function moodAnimation(agent) {
+  const m = agent.mood, e = agent.emoji;
+  if (m === 'focused') return `<div class="mood-sprite mood-focused">${e}</div>
+    <div class="bubble" style="top:30px">💭</div><div class="bubble" style="top:20px">💭</div><div class="bubble" style="top:25px">💭</div>`;
+  if (m === 'shipping') return `<div class="mood-sprite">${e}</div>
+    <div class="code-screen"><div class="code-line">import Dashboard from './mission'</div><div class="code-line">const render = (section) =&gt; {</div><div class="code-line">&nbsp;&nbsp;return sections[section]</div><div class="code-line">&nbsp;&nbsp;.map(buildComponent)</div><div class="code-line">}<span class="cursor"></span></div></div>`;
+  if (m === 'digging') return `<div class="mood-sprite mood-digging">${e}</div><div class="search-dots">🔍 searching</div>`;
+  if (m === 'waiting') return `<div class="mood-sprite mood-waiting">${e}</div>
+    <div class="chart-bars"><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div></div>`;
+  if (m === 'sleeping') return `<div class="mood-sprite mood-sleeping">${e}</div>
+    <div><span class="zzz-float">Z</span><span class="zzz-float">Z</span><span class="zzz-float">Z</span></div>`;
+  return `<div class="mood-sprite">${e}</div>`;
+}
+
+function buildOfficeHTML(data) {
+  const agents = Object.values(data.agents);
+  const zones = agents.map(a => {
+    const zc = ZONE_COLORS[a.zone] || {border:'var(--border)',bg:'var(--card)'};
+    return `<div class="zone" style="border-color:${zc.border};background:${zc.bg}">
+      <div class="zone-label">${escHtml(a.zone)}</div>
+      ${moodAnimation(a)}
+      <div class="zone-name">${escHtml(a.name)}</div>
+      <div class="zone-status">${escHtml(a.role)} · <span class="status-dot ${a.status}"></span>${escHtml(a.statusLabel)}</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">${escHtml(a.currentTask)}</div>
+    </div>`;
   }).join('');
 
-  const pct = Math.round((COST_DATA.mtd/COST_DATA.budget)*100);
-  const bRows = COST_DATA.breakdown.map(b=>`
-    <div class="cost-row">
-      <div><div class="cost-provider">${b.provider}</div><div class="cost-note">${b.agents} · ${b.models}</div></div>
-      <div class="cost-amount">$${b.mtd.toFixed(2)}</div>
-    </div>`).join('');
+  const rows = agents.map(a => `<tr>
+    <td>${a.emoji} ${escHtml(a.name)}</td>
+    <td>${escHtml(a.zone)}</td>
+    <td><span class="status-dot ${a.status}"></span><span style="color:${STATUS_COLORS[a.status]||'var(--muted)'}">${escHtml(a.statusLabel)}</span></td>
+    <td>${escHtml(a.currentTask)}</td>
+  </tr>`).join('');
 
+  const ago = _agentStatusFetchedAt ? Math.round((Date.now() - _agentStatusFetchedAt)/1000) : 0;
+  const updatedLine = `<div class="office-updated">Last updated: ${ago < 5 ? 'just now' : ago + 's ago'} · refreshes every 30s</div>`;
+
+  const wins = (data.wins && data.wins.length > 0)
+    ? data.wins.map(w => `<div class="win-item"><span>${w.emoji||'🏆'}</span><span>${escHtml(w.text||w)}</span></div>`).join('')
+    : `<div style="font-size:13px;color:var(--dim);font-style:italic">Empty for now — first win incoming soon 🔜</div>`;
+
+  return `${updatedLine}
+    <div class="office-wrap">${zones}</div>
+    <table class="office-table">
+      <thead><tr><th>Agent</th><th>Zone</th><th>Status</th><th>Current Task</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="wins-section">
+      <div class="wins-title">🏆 Wall of Wins</div>
+      ${wins}
+    </div>`;
+}
+
+function renderOfficeStatic() {
   return `<div class="page">
-    <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">🤖 Agents</h2>
-    <div class="policy-note"><strong>Model Policy enforced by Goku:</strong> Each agent runs the right model for its task — strategic reasoning on Sonnet, bulk research on Qwen (10× cheaper), dev on GPT-5.4. Prevents cost bloat as team scales.</div>
-    <div class="agents-grid">${cards}</div>
-    <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent)">💰 API Cost Breakdown (March 2026 MTD)</h3>
-    <div class="cost-breakdown">
-      ${bRows}
-      <div style="padding:10px 0 0;display:flex;align-items:center;justify-content:space-between;font-size:13px">
-        <span style="color:var(--muted)">Total MTD: <strong style="color:var(--text)">$${COST_DATA.mtd} / $${COST_DATA.budget}</strong></span>
-        <span style="color:var(--dim);font-size:11px">Yesterday: $${COST_DATA.today} (high context day)</span>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🏢 The Office — Websage HQ</h2>
+    <div class="office-wrap">
+      <div class="zone" style="border-color:rgba(249,115,22,.3);background:linear-gradient(135deg,rgba(249,115,22,.05),var(--card))">
+        <div class="zone-label">💡 Ideation Corner</div>
+        <div class="bubble" style="top:30px">💭</div><div class="bubble" style="top:20px">💭</div><div class="bubble" style="top:25px">💭</div>
+        <div class="zone-agent">🟠</div><div class="zone-name">Goku</div>
+        <div class="zone-status">Chief of Staff · Online</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">Strategizing next sprint...</div>
       </div>
-      <div class="pbar-wrap" style="margin-top:8px"><div class="pbar orange" style="width:${pct}%"></div></div>
-      <div style="font-size:11px;color:var(--dim);margin-top:4px">${pct}% of monthly budget used · ${100-pct}% remaining</div>
+      <div class="zone" style="border-color:rgba(59,130,246,.3);background:linear-gradient(135deg,rgba(59,130,246,.05),var(--card))">
+        <div class="zone-label">🔨 Build Station</div><div class="zone-agent">⚡</div><div class="zone-name">Vegeta</div>
+        <div class="zone-status">Engineering · Building</div>
+        <div class="code-screen"><div class="code-line">import Dashboard from './mission'</div><div class="code-line">const render = (section) =&gt; {</div><div class="code-line">&nbsp;&nbsp;return sections[section]</div><div class="code-line">&nbsp;&nbsp;.map(buildComponent)</div><div class="code-line">}<span class="cursor"></span></div></div>
+      </div>
+      <div class="zone" style="border-color:rgba(168,85,247,.3);background:linear-gradient(135deg,rgba(168,85,247,.05),var(--card))">
+        <div class="zone-label">📊 War Room</div><div class="zone-agent">👽</div><div class="zone-name">Frieza</div>
+        <div class="zone-status">CFO · Standby</div>
+        <div class="chart-bars"><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div><div class="chart-bar"></div></div>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px;font-style:italic">Awaiting tasks...</div>
+      </div>
+      <div class="zone"><div class="zone-label">📡 Research Pod</div><div class="zone-agent">🔵</div><div class="zone-name">Bulma</div>
+        <div class="zone-status">Research · Offline</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">Awaiting assignment</div>
+      </div>
+    </div>
+    <table class="office-table">
+      <thead><tr><th>Agent</th><th>Zone</th><th>Status</th><th>Current Task</th></tr></thead>
+      <tbody>
+        <tr><td>🟠 Goku</td><td>💡 Ideation</td><td><span style="color:var(--green)">● Online</span></td><td>Coordinating sprint</td></tr>
+        <tr><td>⚡ Vegeta</td><td>🔨 Build Station</td><td><span style="color:var(--accent)">● Building</span></td><td>Mission Control</td></tr>
+        <tr><td>👽 Frieza</td><td>📊 War Room</td><td><span style="color:var(--yellow)">● Standby</span></td><td>Awaiting tasks</td></tr>
+        <tr><td>🔵 Bulma</td><td>📡 Research Pod</td><td><span style="color:var(--dim)">● Offline</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="wins-section"><div class="wins-title">🏆 Wall of Wins</div>
+      <div style="font-size:13px;color:var(--dim);font-style:italic">Empty for now — first win incoming soon 🔜</div>
     </div>
   </div>`;
 }
 
 function renderOffice() {
-  return `<div class="page">
+  // Return shell immediately, then hydrate with live data
+  const shell = `<div class="page">
     <h2 style="font-size:20px;font-weight:700;margin-bottom:16px">🏢 The Office — Websage HQ</h2>
-    <div class="office-wrap">
-
-      <!-- Ideation Corner: Goku -->
-      <div class="zone" style="border-color:rgba(249,115,22,.3);background:linear-gradient(135deg,rgba(249,115,22,.05),var(--card))">
-        <div class="zone-label">💡 Ideation Corner</div>
-        <div class="bubble" style="top:30px">💭</div>
-        <div class="bubble" style="top:20px">💭</div>
-        <div class="bubble" style="top:25px">💭</div>
-        <div class="zone-agent">🟠</div>
-        <div class="zone-name">Goku</div>
-        <div class="zone-status">Chief of Staff · Online</div>
-        <div style="font-size:11px;color:var(--dim);margin-top:6px;font-style:italic">Strategizing next sprint...</div>
-      </div>
-
-      <!-- Build Station: Vegeta -->
-      <div class="zone" style="border-color:rgba(59,130,246,.3);background:linear-gradient(135deg,rgba(59,130,246,.05),var(--card))">
-        <div class="zone-label">🔨 Build Station</div>
-        <div class="zone-agent">⚡</div>
-        <div class="zone-name">Vegeta</div>
-        <div class="zone-status">Engineering · Building</div>
-        <div class="code-screen">
-          <div class="code-line">import Dashboard from './mission'</div>
-          <div class="code-line">const render = (section) => {</div>
-          <div class="code-line">  &nbsp;&nbsp;return sections[section]</div>
-          <div class="code-line">  &nbsp;&nbsp;.map(buildComponent)</div>
-          <div class="code-line">}<span class="cursor"></span></div>
-        </div>
-      </div>
-
-      <!-- War Room: Frieza -->
-      <div class="zone" style="border-color:rgba(168,85,247,.3);background:linear-gradient(135deg,rgba(168,85,247,.05),var(--card))">
-        <div class="zone-label">📊 War Room</div>
-        <div class="zone-agent">👽</div>
-        <div class="zone-name">Frieza</div>
-        <div class="zone-status">CFO · Analyzing</div>
-        <div class="chart-bars">
-          <div class="chart-bar"></div>
-          <div class="chart-bar"></div>
-          <div class="chart-bar"></div>
-          <div class="chart-bar"></div>
-          <div class="chart-bar"></div>
-        </div>
-        <div style="font-size:11px;color:var(--dim);margin-top:8px;font-style:italic">Splitt unit economics...</div>
-      </div>
-
-      <!-- Launch Pad + Bulma sleeping -->
-      <div class="zone" style="position:relative">
-        <div class="zone-label">🚀 Launch Pad</div>
-        <div class="launchpad">
-          <div class="rocket">🚀</div>
-          <p style="margin-top:8px">Ready for launch</p>
-          <p style="font-size:11px;margin-top:4px">First client incoming</p>
-        </div>
-        <!-- Bulma sleeping in corner -->
-        <div style="position:absolute;bottom:14px;right:14px;text-align:center;opacity:.7">
-          <div class="zzz" style="position:relative">Z</div>
-          <div class="zzz" style="position:relative">Z</div>
-          <div class="zzz" style="position:relative">Z</div>
-          <div style="font-size:22px">🔵</div>
-          <div style="font-size:10px;color:var(--dim)">Bulma · Sleeping<br>(wakes 8 AM)</div>
-        </div>
-      </div>
-
-    </div>
-
-    <table class="office-table">
-      <thead><tr><th>Agent</th><th>Zone</th><th>Status</th><th>Current Task</th></tr></thead>
-      <tbody>
-        <tr><td>🟠 Goku</td><td>💡 Ideation</td><td><span style="color:var(--green)">● Online</span></td><td>Coordinating dashboard rebuild, sprint planning</td></tr>
-        <tr><td>⚡ Vegeta</td><td>🔨 Build Station</td><td><span style="color:var(--accent)">● Building</span></td><td>Mission Control v2 dashboard</td></tr>
-        <tr><td>👽 Frieza</td><td>📊 War Room</td><td><span style="color:var(--yellow)">● Standby</span></td><td>Splitt unit economics (queued)</td></tr>
-        <tr><td>🔵 Bulma</td><td>🚀 Launch Pad (corner)</td><td><span style="color:var(--dim)">● Sleeping</span></td><td>Wakes at 8 AM ET for daily brief</td></tr>
-      </tbody>
-    </table>
-
-    <div style="margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:10px">🏆 Wall of Wins</div>
-      <div style="font-size:13px;color:var(--dim);font-style:italic">Empty for now — first win incoming soon 🔜</div>
-    </div>
+    <div id="office-live"><div style="text-align:center;padding:40px;color:var(--dim)">Loading live status...</div></div>
   </div>`;
+
+  // Async hydration
+  (async () => {
+    const data = await loadAgentStatus();
+    const el = document.getElementById('office-live');
+    if (!el) return;
+    if (data) {
+      el.innerHTML = buildOfficeHTML(data);
+      startOfficePolling();
+    } else {
+      // Fallback: render static content inside the shell
+      el.innerHTML = buildOfficeHTML({
+        agents: {
+          goku:{emoji:'🟠',name:'Goku',role:'Chief of Staff',zone:'💡 Ideation Corner',status:'online',statusLabel:'Online',currentTask:'Strategizing next sprint...',mood:'focused'},
+          vegeta:{emoji:'⚡',name:'Vegeta',role:'Engineering',zone:'🔨 Build Station',status:'building',statusLabel:'Building',currentTask:'Mission Control',mood:'shipping'},
+          frieza:{emoji:'👽',name:'Frieza',role:'CFO',zone:'📊 War Room',status:'standby',statusLabel:'Standby',currentTask:'Awaiting tasks',mood:'waiting'},
+          bulma:{emoji:'🔵',name:'Bulma',role:'Research',zone:'📡 Research Pod',status:'offline',statusLabel:'Offline',currentTask:'—',mood:'sleeping'}
+        },
+        wins:[]
+      });
+    }
+  })();
+
+  return shell;
 }
 
 function getIdeas() {
@@ -1160,6 +1473,10 @@ const navItems = document.querySelectorAll('.nav-item');
 
 function render(section) {
   currentSection = section;
+  if (section !== 'office') stopOfficePolling();
+  if (section !== 'dashboard') stopDashboardPolling();
+  if (section !== 'projects') stopProjectsPolling();
+  if (section !== 'agents') stopAgentsPolling();
   navItems.forEach(n=>n.classList.toggle('active', n.dataset.s===section));
   contentEl.parentElement.scrollTop = 0;
   switch(section) {
