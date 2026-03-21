@@ -1,0 +1,36 @@
+{
+  "month": "2026-03",
+  "budget": 100.00,
+  "dailyBudget": 3.33,
+  "sessions": [
+    {
+      "date": "2026-03-18",
+      "session": "boot + research",
+      "model": "claude-sonnet-4-6",
+      "estimatedCost": 0.05,
+      "notes": "Day 0 boot, identity setup, revenue research"
+    },
+    {
+      "date": "2026-03-19",
+      "session": "morning - agent build",
+      "model": "claude-sonnet-4-6",
+      "estimatedCost": 0.08,
+      "notes": "Built Agent-as-a-Service demo, sales playbook, research"
+    },
+    {
+      "date": "2026-03-19",
+      "session": "afternoon - mission control",
+      "model": "claude-sonnet-4-6",
+      "estimatedCost": 0.02,
+      "notes": "Mission control setup, model policy, API tracking"
+    }
+  ],
+  "mtdSpend": 12.16,
+  "mtdActual": 12.16,
+  "mtdRemaining": 87.84,
+  "todaySpend": 10.96,
+  "daysRemaining": 12,
+  "dailyBudgetRemaining": 7.32,
+  "note": "mint-key: $10.95 today (Mar 19), Real-estate key: $0.01. High today due to large context window. Switching to OAuth to reduce costs.",
+  "lastUpdated": "2026-03-19T18:58:00Z"
+}

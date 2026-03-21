@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splitt. vs Kasheesh — Competitive Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --lime: #c8ff57;
+    --cyan: #57c8ff;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --red: #ff5757;
+    --yellow: #ffd657;
+    --green: #57ff9a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 60px 48px 40px;
+    border-bottom: 1px solid var(--border);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .header-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+
+  header h1 .splitt { color: var(--lime); }
+  header h1 .vs { color: var(--muted); font-weight: 700; }
+  header h1 .kasheesh { color: var(--text); }
+
+  header p {
+    color: var(--muted);
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .meta-item {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .meta-item span {
+    color: var(--lime);
+    font-weight: 600;
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+  }
+
+  section {
+    margin-bottom: 64px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── SIDE BY SIDE TABLE ── */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr 1fr;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .grid-header {
+    padding: 20px 24px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .grid-header.label-col {
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .grid-header.splitt-col {
+    background: var(--lime);
+    color: var(--black);
+    text-align: center;
+  }
+
+  .grid-header.kasheesh-col {
+    background: var(--surface2);
+    color: var(--text);
+    text-align: center;
+    border-left: 1px solid var(--border);
+  }
+
+  .grid-row {
+    display: contents;
+  }
+
+  .grid-cell {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .grid-cell.label {
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .grid-cell.splitt {
+    background: rgba(200, 255, 87, 0.04);
+  }
+
+  .grid-cell.kasheesh {
+    background: var(--black);
+    border-left: 1px solid var(--border);
+  }
+
+  .grid-row:last-child .grid-cell {
+    border-bottom: none;
+  }
+
+  .win { color: var(--lime); font-weight: 600; }
+  .neutral { color: var(--yellow); font-weight: 600; }
+  .lose { color: var(--red); font-weight: 500; }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .tag.advantage { background: rgba(200,255,87,0.15); color: var(--lime); }
+  .tag.disadvantage { background: rgba(255,87,87,0.12); color: var(--red); }
+  .tag.neutral-tag { background: rgba(255,214,87,0.12); color: var(--yellow); }
+
+  /* ── SCORECARD ── */
+  .scorecard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .score-panel {
+    padding: 32px 36px;
+  }
+
+  .score-panel.splitt-panel {
+    background: rgba(200,255,87,0.06);
+    border-right: 1px solid var(--border);
+  }
+
+  .score-panel.kasheesh-panel {
+    background: var(--surface);
+  }
+
+  .score-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 24px;
+  }
+
+  .score-brand.lime { color: var(--lime); }
+  .score-brand.white { color: var(--text); }
+
+  .score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .score-item:last-child { border-bottom: none; }
+
+  .score-label { color: var(--muted); }
+
+  .score-val {
+    display: flex;
+    gap: 4px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 3px;
+  }
+
+  .dot.filled-lime { background: var(--lime); }
+  .dot.filled-red { background: var(--red); }
+  .dot.filled-yellow { background: var(--yellow); }
+  .dot.empty { background: var(--border); }
+
+  /* ── VOICE OF CUSTOMER ── */
+  .quotes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .quote-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+
+  .quote-card.positive { border-left: 3px solid var(--green); }
+  .quote-card.negative { border-left: 3px solid var(--red); }
+  .quote-card.neutral-q { border-left: 3px solid var(--yellow); }
+
+  .quote-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #ccc;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .quote-meta {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .quote-meta strong {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* ── OPPORTUNITY TABLE ── */
+  .opp-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .opp-table th {
+    background: var(--surface);
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .opp-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .opp-table tr:last-child td { border-bottom: none; }
+
+  .opp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .priority {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .priority.high { background: rgba(255,87,87,0.15); color: var(--red); }
+  .priority.medium { background: rgba(255,214,87,0.12); color: var(--yellow); }
+  .priority.low { background: rgba(200,255,87,0.1); color: var(--lime); }
+
+  /* ── VERDICT ── */
+  .verdict-box {
+    background: rgba(200,255,87,0.06);
+    border: 1px solid rgba(200,255,87,0.2);
+    border-radius: 12px;
+    padding: 36px 40px;
+  }
+
+  .verdict-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--lime);
+    margin-bottom: 16px;
+  }
+
+  .verdict-box p {
+    color: #bbb;
+    line-height: 1.8;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .verdict-box p:last-child { margin-bottom: 0; }
+
+  .verdict-box strong { color: var(--text); }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .splitt-wordmark {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--lime);
+  }
+
+  @media (max-width: 768px) {
+    header, main, footer { padding-left: 20px; padding-right: 20px; }
+    .comparison-grid { grid-template-columns: 120px 1fr 1fr; }
+    .scorecard, .quotes-grid { grid-template-columns: 1fr; }
+    .score-panel.splitt-panel { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Internal Competitive Analysis · March 2026</div>
+  <h1>
+    <span class="splitt">Splitt.</span>
+    <span class="vs"> vs </span>
+    <span class="kasheesh">Kasheesh</span>
+  </h1>
+  <p>An honest, unfiltered look at the only other company attempting to solve multi-card payment splitting — where they fall short, where they get it right, and what Splitt. must do better.</p>
+  <div class="meta">
+    <div class="meta-item">Kasheesh Founded: <span>2021</span></div>
+    <div class="meta-item">Kasheesh Users: <span>Tens of thousands</span></div>
+    <div class="meta-item">Kasheesh Rating: <span>2.9 / 5 (Trustpilot)</span></div>
+    <div class="meta-item">Splitt. Status: <span>Pre-launch</span></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- SIDE BY SIDE -->
+  <section>
+    <div class="section-title">Side-by-Side Comparison</div>
+    <div class="comparison-grid">
+
+      <div class="grid-header label-col">Category</div>
+      <div class="grid-header splitt-col">Splitt.</div>
+      <div class="grid-header kasheesh-col">Kasheesh</div>
+
+      <!-- Core Mechanic -->
+      <div class="grid-cell label">Core Mechanic</div>
+      <div class="grid-cell splitt">
+        <div class="tag advantage">Advantage</div><br>
+        Real-time authorization webhook intercepts the transaction at the moment of purchase. Split rules are pre-configured and fire automatically — user does nothing at checkout except use their card.
+      </div>
+      <div class="grid-cell kasheesh">
+        User must open app before each purchase, set the split, generate a virtual card number, then go use that number at checkout. The multi-use card is "set it and forget it" but percentage-only — no smart routing per purchase.
+      </div>
+
+      <!-- UX at Checkout -->
+      <div class="grid-cell label">UX at Checkout</div>
+      <div class="grid-cell splitt">
+        <div class="tag advantage">Advantage</div><br>
+        Zero friction. Tap card, done. No app interaction required per purchase.
+      </div>
+      <div class="grid-cell kasheesh">
+        <div class="tag disadvantage">Friction</div><br>
+        Requires active pre-purchase steps. For in-store, user must have app open and working. Multiple users reported <span class="lose">standing in store for 30 minutes</span> while card declined.
+      </div>
+
+      <!-- Pricing Model -->
+      <div class="grid-cell label">Pricing Model</div>
+      <div class="grid-cell splitt">
+        <div class="tag advantage">Advantage</div><br>
+        Monthly subscription (Free / Plus $4.99 / Pro $9.99). No per-transaction fee. <strong class="win">Zero purchase-moment friction.</strong>
+      </div>
+      <div class="grid-cell kasheesh">
+        <div class="tag disadvantage">Per-Transaction</div><br>
+        2% fee on every transaction processed. 1–1.5% rewards back, so net cost ~0.5–1%. Users feel the fee every single time they use it — creates hesitation on smaller purchases.
+      </div>
+
+      <!-- Split Logic -->
+      <div class="grid-cell label">Split Logic</div>
+      <div class="grid-cell splitt">
+        Fixed amount, percentage, remainder, and rules-engine routing by merchant category, time of day, or amount. Up to 5 cards per split.
+      </div>
+      <div class="grid-cell kasheesh">
+        Percentage-only on the multi-use card. Fixed amounts available on single-use cards only. No rules engine or intelligent routing. One user noted <span class="lose">"unless you have a degree in math, this app isn't for you"</span> — percentage UX is confusing.
+      </div>
+
+      <!-- Card Types Supported -->
+      <div class="grid-cell label">Card Types</div>
+      <div class="grid-cell splitt">
+        Credit, debit, FSA/HSA, employer stipends, prepaid — anything Stripe can tokenize.
+      </div>
+      <div class="grid-cell kasheesh">
+        Credit and debit via Plaid. Prepaid gift cards — <span class="lose">advertised but often doesn't work</span>. Multiple users complained gift cards cannot be verified. Several had accounts revoked for using gift cards the platform claims to support.
+      </div>
+
+      <!-- Onboarding -->
+      <div class="grid-cell label">Onboarding</div>
+      <div class="grid-cell splitt">
+        Guided 4-step flow. Add card via Stripe Elements (no Plaid dependency). Simpler verification path.
+      </div>
+      <div class="grid-cell kasheesh">
+        <div class="tag disadvantage">Major Pain Point</div><br>
+        ID scanning frequently fails. Plaid verification blocks many users. Multiple users could not get past sign-up. One reported a <span class="lose">20-minute crash loop just to onboard.</span>
+      </div>
+
+      <!-- In-Store Usage -->
+      <div class="grid-cell label">In-Store Usage</div>
+      <div class="grid-cell splitt">
+        Physical Stripe-issued debit card. Tap anywhere. Split happens invisibly in the background.
+      </div>
+      <div class="grid-cell kasheesh">
+        Supports tap-to-pay via Apple/Google Pay but card is pinless — must select "Credit" not "Debit" or it fails. Users report embarrassing declines at registers. Support is <span class="lose">email-only</span>, useless in an in-store emergency.
+      </div>
+
+      <!-- Account Control -->
+      <div class="grid-cell label">Account Control</div>
+      <div class="grid-cell splitt">
+        Standard account management. Delete cards, update rules, cancel subscription.
+      </div>
+      <div class="grid-cell kasheesh">
+        <div class="tag disadvantage">Serious Issue</div><br>
+        Multiple users report being <span class="lose">unable to remove linked cards</span>. No account deletion path visible in app. One user said searching "close account" returns an error. This creates real security concerns.
+      </div>
+
+      <!-- Transparency -->
+      <div class="grid-cell label">Transaction Visibility</div>
+      <div class="grid-cell splitt">
+        Full transaction history with expandable split legs per charge. Per-card status (completed, failed, partially failed). Retry on failure.
+      </div>
+      <div class="grid-cell kasheesh">
+        Basic transaction history. Users reported <span class="lose">not being notified when transactions failed</span>, discovering problems only weeks later.
+      </div>
+
+      <!-- Support -->
+      <div class="grid-cell label">Support</div>
+      <div class="grid-cell splitt">
+        <div class="tag neutral-tag">To Be Built</div><br>
+        In-app push notifications for every split. No live support yet — this needs a plan.
+      </div>
+      <div class="grid-cell kasheesh">
+        Email-only. Average response time claimed 90 min, but users report waiting <span class="lose">a week or more</span> with no response. No phone, no chat, no real-time help.
+      </div>
+
+      <!-- Brand / Trust -->
+      <div class="grid-cell label">Brand Trust</div>
+      <div class="grid-cell splitt">
+        Pre-launch. Clean, premium brand identity. No negative reviews yet — a blank slate.
+      </div>
+      <div class="grid-cell kasheesh">
+        Trustpilot 2.9/5. Multiple "does not do what is advertised" complaints. Users suspect fake positive reviews. Some Glassdoor employees describe leadership as unstable and a Series A that never closed after 4 years of promises.
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SCORECARD -->
+  <section>
+    <div class="section-title">Scorecard</div>
+    <div class="scorecard">
+      <div class="score-panel splitt-panel">
+        <div class="score-brand lime">Splitt.</div>
+        <div class="score-item"><span class="score-label">Core mechanic</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div></div></div>
+        <div class="score-item"><span class="score-label">Checkout UX</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div></div></div>
+        <div class="score-item"><span class="score-label">Pricing model</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div></div></div>
+        <div class="score-item"><span class="score-label">Split logic depth</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div></div></div>
+        <div class="score-item"><span class="score-label">Onboarding</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Reliability (projected)</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Live support</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Market proof</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+      </div>
+      <div class="score-panel kasheesh-panel">
+        <div class="score-brand white">Kasheesh</div>
+        <div class="score-item"><span class="score-label">Core mechanic</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Checkout UX</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Pricing model</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Split logic depth</span><div class="score-val"><div class="dot filled-yellow"></div><div class="dot filled-yellow"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Onboarding</span><div class="score-val"><div class="dot filled-red"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Reliability</span><div class="score-val"><div class="dot filled-red"></div><div class="dot filled-red"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Live support</span><div class="score-val"><div class="dot filled-red"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div><div class="dot empty"></div></div></div>
+        <div class="score-item"><span class="score-label">Market proof</span><div class="score-val"><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot filled-lime"></div><div class="dot empty"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE OF CUSTOMER -->
+  <section>
+    <div class="section-title">Voice of Customer — Kasheesh Reviews</div>
+    <div class="quotes-grid">
+
+      <div class="quote-card positive">
+        <div class="quote-text">"Used Kasheesh to split my tax payment between 3 credit cards. I was able to charge the amount I wanted to defer to a 0% intro APR card, and the rest to cards I wanted to earn points on. Very useful service."</div>
+        <div class="quote-meta"><strong>Trustpilot</strong> · Freelancer use case · ★★★★★</div>
+      </div>
+
+      <div class="quote-card positive">
+        <div class="quote-text">"I've been using Kasheesh to split payments when booking flights and shopping for the holidays. It's made it possible to take advantage of sales before they're over. Definitely my new go-to for big purchases."</div>
+        <div class="quote-meta"><strong>App Store</strong> · Rewards optimizer · ★★★★★</div>
+      </div>
+
+      <div class="quote-card negative">
+        <div class="quote-text">"DOES NOT DO WHAT IS ADVERTISED. FAILS TO WORK WHEN NEEDED. CHARGES FEES BUT DOESN'T WORK. The system would glitch and I'd have to start over again. Contacted support twice a week ago and haven't heard back."</div>
+        <div class="quote-meta"><strong>Trustpilot</strong> · Failed transactions · ★☆☆☆☆</div>
+      </div>
+
+      <div class="quote-card negative">
+        <div class="quote-text">"Standing in a store for 30 minutes trying to complete a purchase. The 'support' option is email only, which is useless for people actually trying to use the card in-store. Do not recommend."</div>
+        <div class="quote-meta"><strong>App Store</strong> · In-store failure · ★☆☆☆☆</div>
+      </div>
+
+      <div class="quote-card negative">
+        <div class="quote-text">"Says you can use prepaid gift cards — you can't. Can't verify a prepaid gift card through Plaid. And you can NEVER remove your card information. Don't waste your time."</div>
+        <div class="quote-meta"><strong>App Store</strong> · Advertised vs. reality · ★☆☆☆☆</div>
+      </div>
+
+      <div class="quote-card negative">
+        <div class="quote-text">"I only got it to use my AMEX at Costco. Every time I tried at a physical Costco it never works. I looked for a way to close my account and couldn't find it. They accused me of not using their services correctly."</div>
+        <div class="quote-meta"><strong>App Store</strong> · In-store + account control · ★☆☆☆☆</div>
+      </div>
+
+      <div class="quote-card neutral-q">
+        <div class="quote-text">"The onboarding experience kept crashing and it took almost 20 minutes just to onboard. Unless you have some sort of degree in math or accounting, this app is not for you."</div>
+        <div class="quote-meta"><strong>Google Play</strong> · Onboarding UX · ★★☆☆☆</div>
+      </div>
+
+      <div class="quote-card neutral-q">
+        <div class="quote-text">"The experience wasn't great. Their system may do what it says but isn't worth the hassle when you can't remove your cards after using the service — leading to security issues."</div>
+        <div class="quote-meta"><strong>Trustpilot</strong> · Security concern · ★★☆☆☆</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHAT KASHEESH DOES WELL -->
+  <section>
+    <div class="section-title">What Kasheesh Gets Right</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div style="background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--cyan); border-radius:10px; padding:20px 22px;">
+        <div style="font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--cyan); margin-bottom:8px;">Proven Market Demand</div>
+        <div style="font-size:13px; color:#bbb; line-height:1.7;">Tens of thousands of users and millions in transactions processed in 2024 — despite a broken product. This proves the demand is real and people will push through friction to get this capability.</div>
+      </div>
+      <div style="background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--cyan); border-radius:10px; padding:20px 22px;">
+        <div style="font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--cyan); margin-bottom:8px;">Browser Extension Distribution</div>
+        <div style="font-size:13px; color:#bbb; line-height:1.7;">The Chrome extension means they show up at the point of intent — on the merchant's page. Users don't have to switch apps. Positive browser reviews are their best feedback, suggesting this is the right channel to reach power users.</div>
+      </div>
+      <div style="background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--cyan); border-radius:10px; padding:20px 22px;">
+        <div style="font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--cyan); margin-bottom:8px;">Apple Pay / Google Pay Integration</div>
+        <div style="font-size:13px; color:#bbb; line-height:1.7;">The multi-use card can be added to digital wallets. For online-only users this is genuinely convenient and reduces the friction of entering card numbers. Splitt. should target this too.</div>
+      </div>
+      <div style="background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--cyan); border-radius:10px; padding:20px 22px;">
+        <div style="font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--cyan); margin-bottom:8px;">Use Case Discovery</div>
+        <div style="font-size:13px; color:#bbb; line-height:1.7;">Their content marketing (100+ SEO articles on specific use cases) has surfaced the exact scenarios customers care about: tax payments, rent, Costco, Amazon, flights. This is a roadmap of what Splitt. should message against.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPLITT GAPS / HONEST LOOK -->
+  <section>
+    <div class="section-title">Where Splitt. Is Currently Lacking — Honest Assessment</div>
+    <table class="opp-table">
+      <thead>
+        <tr>
+          <th>Gap</th>
+          <th>Why It Matters</th>
+          <th>What to Do About It</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Zero market proof</strong></td>
+          <td>Kasheesh has tens of thousands of users and real transaction volume. Splitt. has a waitlist. Every investor, partner, and early adopter will ask "who's using it?"</td>
+          <td>First 50 real users transacting is the only fix. Speed to beta matters more than polish right now.</td>
+          <td><span class="priority high">Critical</span></td>
+        </tr>
+        <tr>
+          <td><strong>No live customer support plan</strong></td>
+          <td>Kasheesh's #1 failure is email-only support that goes dark. Payments are high-stakes — a declined card in-store is a crisis. Users need a fast path to resolution.</td>
+          <td>Even a well-staffed Intercom chat or a clear real-time status page would differentiate. Plan this before launch, not after.</td>
+          <td><span class="priority high">Critical</span></td>
+        </tr>
+        <tr>
+          <td><strong>No browser presence</strong></td>
+          <td>The browser extension is Kasheesh's best-rated distribution channel. Splitt. has no equivalent online presence beyond the card.</td>
+          <td>Phase 3 checkout button solves this — but consider a lightweight browser extension even in Phase 2 to reach online-only users.</td>
+          <td><span class="priority medium">Medium</span></td>
+        </tr>
+        <tr>
+          <td><strong>Stripe Issuing geographic limits</strong></td>
+          <td>Stripe Issuing is US-only. Kasheesh is also US-only currently, so this is parity — but it caps the TAM and must be acknowledged.</td>
+          <td>Not a launch blocker, but be transparent about it. Monitor Stripe's international Issuing expansion.</td>
+          <td><span class="priority low">Low</span></td>
+        </tr>
+        <tr>
+          <td><strong>No rewards layer at launch</strong></td>
+          <td>Kasheesh has a 1–1.5% cashback rewards program. It's a retention tool that makes the 2% fee feel more palatable. Splitt. has no loyalty hook yet.</td>
+          <td>Subscription tiers partially address this (value is in features, not cashback). But a rewards optimizer page (already in the product spec) should ship early, not late.</td>
+          <td><span class="priority medium">Medium</span></td>
+        </tr>
+        <tr>
+          <td><strong>Stripe Issuing approval dependency</strong></td>
+          <td>The entire product is blocked on Stripe Issuing approval. If that drags, nothing ships. Kasheesh had the same dependency and got through it — but it's a real risk.</td>
+          <td>Document the use case clearly for Stripe reviewers. Emphasize consumer-facing, low-risk spending. Have backup communication ready.</td>
+          <td><span class="priority high">Critical</span></td>
+        </tr>
+        <tr>
+          <td><strong>No social proof or press yet</strong></td>
+          <td>Kasheesh has VC backing (Tribe Capital), celebrity investors, and Business Wire coverage. Splitt. is invisible to media and investors right now.</td>
+          <td>One good Product Hunt launch, one fintech newsletter feature, or one angel check changes this. Start the outreach now, not after launch.</td>
+          <td><span class="priority medium">Medium</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- VERDICT -->
+  <section>
+    <div class="section-title">The Bottom Line</div>
+    <div class="verdict-box">
+      <h3>Kasheesh proved the market. Splitt. can own it.</h3>
+      <p>Kasheesh's existence is the best thing that could have happened to Splitt. They've done three years of consumer education, built tens of thousands of users who now know what multi-card splitting is, and collected a mountain of negative reviews that serve as a precise product spec for what <em>not</em> to do.</p>
+      <p>The core failure of Kasheesh is architectural: <strong>they built a manual product for an automatic problem.</strong> Every interaction requires the user to think, configure, and act before a purchase. Splitt.'s webhook-intercept model means the user never has to think at all — which is how every great payments product ultimately wins.</p>
+      <p>The honest gaps for Splitt. right now are not product gaps — they're <strong>market gaps.</strong> No users, no press, no social proof, and a launch blocked on approvals. Kasheesh got to market first and it still hasn't figured out basic reliability. Splitt.'s opportunity is to be the version of this product that actually works.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="splitt-wordmark">Splitt.</div>
+  <div>Confidential · Internal Use Only · March 2026</div>
+</footer>
+
+</body>
+</html>

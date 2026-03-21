@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splitt. Logo Files</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --lime: #c8ff57;
+    --cyan: #57c8ff;
+    --white: #f5f5f5;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: #111; color: var(--white); font-family: 'DM Sans', sans-serif; }
+
+  header {
+    padding: 52px 60px 36px;
+    border-bottom: 1px solid #1e1e1e;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  header h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:28px; }
+  header h1 span { color: var(--lime); }
+  header p { font-size:13px; color:#555; margin-top:6px; }
+  .file-count { font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:#333; }
+
+  .section { padding: 48px 60px; border-bottom: 1px solid #1a1a1a; }
+  .section-label {
+    font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    color:#444; margin-bottom:32px; font-family:'Syne',sans-serif; font-weight:700;
+  }
+
+  .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: #1a1a1a; }
+
+  .logo-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    min-height: 160px;
+  }
+
+  .logo-preview.bg-black  { background: #0a0a0a; }
+  .logo-preview.bg-white  { background: #ffffff; }
+  .logo-preview.bg-lime   { background: #c8ff57; }
+  .logo-preview.bg-checker {
+    background-color: #1a1a1a;
+    background-image: linear-gradient(45deg, #222 25%, transparent 25%),
+                      linear-gradient(-45deg, #222 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #222 75%),
+                      linear-gradient(-45deg, transparent 75%, #222 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  }
+
+  .logo-meta {
+    padding: 16px 20px;
+    background: #0f0f0f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  .logo-meta .name { font-size: 12px; color: #555; font-family:'DM Sans',sans-serif; }
+  .logo-meta .filename { font-size: 11px; color: #333; font-family: monospace; }
+
+  /* inline SVG rendering */
+  .logo-preview svg { max-width:100%; height:auto; }
+
+  /* App icons row */
+  .icon-row { display:flex; gap:1px; background:#1a1a1a; }
+  .icon-tile { flex:1; display:flex; flex-direction:column; }
+  .icon-preview {
+    display:flex; align-items:center; justify-content:center;
+    padding: 48px; min-height: 200px;
+  }
+  .icon-preview.bg-black { background:#0a0a0a; }
+  .icon-preview.bg-white { background:#ffffff; }
+  .icon-preview.bg-lime  { background:#c8ff57; }
+  .icon-preview.bg-dark  { background:#111; }
+
+  .usage-notes {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap:1px;
+    background:#1a1a1a;
+    margin-top: 0;
+  }
+  .usage-note {
+    background: #0a0a0a;
+    padding: 28px 24px;
+  }
+  .usage-note h4 { font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:var(--lime); margin-bottom:8px; }
+  .usage-note p  { font-size:12px; line-height:1.7; color:#555; }
+
+  @media(max-width:700px){
+    header { padding:32px; flex-direction:column; gap:12px; align-items:flex-start; }
+    .section { padding:32px; }
+    .usage-notes { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Splitt<span>.</span> Logo Kit</h1>
+    <p>Concept 02 — Two Cards · 8 files · SVG format</p>
+  </div>
+  <div class="file-count">8 files ready</div>
+</header>
+
+<!-- FULL LOGOS -->
+<div class="section">
+  <div class="section-label">Full Logo — Icon + Wordmark</div>
+  <div class="logo-grid">
+
+    <!-- Dark bg -->
+    <div class="logo-tile">
+      <div class="logo-preview bg-black">
+        <svg width="220" height="66" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="16" width="42" height="28" rx="5" fill="#f5f5f5"/>
+          <rect x="22" y="28" width="42" height="28" rx="5" fill="#c8ff57"/>
+          <text x="78" y="50" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#f5f5f5">Splitt</text>
+          <circle cx="229" cy="49" r="6" fill="#c8ff57"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Dark background</span>
+        <span class="filename">splitt-logo-dark.svg</span>
+      </div>
+    </div>
+
+    <!-- Light bg -->
+    <div class="logo-tile">
+      <div class="logo-preview bg-white">
+        <svg width="220" height="66" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="16" width="42" height="28" rx="5" fill="#0a0a0a"/>
+          <rect x="22" y="28" width="42" height="28" rx="5" fill="#c8ff57"/>
+          <text x="78" y="50" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#0a0a0a">Splitt</text>
+          <circle cx="229" cy="49" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Light background</span>
+        <span class="filename">splitt-logo-light.svg</span>
+      </div>
+    </div>
+
+    <!-- Transparent dark text -->
+    <div class="logo-tile">
+      <div class="logo-preview bg-checker">
+        <svg width="220" height="66" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="16" width="42" height="28" rx="5" fill="#f5f5f5"/>
+          <rect x="22" y="28" width="42" height="28" rx="5" fill="#c8ff57"/>
+          <text x="78" y="50" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#f5f5f5">Splitt</text>
+          <circle cx="229" cy="49" r="6" fill="#c8ff57"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Transparent · light text</span>
+        <span class="filename">splitt-logo-transparent-dark.svg</span>
+      </div>
+    </div>
+
+    <!-- Transparent light text -->
+    <div class="logo-tile">
+      <div class="logo-preview bg-checker">
+        <svg width="220" height="66" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="16" width="42" height="28" rx="5" fill="#0a0a0a"/>
+          <rect x="22" y="28" width="42" height="28" rx="5" fill="#c8ff57"/>
+          <text x="78" y="50" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#0a0a0a">Splitt</text>
+          <circle cx="229" cy="49" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Transparent · dark text</span>
+        <span class="filename">splitt-logo-transparent-light.svg</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- APP ICONS -->
+<div class="section">
+  <div class="section-label">App Icon — Square Mark</div>
+  <div class="icon-row">
+
+    <div class="icon-tile">
+      <div class="icon-preview bg-black">
+        <svg width="96" height="96" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="26" fill="#0a0a0a"/>
+          <rect x="18" y="28" width="64" height="42" rx="7" fill="#f5f5f5"/>
+          <rect x="38" y="50" width="64" height="42" rx="7" fill="#c8ff57"/>
+          <circle cx="95" cy="92" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">App icon · dark</span>
+        <span class="filename">splitt-icon-dark.svg</span>
+      </div>
+    </div>
+
+    <div class="icon-tile">
+      <div class="icon-preview bg-dark">
+        <svg width="96" height="96" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="26" fill="#c8ff57"/>
+          <rect x="18" y="28" width="64" height="42" rx="7" fill="#0a0a0a"/>
+          <rect x="38" y="50" width="64" height="42" rx="7" fill="#f5f5f5"/>
+          <circle cx="95" cy="92" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">App icon · lime</span>
+        <span class="filename">splitt-icon-lime.svg</span>
+      </div>
+    </div>
+
+    <div class="icon-tile">
+      <div class="icon-preview bg-white">
+        <svg width="96" height="96" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="26" fill="#0a0a0a"/>
+          <rect x="18" y="28" width="64" height="42" rx="7" fill="#f5f5f5"/>
+          <rect x="38" y="50" width="64" height="42" rx="7" fill="#c8ff57"/>
+          <circle cx="95" cy="92" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">On white background</span>
+        <span class="filename">splitt-icon-dark.svg</span>
+      </div>
+    </div>
+
+    <div class="icon-tile">
+      <div class="icon-preview bg-lime">
+        <svg width="96" height="96" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="26" fill="#0a0a0a"/>
+          <rect x="18" y="28" width="64" height="42" rx="7" fill="#f5f5f5"/>
+          <rect x="38" y="50" width="64" height="42" rx="7" fill="#c8ff57"/>
+          <circle cx="95" cy="92" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">On lime background</span>
+        <span class="filename">splitt-icon-dark.svg</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- WORDMARKS -->
+<div class="section">
+  <div class="section-label">Wordmark Only</div>
+  <div class="logo-grid">
+
+    <div class="logo-tile">
+      <div class="logo-preview bg-black">
+        <svg width="180" height="52" viewBox="0 0 192 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="4" y="44" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#f5f5f5">Splitt</text>
+          <circle cx="181" cy="43" r="6" fill="#c8ff57"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Wordmark · dark</span>
+        <span class="filename">splitt-wordmark-dark.svg</span>
+      </div>
+    </div>
+
+    <div class="logo-tile">
+      <div class="logo-preview bg-white">
+        <svg width="180" height="52" viewBox="0 0 192 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="4" y="44" font-family="'Syne','Arial Black',sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#0a0a0a">Splitt</text>
+          <circle cx="181" cy="43" r="6" fill="#0a0a0a"/>
+        </svg>
+      </div>
+      <div class="logo-meta">
+        <span class="name">Wordmark · light</span>
+        <span class="filename">splitt-wordmark-light.svg</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- USAGE NOTES -->
+<div class="usage-notes">
+  <div class="usage-note">
+    <h4>Website nav</h4>
+    <p>Use <code>splitt-logo-transparent-dark.svg</code> on your dark header. Transparent background adapts to any nav color.</p>
+  </div>
+  <div class="usage-note">
+    <h4>App icon</h4>
+    <p>Use <code>splitt-icon-dark.svg</code> for iOS/Android. The rounded rect (rx=26) matches Apple's icon grid spec.</p>
+  </div>
+  <div class="usage-note">
+    <h4>Email / docs</h4>
+    <p>Use <code>splitt-logo-light.svg</code> for white-background contexts like emails, PDFs, or printed materials.</p>
+  </div>
+  <div class="usage-note">
+    <h4>Scale</h4>
+    <p>All files are SVG — infinitely scalable. For PNG export (App Store, etc.), open in Figma or browser and export at 2x or 3x.</p>
+  </div>
+</div>
+
+</body>
+</html>

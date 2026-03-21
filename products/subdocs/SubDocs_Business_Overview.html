@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SubDocs — Business Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --navy:#1B2B4B;--blue:#2563EB;--blue-light:#EFF6FF;--blue-mid:#DBEAFE;
+    --teal:#0F6E56;--teal-light:#E1F5EE;--teal-mid:#9FE1CB;
+    --green:#3B6D11;--green-light:#EAF3DE;
+    --amber:#854F0B;--amber-light:#FAEEDA;--amber-mid:#FAC775;
+    --red:#A32D2D;--red-light:#FCEBEB;
+    --gray:#2C2C2A;--gray-mid:#888780;--gray-light:#F1EFE8;--gray-soft:#D3D1C7;
+    --white:#FFFFFF;--off:#F9FAFB;
+    --text:#111827;--text-muted:#6B7280;
+    --border:#E5E7EB;
+    --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:20px;
+  }
+  body{font-family:'Inter',sans-serif;color:var(--text);background:var(--white);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .page{max-width:900px;margin:0 auto;padding:0 0 80px}
+
+  /* ── COVER ── */
+  .cover{background:var(--navy);color:var(--white);padding:80px 60px 72px;position:relative;overflow:hidden}
+  .cover-dot{position:absolute;border-radius:50%;opacity:.06;background:var(--white)}
+  .cover-dot.d1{width:400px;height:400px;top:-120px;right:-80px}
+  .cover-dot.d2{width:200px;height:200px;bottom:-60px;left:40px}
+  .cover-dot.d3{width:120px;height:120px;top:40px;left:200px}
+  .cover-eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:20px}
+  .cover-title{font-family:'DM Serif Display',serif;font-size:72px;line-height:1;color:var(--white);margin-bottom:6px}
+  .cover-sub{font-family:'DM Serif Display',serif;font-size:26px;color:rgba(255,255,255,.55);font-style:italic;margin-bottom:40px}
+  .cover-tagline{font-size:17px;color:rgba(255,255,255,.75);max-width:480px;line-height:1.6;margin-bottom:56px}
+  .cover-pills{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px}
+  .pill{padding:8px 18px;border-radius:100px;font-size:13px;font-weight:500}
+  .pill-outline{border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8)}
+  .pill-blue{background:var(--blue);color:var(--white)}
+  .cover-meta{display:flex;gap:48px;padding-top:40px;border-top:1px solid rgba(255,255,255,.12)}
+  .cover-meta-item label{display:block;font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+  .cover-meta-item span{font-size:14px;color:rgba(255,255,255,.75)}
+
+  /* ── SECTION CHROME ── */
+  .section{padding:64px 60px}
+  .section-alt{background:var(--off)}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+  .section-title{font-family:'DM Serif Display',serif;font-size:38px;line-height:1.15;color:var(--navy);margin-bottom:8px}
+  .section-lead{font-size:16px;color:var(--text-muted);max-width:580px;line-height:1.7;margin-bottom:40px}
+  h3.sub{font-size:16px;font-weight:600;color:var(--navy);margin:28px 0 10px}
+  p.body-copy{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:12px}
+
+  /* ── DIVIDER ── */
+  .divider{height:1px;background:var(--border);margin:0 60px}
+
+  /* ── STAT CARDS ── */
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+  .stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center}
+  .stat-card.blue{background:var(--blue-light);border-color:var(--blue-mid)}
+  .stat-card.teal{background:var(--teal-light);border-color:var(--teal-mid)}
+  .stat-card.amber{background:var(--amber-light);border-color:var(--amber-mid)}
+  .stat-num{font-family:'DM Serif Display',serif;font-size:40px;color:var(--navy);line-height:1}
+  .stat-label{font-size:12px;color:var(--text-muted);margin-top:6px;font-weight:500}
+  .stat-sub{font-size:11px;color:var(--gray-mid);margin-top:4px}
+
+  /* ── CALLOUT ── */
+  .callout{border-radius:var(--radius-lg);padding:28px 32px;margin:28px 0}
+  .callout-blue{background:var(--blue-light);border-left:4px solid var(--blue)}
+  .callout-teal{background:var(--teal-light);border-left:4px solid var(--teal)}
+  .callout-amber{background:var(--amber-light);border-left:4px solid var(--amber-mid)}
+  .callout-navy{background:var(--navy);color:var(--white)}
+  .callout-navy p{color:rgba(255,255,255,.85)}
+  .callout-navy .callout-title{color:var(--white)}
+  .callout-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .callout-blue .callout-title{color:var(--blue)}
+  .callout-teal .callout-title{color:var(--teal)}
+  .callout-amber .callout-title{color:var(--amber)}
+  .callout p{font-size:15px;line-height:1.7}
+  blockquote.pull{font-family:'DM Serif Display',serif;font-size:22px;line-height:1.5;color:var(--navy);font-style:italic;border-left:3px solid var(--blue);padding-left:24px;margin:28px 0}
+
+  /* ── BULLET LISTS ── */
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+  ul.clean li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.6}
+  ul.clean li::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:7px;flex-shrink:0}
+  ul.clean.teal li::before{background:var(--teal)}
+  ul.clean.amber li::before{background:var(--amber-mid)}
+  ul.clean.check li::before{content:'✓';width:auto;height:auto;background:none;color:var(--teal);font-size:13px;font-weight:700;margin-top:1px}
+  ul.clean li strong{font-weight:600;color:var(--navy)}
+  ol.steps{list-style:none;display:flex;flex-direction:column;gap:0;margin-bottom:24px}
+  ol.steps li{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)}
+  ol.steps li:last-child{border-bottom:none}
+  ol.steps li .num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  ol.steps li .step-content strong{display:block;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:3px}
+  ol.steps li .step-content span{font-size:14px;color:var(--text-muted)}
+
+  /* ── TABLES ── */
+  .tbl-wrap{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);margin:24px 0}
+  table.pretty{width:100%;border-collapse:collapse;font-size:14px}
+  table.pretty th{background:var(--navy);color:var(--white);padding:12px 16px;text-align:left;font-weight:500;font-size:12px;letter-spacing:.04em}
+  table.pretty td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.pretty tr:last-child td{border-bottom:none}
+  table.pretty tr:nth-child(even) td{background:var(--off)}
+  table.pretty td.highlight{font-weight:600;color:var(--navy)}
+  table.pretty td.good{color:var(--teal);font-weight:600}
+  table.pretty td.warn{color:var(--amber);font-weight:600}
+  table.pretty td.bad{color:var(--red);font-weight:600}
+  .badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+  .badge-blue{background:var(--blue-mid);color:#185FA5}
+  .badge-teal{background:var(--teal-light);color:var(--teal)}
+  .badge-amber{background:var(--amber-light);color:var(--amber)}
+  .badge-red{background:var(--red-light);color:var(--red)}
+  .badge-gray{background:var(--gray-light);color:var(--gray-mid)}
+
+  /* ── TWO-COL ── */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+  .card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px}
+  .card.featured{border-color:var(--blue);border-width:2px}
+
+  /* ── PRICING CARDS ── */
+  .pricing-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+  .price-card{border-radius:var(--radius-lg);padding:28px;border:1px solid var(--border);background:var(--white)}
+  .price-card.featured{border-color:var(--blue);border-width:2px;background:var(--blue-light)}
+  .price-tier{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:12px}
+  .price-featured .price-tier{color:var(--blue)}
+  .price-amount{font-family:'DM Serif Display',serif;font-size:42px;color:var(--navy);line-height:1}
+  .price-period{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+  .price-desc{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.55}
+
+  /* ── MRR TIMELINE ── */
+  .mrr-timeline{margin:24px 0}
+  .mrr-row{display:grid;grid-template-columns:80px 120px 1fr;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+  .mrr-row:last-child{border-bottom:none}
+  .mrr-row.milestone{background:var(--blue-light);margin:0 -8px;padding:10px 8px;border-radius:var(--radius-sm);border-bottom:none;margin-bottom:1px}
+  .mrr-month{font-size:13px;font-weight:600;color:var(--text-muted)}
+  .mrr-num{font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy)}
+  .mrr-bar-wrap{flex:1;height:8px;background:var(--gray-light);border-radius:100px;overflow:hidden}
+  .mrr-bar{height:100%;border-radius:100px;background:var(--blue)}
+  .mrr-bar.milestone-bar{background:var(--navy)}
+  .mrr-desc{font-size:13px;color:var(--text-muted)}
+
+  /* ── OBJECTIONS ── */
+  .objection-list{display:flex;flex-direction:column;gap:14px;margin:20px 0}
+  .obj-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px 20px}
+  .obj-q{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px}
+  .obj-a{font-size:14px;color:var(--text-muted);line-height:1.6}
+
+  /* ── PHASE CARDS ── */
+  .phase-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:24px 0}
+  .phase-card{border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border)}
+  .phase-card.p1{background:var(--blue-light);border-color:var(--blue-mid)}
+  .phase-card.p2{background:var(--teal-light);border-color:var(--teal-mid)}
+  .phase-card.p3{background:var(--amber-light);border-color:var(--amber-mid)}
+  .phase-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+  .p1 .phase-label{color:var(--blue)}
+  .p2 .phase-label{color:var(--teal)}
+  .p3 .phase-label{color:var(--amber)}
+  .phase-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+  .phase-dates{font-size:12px;color:var(--text-muted);margin-bottom:12px}
+  .phase-card ul.clean li{font-size:13px}
+
+  /* ── FLYWHEEL ── */
+  .flywheel{display:flex;align-items:center;justify-content:center;gap:0;margin:32px 0;flex-wrap:wrap}
+  .fw-item{text-align:center;flex:1;min-width:120px;padding:20px 10px}
+  .fw-dot{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+  .fw-arrow{font-size:20px;color:var(--gray-soft);flex-shrink:0;padding:0 4px;align-self:center;margin-top:-20px}
+  .fw-label{font-size:12px;font-weight:600;color:var(--navy)}
+  .fw-sub{font-size:11px;color:var(--text-muted);margin-top:3px}
+
+  /* ── FOOTER ── */
+  .doc-footer{background:var(--navy);color:rgba(255,255,255,.5);padding:32px 60px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+  .doc-footer strong{color:var(--white)}
+
+  @media(max-width:640px){
+    .cover{padding:48px 28px}
+    .cover-title{font-size:48px}
+    .section{padding:48px 28px}
+    .divider{margin:0 28px}
+    .stat-row,.pricing-row,.phase-row,.two-col{grid-template-columns:1fr}
+    .cover-meta{flex-direction:column;gap:16px}
+    .mrr-row{grid-template-columns:60px 100px 1fr}
+    .doc-footer{flex-direction:column;gap:8px;padding:24px 28px}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════════════════════════════ COVER ══════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-dot d1"></div>
+  <div class="cover-dot d2"></div>
+  <div class="cover-dot d3"></div>
+  <div class="cover-eyebrow">Business Overview &amp; Partner Brief &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; Confidential</div>
+  <div class="cover-title">SubDocs</div>
+  <div class="cover-sub">Subcontractor compliance, automated.</div>
+  <p class="cover-tagline">The only COI tracking tool built for small general contractors — collect documents automatically, get alerts before anything expires, and walk into every annual audit with proof.</p>
+  <div class="cover-pills">
+    <span class="pill pill-blue">$29 / month</span>
+    <span class="pill pill-outline">No contract</span>
+    <span class="pill pill-outline">Self-serve signup</span>
+    <span class="pill pill-outline">Free sub accounts</span>
+    <span class="pill pill-outline">Launching March 2026</span>
+  </div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><label>Company</label><span>Websage Inc.</span></div>
+    <div class="cover-meta-item"><label>Legal Entity</label><span>Delaware S-Corp</span></div>
+    <div class="cover-meta-item"><label>Stage</label><span>Pre-revenue &nbsp;·&nbsp; 30-day launch sprint</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TL;DR ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="eyebrow">The 60-Second Version</div>
+  <div class="section-title">What is SubDocs?</div>
+
+  <div class="stat-row">
+    <div class="stat-card blue">
+      <div class="stat-num">$6K–8K</div>
+      <div class="stat-label">Typical annual audit surprise bill</div>
+      <div class="stat-sub">When a sub's COI was expired at audit time</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-num">$348</div>
+      <div class="stat-label">SubDocs annual cost (Pro plan)</div>
+      <div class="stat-sub">One prevented audit pays for 17+ years</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Of GC policies are audited annually</div>
+      <div class="stat-sub">The demand event is built into regulations</div>
+    </div>
+  </div>
+
+  <blockquote class="pull">"Every small general contractor gets audited on their subcontractor insurance every single year. Most find out they had a problem when the audit bill arrives. SubDocs makes sure that never happens."</blockquote>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">The Problem</div>
+      <ul class="clean">
+        <li>GCs must collect a Certificate of Insurance (COI) from every sub, every year</li>
+        <li>Most track COIs in Excel — subs let policies lapse, GCs don't notice</li>
+        <li>Annual audit arrives: carrier flags expired certs, charges GC as if the sub is an uninsured employee</li>
+        <li>Result: $6K–$14K+ surprise bill, insurance premium spike, rising EMR rate for 3 years</li>
+      </ul>
+    </div>
+    <div class="card featured">
+      <div class="card-title" style="color:var(--blue)">The Solution</div>
+      <ul class="clean check">
+        <li>GC adds their subs — SubDocs generates a personal upload link for each</li>
+        <li>Subs upload their own documents via a no-login mobile link</li>
+        <li>Dashboard shows Green / Yellow / Red compliance status for every sub</li>
+        <li>Auto alerts fire at 30, 14, and 7 days before any document expires</li>
+        <li>Audit arrives — GC pulls a one-click compliance report. Done.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ HOW IT WORKS ══════════════════════════════════ -->
+<div class="section section-alt">
+  <div class="eyebrow">Product</div>
+  <div class="section-title">How It Works</div>
+  <p class="section-lead">Two types of users, one simple loop — and a network effect that keeps compounding.</p>
+
+  <h3 class="sub">The GC Experience &nbsp;<span style="font-size:12px;font-weight:400;color:var(--text-muted)">(paying customer)</span></h3>
+  <ol class="steps">
+    <li><div class="num">1</div><div class="step-content"><strong>Add subcontractors</strong><span>Name, email, phone, trade. Takes 2 minutes. Bulk CSV import available.</span></div></li>
+    <li><div class="num">2</div><div class="step-content"><strong>Send the upload link</strong><span>One click generates a unique, secure link per sub. GC sends it by email or copies and shares via text.</span></div></li>
+    <li><div class="num">3</div><div class="step-content"><strong>Sub uploads their documents</strong><span>Sub opens the link on any device — no account required. Selects document type, uploads file, enters expiry date. Done in under 2 minutes.</span></div></li>
+    <li><div class="num">4</div><div class="step-content"><strong>Automatic monitoring kicks in</strong><span>SubDocs tracks every expiry date. GC gets dashboard alerts. Subs get email nudges 30, 14, and 7 days before anything lapses.</span></div></li>
+    <li><div class="num">5</div><div class="step-content"><strong>Audit-ready, always</strong><span>Every document is cloud-stored. Annual audit arrives — pull a compliance report in seconds, not hours.</span></div></li>
+  </ol>
+
+  <h3 class="sub" style="margin-top:36px">The Sub Experience &nbsp;<span style="font-size:12px;font-weight:400;color:var(--text-muted)">(free — the network engine)</span></h3>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">New Feature: Sub Accounts</div>
+    <p>When a sub submits their documents, SubDocs prompts them to save their email. This creates a <strong>free SubDocs account</strong> — a personal document wallet where all their compliance docs live in one place. SubDocs then reminds the sub <em>before their own policy expires</em> — so they never get caught off guard either. The sub can share their profile with any new GC instantly, instead of hunting down documents every time someone asks.</p>
+  </div>
+
+  <h3 class="sub" style="margin-top:32px">The Network Flywheel</h3>
+  <p class="body-copy">Sub accounts turn every upload into a distribution event. Here's the loop:</p>
+
+  <div class="flywheel">
+    <div class="fw-item">
+      <div class="fw-dot" style="background:var(--blue-light)">📋</div>
+      <div class="fw-label">GC adds subs</div>
+      <div class="fw-sub">Sends upload links</div>
+    </div>
+    <div class="fw-arrow">→</div>
+    <div class="fw-item">
+      <div class="fw-dot" style="background:var(--teal-light)">👷</div>
+      <div class="fw-label">Subs create accounts</div>
+      <div class="fw-sub">Free doc wallet</div>
+    </div>
+    <div class="fw-arrow">→</div>
+    <div class="fw-item">
+      <div class="fw-dot" style="background:var(--amber-light)">🔗</div>
+      <div class="fw-label">Subs work elsewhere</div>
+      <div class="fw-sub">Mention SubDocs to new GC</div>
+    </div>
+    <div class="fw-arrow">→</div>
+    <div class="fw-item">
+      <div class="fw-dot" style="background:var(--blue-light)">📈</div>
+      <div class="fw-label">New GC signs up</div>
+      <div class="fw-sub">Zero CAC. Loop repeats.</div>
+    </div>
+  </div>
+
+  <p class="body-copy" style="color:var(--text-muted);font-size:14px;text-align:center">Every sub on the network is a free distribution agent. No ads. No cold outreach needed.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ MARKET ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="eyebrow">Market</div>
+  <div class="section-title">The Problem &amp; The Gap</div>
+
+  <div class="callout callout-navy">
+    <div class="callout-title">The audit math nobody told small GCs about</div>
+    <p>Workers' Comp class codes for construction trades run <strong>$15–$20 per $100 of payroll</strong>. If your sub's COI lapsed for even 3 months, the auditor applies that rate to everything you paid them. A framing crew paid $40K = a $6,000–$8,000 audit bill. The EMR rate spike then adds $4,800–$5,800 per year for the next 3 years. That's a $20,000+ event from one expired certificate.</p>
+  </div>
+
+  <h3 class="sub" style="margin-top:36px">Market Size</h3>
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Segment</th><th>Count</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Total US construction businesses</td><td class="highlight">3.97 million</td><td>IBISWorld 2025</td></tr>
+        <tr><td>Construction businesses with employees</td><td class="highlight">814,557</td><td>US Census 2023</td></tr>
+        <tr><td>GC LLCs actively managing subs</td><td class="highlight">745,000+</td><td>Wikipedia / Census 2022</td></tr>
+        <tr><td>Target ICP: 5–30 subs, 1–10 employees</td><td class="highlight">~80,000–120,000</td><td>Est. 15% of GC population</td></tr>
+        <tr><td>Serviceable addressable market (SAM)</td><td class="highlight">$34.8M ARR potential</td><td>100K businesses × $29 × 12</td></tr>
+        <tr><td>Realistic Year 3 target (SOM)</td><td class="highlight good">$1.14M ARR</td><td>2,500 customers × $38 ARPU</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ COMPETITIVE ══════════════════════════════════ -->
+<div class="section section-alt">
+  <div class="eyebrow">Competitive Landscape</div>
+  <div class="section-title">Why Nobody Else Owns This</div>
+  <p class="section-lead">The market leader wrote the gap into their own pricing page.</p>
+
+  <div class="callout callout-amber">
+    <div class="callout-title">The Explicit Moat</div>
+    <p>myCOI (dominant player in COI tracking) requires a <strong>minimum of 200 incoming certificates per year</strong> to use their service. This is stated on their website. Our entire target customer generates 5–60 certificates per year. They cannot use myCOI. Every enterprise platform (Jones, TrustLayer, Billy, BCS) has the same structural floor — through pricing minimums, mandatory sales calls, or onboarding complexity.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Platform</th><th>Price</th><th>Min. Volume</th><th>Sub Upload Link</th><th>GC-Specific</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr style="background:var(--blue-light)"><td><strong>SubDocs</strong></td><td class="good"><strong>$29/mo</strong></td><td>5 subs</td><td><span class="badge badge-teal">Yes</span></td><td><span class="badge badge-teal">Yes</span></td><td class="highlight">Our product</td></tr>
+        <tr><td>TrackSurePro</td><td>$49/mo</td><td>50 records</td><td><span class="badge badge-blue">Yes</span></td><td><span class="badge badge-gray">No</span></td><td class="warn">Generic, overpriced</td></tr>
+        <tr><td>C2COI</td><td>$67/mo</td><td>None stated</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-gray">Partial</span></td><td class="warn">GC uploads for sub</td></tr>
+        <tr><td>myCOI</td><td>$500+/mo</td><td><strong>200 certs min</strong></td><td><span class="badge badge-blue">Yes</span></td><td><span class="badge badge-gray">Partial</span></td><td class="bad">Excludes our ICP entirely</td></tr>
+        <tr><td>TrustLayer / Jones / Billy</td><td>$150–500+/mo</td><td>Enterprise only</td><td><span class="badge badge-blue">Yes</span></td><td><span class="badge badge-gray">No</span></td><td class="bad">Enterprise only</td></tr>
+        <tr><td>Jobber / HousecallPro</td><td>$39–$249/mo</td><td>N/A</td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-blue">Yes</span></td><td style="color:var(--text-muted)">No COI module at all → additive</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col" style="margin-top:24px">
+    <div class="card">
+      <div class="card-title">Our 5 Defensible Edges</div>
+      <ul class="clean teal">
+        <li><strong>Price floor:</strong> $29 is 40% below closest SMB competitor, 83% below enterprise entry</li>
+        <li><strong>GC positioning:</strong> Everyone else markets to compliance admins. We speak directly to the owner.</li>
+        <li><strong>Sub-side network:</strong> No competitor built a free sub layer. Unique to SubDocs.</li>
+        <li><strong>Community ownership:</strong> FB Groups for GCs are our channel. Competitors have zero presence.</li>
+        <li><strong>Insurance agent channel:</strong> 25% recurring commission program. No equivalent exists.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Adjacent Tools = Additive Opportunity</div>
+      <p class="body-copy" style="font-size:14px">Jobber (300K users) and HousecallPro (200K+ users) are the tools our customers already use. Neither has COI tracking. SubDocs is a $29/month add-on that does one thing none of their tools do.</p>
+      <p class="body-copy" style="font-size:14px;color:var(--text-muted)">"We use Jobber for scheduling — SubDocs for the compliance piece Jobber doesn't do." That's the sell. No displacement. No switching cost.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ PRICING ══════════════════════════════════════ -->
+<div class="section">
+  <div class="eyebrow">Business Model</div>
+  <div class="section-title">Pricing &amp; Unit Economics</div>
+
+  <div class="pricing-row">
+    <div class="price-card">
+      <div class="price-tier">Free</div>
+      <div class="price-amount">$0</div>
+      <div class="price-period">forever</div>
+      <div class="price-desc">Up to 5 active subs. The hook. Gets GCs into the product and creates the upgrade path.</div>
+      <ul class="clean" style="font-size:13px">
+        <li>COI + W-9 tracking</li>
+        <li>Upload links</li>
+        <li>Email alerts</li>
+      </ul>
+    </div>
+    <div class="price-card featured">
+      <div class="price-tier" style="color:var(--blue)">Pro &nbsp;·&nbsp; ⭐ Most Popular</div>
+      <div class="price-amount">$29</div>
+      <div class="price-period">per month &nbsp;·&nbsp; $290/year</div>
+      <div class="price-desc">The core ICP plan. Unlimited subs, everything automated.</div>
+      <ul class="clean check">
+        <li>Unlimited subcontractors</li>
+        <li>COI + W-9 + License tracking</li>
+        <li>Email + SMS reminders</li>
+        <li>Project-level compliance views</li>
+        <li>Audit export report</li>
+      </ul>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Business</div>
+      <div class="price-amount">$79</div>
+      <div class="price-period">per month &nbsp;·&nbsp; $790/year</div>
+      <div class="price-desc">For GCs managing teams and multiple projects.</div>
+      <ul class="clean" style="font-size:13px">
+        <li>Everything in Pro</li>
+        <li>Lien waiver tracking</li>
+        <li>Multi-user (up to 3 logins)</li>
+        <li>Advanced compliance reports</li>
+        <li>Sub invoice payment gating</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub" style="margin-top:36px">Unit Economics Snapshot</h3>
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Average Revenue Per User (ARPU)</td><td class="highlight">$29/mo Pro · $38 blended with Business tier</td></tr>
+        <tr><td>Customer Acquisition Cost (CAC)</td><td class="highlight">~$60–$80 organic (Facebook Groups, SEO, insurance agents)</td></tr>
+        <tr><td>Monthly churn target</td><td class="good">< 3% — compliance tools are sticky once embedded</td></tr>
+        <tr><td>LTV at 3% churn</td><td class="highlight">~$967 per customer (33-month avg lifetime × $29)</td></tr>
+        <tr><td>LTV : CAC ratio</td><td class="good">~13 : 1</td></tr>
+        <tr><td>Payback period</td><td class="good">~3 months</td></tr>
+        <tr><td>Gross margin</td><td class="good">> 90% — infrastructure < $0.50/customer/month at scale</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ SALES ═══════════════════════════════════════════ -->
+<div class="section section-alt">
+  <div class="eyebrow">Sales Playbook</div>
+  <div class="section-title">How We Sell This</div>
+  <p class="section-lead">One sentence that lands. Four channels. Zero paid ads required at launch.</p>
+
+  <div class="callout callout-blue">
+    <div class="callout-title">The 30-Second Pitch</div>
+    <p><em>"Your insurance company audits your subcontractor COIs every single year. If even one is expired or missing, they charge you like that sub was your own employee. For a framing crew paid $40K, that's a $6,000–$8,000 surprise bill you didn't budget for. SubDocs makes sure you're never caught off guard — for $29 a month."</em></p>
+  </div>
+
+  <h3 class="sub" style="margin-top:32px">Four Channels to First 100 Customers</h3>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Channel 1 — Facebook Groups</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:10px">Target groups: General Contractors USA (180K members), Residential Remodeling Contractors, HVAC Business Owners, Electrical Contractors Business Owners.</p>
+      <p style="font-size:14px;color:var(--text-muted)">Post the audit horror story. Collect DMs. Offer founding member trial. Zero cost, high trust.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Channel 2 — Insurance Agent Referrals</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:10px">Independent agents already trust GC owners. One agent with 15 GC clients = 15 trial starts at $0 CAC.</p>
+      <p style="font-size:14px;color:var(--text-muted)">We pay <strong style="color:var(--navy)">25% recurring commission</strong> for every GC they refer who converts. The channel pays for itself.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Channel 3 — LinkedIn Outreach</div>
+      <p style="font-size:14px;color:var(--text-muted)">Search "general contractor" + state, filter for 1–10 employees. Personalized DMs referencing their specific trade. Kevin (Head of Sales) owns this channel.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Channel 4 — SEO Content</div>
+      <p style="font-size:14px;color:var(--text-muted)">Target: "COI tracking spreadsheet template," "what happens if subcontractor has no insurance," "what is an EMR contractor." These are GCs actively looking for help. Compounding asset.</p>
+    </div>
+  </div>
+
+  <h3 class="sub" style="margin-top:32px">Handling the Common Objections</h3>
+  <div class="objection-list">
+    <div class="obj-card">
+      <div class="obj-q">"My subs won't upload their stuff."</div>
+      <div class="obj-a">They get a simple link — no account needed, works on any phone, takes 2 minutes. Free accounts give them a reason to use it (their docs live there). You can resend reminders in one click.</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">"I already use a spreadsheet."</div>
+      <div class="obj-a">Spreadsheets don't catch a policy that lapses mid-year. They don't remind your sub 30 days before expiration. They don't alert you the day your audit starts. One missed expiry date costs more than 17 years of SubDocs.</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">"I've never had a problem."</div>
+      <div class="obj-a">Most GCs don't know they had a problem until the audit bill arrives. By then it's too late to produce retroactive coverage. SubDocs is your proof that you did everything right.</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">"Is this like myCOI?"</div>
+      <div class="obj-a">myCOI requires 200 certificates minimum and charges enterprise prices with a mandatory sales call. SubDocs is built for GCs managing 5–30 subs, at $29/month, with a 14-day free trial. No sales call needed — sign up in 3 minutes.</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ PATH TO $10K MRR ══════════════════════════════ -->
+<div class="section">
+  <div class="eyebrow">Growth Plan</div>
+  <div class="section-title">Path to $10,000 MRR</div>
+  <p class="section-lead">14 months. All organic. No paid ads required.</p>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-num">345</div>
+      <div class="stat-label">Paying customers needed</div>
+      <div class="stat-sub">At $29/month flat = $10,005 MRR</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-num">263</div>
+      <div class="stat-label">With Business tier mix</div>
+      <div class="stat-sub">15–20% on $79/mo lifts ARPU to ~$38</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-num">Mo. 14</div>
+      <div class="stat-label">Base case timeline</div>
+      <div class="stat-sub">Mo. 11–12 with insurance agent scale</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Month</th><th>Paid Users</th><th>MRR</th><th>Milestone</th><th>Primary Driver</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>7</td><td>$203</td><td>15 founding members</td><td>Direct DMs from validation</td></tr>
+        <tr><td>2</td><td>19</td><td>$551</td><td>Public launch post</td><td>FB Groups launch</td></tr>
+        <tr><td>3</td><td>35</td><td>$1,015</td><td>First insurance agent signed</td><td>Agent channel starts</td></tr>
+        <tr><td>4</td><td>56</td><td>$1,624</td><td>2 agents active</td><td>Agent referrals</td></tr>
+        <tr style="background:var(--blue-light)"><td><strong>6</strong></td><td><strong>101</strong></td><td class="good"><strong>$2,929</strong></td><td><strong>100 paying customers</strong></td><td>All channels active</td></tr>
+        <tr><td>8</td><td>146</td><td>$4,234</td><td>Sub network hits 1K accounts</td><td>Network flywheel</td></tr>
+        <tr><td>9</td><td>167</td><td>$4,843</td><td>Lien waiver feature ships</td><td>Feature expansion + upsell</td></tr>
+        <tr><td>12</td><td>231</td><td>$6,699</td><td>Year 1 complete</td><td>All channels compounding</td></tr>
+        <tr style="background:var(--teal-light)"><td><strong>14–16</strong></td><td><strong>345–380</strong></td><td class="highlight"><strong>$10,000+</strong></td><td><strong>$10K MRR crossed</strong></td><td>Organic + agent scale</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ PATH TO $50K MRR ════════════════════════════════ -->
+<div class="section section-alt">
+  <div class="eyebrow">Scale</div>
+  <div class="section-title">Path to $50,000 MRR</div>
+  <p class="section-lead">$50K MRR = ~$600K ARR. At 4–5× ARR multiple, this is a $2.4M–$3M asset. Timeline: 36–42 months.</p>
+
+  <div class="phase-row">
+    <div class="phase-card p1">
+      <div class="phase-label">Phase 1</div>
+      <div class="phase-title">Own the Category</div>
+      <div class="phase-dates">Months 1–18 · Target: $12K–$15K MRR</div>
+      <ul class="clean" style="font-size:13px">
+        <li>Prove product-market fit with core ICP</li>
+        <li>Build sub network to 5,000+ accounts</li>
+        <li>Activate 15–20 insurance agent partners</li>
+        <li>Ship Business tier, lien waiver tracking</li>
+      </ul>
+    </div>
+    <div class="phase-card p2">
+      <div class="phase-label">Phase 2</div>
+      <div class="phase-title">Expand the Surface</div>
+      <div class="phase-dates">Months 18–30 · Target: $25K–$35K MRR</div>
+      <ul class="clean teal" style="font-size:13px">
+        <li>Sub invoice payment gating (no COI = no invoice)</li>
+        <li>Sub CRM — notes, ratings, preferred lists</li>
+        <li>Jobber + Zapier integration</li>
+        <li>ARPU lifts from $38 → $45–$55 blended</li>
+      </ul>
+    </div>
+    <div class="phase-card p3">
+      <div class="phase-label">Phase 3</div>
+      <div class="phase-title">Expand the Customer</div>
+      <div class="phase-dates">Months 24–42 · Target: $50K MRR</div>
+      <ul class="clean amber" style="font-size:13px">
+        <li>Property managers (tenant vendor COIs)</li>
+        <li>Franchise operators (multi-location)</li>
+        <li>Insurance agency white-label dashboard</li>
+        <li>Same platform, new verticals</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub">$50K MRR — How the Numbers Stack Up</h3>
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Segment</th><th>Customers</th><th>Avg MRR / Customer</th><th>MRR Contribution</th></tr></thead>
+      <tbody>
+        <tr><td>Core GCs — Pro plan</td><td>800</td><td>$29</td><td>$23,200</td></tr>
+        <tr><td>Core GCs — Business plan</td><td>250</td><td>$79</td><td>$19,750</td></tr>
+        <tr><td>Property managers — Pro</td><td>120</td><td>$29</td><td>$3,480</td></tr>
+        <tr><td>Insurance agency dashboards</td><td>20</td><td>$150</td><td>$3,000</td></tr>
+        <tr style="background:var(--blue-light)"><td><strong>Total</strong></td><td><strong>1,190</strong></td><td><strong>$41 blended</strong></td><td class="good"><strong>~$49,430</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-blue" style="margin-top:24px">
+    <div class="callout-title">Exit &amp; Asset Value</div>
+    <p>B2B SaaS compliance tools with high retention trade at <strong>4–6× ARR</strong> in private acquisitions at the sub-$2M scale. Natural acquirers: insurance carriers (want compliance data), construction PM platforms (Jobber, Procore), insurance agency management software. At $50K MRR ($600K ARR) → <strong>$2.4M–$3.6M asset value</strong>.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ VIABILITY ═══════════════════════════════════════ -->
+<div class="section">
+  <div class="eyebrow">Financial Viability</div>
+  <div class="section-title">Why This Business Works</div>
+
+  <div class="two-col">
+    <div>
+      <ul class="clean check" style="margin-bottom:0">
+        <li><strong>Demand is guaranteed by regulation.</strong> Every GC gets audited every year. No product-market fit risk — the demand event is built into the law.</li>
+        <li><strong>ROI is undeniable.</strong> $29/month vs. $6K+ audit surprise. No comparable tool at this price. No adoption friction.</li>
+        <li><strong>Churn is structurally low.</strong> Once a GC uploads their sub roster and relies on reminders, switching costs compound with every sub added.</li>
+        <li><strong>Gross margins are high.</strong> Infrastructure costs under $0.50/customer/month at scale. >90% margin from day one.</li>
+        <li><strong>Sub network compounds at zero cost.</strong> Every sub account is a free distribution agent. No marginal acquisition cost.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="sub" style="margin-top:0">Operating Costs vs. Revenue</h3>
+      <div class="tbl-wrap">
+        <table class="pretty">
+          <thead><tr><th>Stage</th><th>Monthly Costs</th><th>Monthly MRR</th><th>Profit</th></tr></thead>
+          <tbody>
+            <tr><td>100 customers</td><td>~$240</td><td>$2,900</td><td class="good">$2,660</td></tr>
+            <tr><td>250 customers</td><td>~$400</td><td>$7,250</td><td class="good">$6,850</td></tr>
+            <tr><td>500 customers</td><td>~$835</td><td>$14,500</td><td class="good">$13,665</td></tr>
+            <tr><td>1,000 customers</td><td>~$1,400</td><td>$29,000</td><td class="good">$27,600</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px">Infrastructure costs include Supabase, Vercel, Resend, Twilio, Sentry, Stripe fees. Gross margin remains above 90% throughout.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ TEAM ═══════════════════════════════════════════ -->
+<div class="section section-alt">
+  <div class="eyebrow">Team &amp; Execution</div>
+  <div class="section-title">How We Operate</div>
+
+  <div class="two-col" style="margin-bottom:32px">
+    <div class="card">
+      <div class="card-title">Founding Team</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.65;margin-bottom:12px">SubDocs is built by a lean founding team with backgrounds in fintech, auto finance, growth marketing, and B2B sales. The team brings direct experience in compliance-adjacent industries and a track record of shipping and scaling digital products.</p>
+      <ul class="clean" style="font-size:13px">
+        <li>Fintech &amp; auto finance operational background (risk, GTM analytics)</li>
+        <li>Prior growth experience — 4× YoY user growth at a prior venture</li>
+        <li>B2B sales experience with direct contractor industry relationships</li>
+        <li>AI-assisted development model — ships fast without a large engineering headcount</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Why This Team Wins This Market</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.65;margin-bottom:12px">The sales motion for SubDocs requires talking to a GC owner about financial risk, audit exposure, and insurance premiums. That's a conversation that requires credibility — not just a product demo.</p>
+      <ul class="clean teal" style="font-size:13px">
+        <li>We speak the language: EMR, audit adjustments, Workers' Comp class codes</li>
+        <li>We have existing relationships in the contractor insurance community</li>
+        <li>We understand the B2B self-serve sales cycle — low friction, fast conversion</li>
+        <li>Director model: AI agents execute, founders direct and iterate</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub">The 5-Agent Automation Stack</h3>
+  <p class="body-copy" style="color:var(--text-muted);font-size:14px;margin-bottom:16px">SubDocs runs on an OpenClaw-based autonomous agent system. Active founder time post-launch: ~1 hour per day to review outputs and handle escalations. Everything else runs automatically.</p>
+  <div class="tbl-wrap">
+    <table class="pretty">
+      <thead><tr><th>Agent</th><th>Role</th><th>Runs Autonomously</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Builder</strong></td><td>Engineering</td><td>Bug fixes, new features, GitHub PRs via Claude Code loops from a phone</td></tr>
+        <tr><td><strong>Marketer</strong></td><td>Content</td><td>Weekly batch of FB posts, LinkedIn articles, blog drafts — all for founder approval</td></tr>
+        <tr><td><strong>Closer</strong></td><td>Sales</td><td>Trial nurture emails, LinkedIn outreach drafts, pipeline status reports</td></tr>
+        <tr><td><strong>Support</strong></td><td>Customer Success</td><td>Answers common Crisp chat questions, flags churn signals, escalates when needed</td></tr>
+        <tr><td><strong>Analyst</strong></td><td>Intelligence</td><td>Monday morning MRR briefing, churn alerts, conversion reporting via Telegram</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════ CLOSING ══════════════════════════════════════ -->
+<div class="section" style="padding-bottom:48px">
+  <div class="eyebrow">The Bottom Line</div>
+  <div class="section-title">Why Now. Why This.</div>
+
+  <blockquote class="pull">The market is real. The pain is annual and guaranteed. The competitive gap is documented and structural. The unit economics are strong. The sub-side network is novel and defensible.</blockquote>
+
+  <div class="stat-row" style="margin-top:32px">
+    <div class="stat-card blue">
+      <div class="stat-num">$29/mo</div>
+      <div class="stat-label">No enterprise contract</div>
+      <div class="stat-sub">No minimum. Start free today.</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-num">Mo. 14–16</div>
+      <div class="stat-label">Path to $10K MRR</div>
+      <div class="stat-sub">~345 paying customers at organic growth</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-num">$2.4M+</div>
+      <div class="stat-label">Asset value at $50K MRR</div>
+      <div class="stat-sub">4–6× ARR acquisition multiple</div>
+    </div>
+  </div>
+
+  <div class="callout callout-navy" style="margin-top:28px">
+    <p>SubDocs is not a feature. It is a compliance utility that every small GC will eventually need — because every small GC gets audited every year, whether they know it's coming or not. We're building the tool that makes sure they're ready.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ════════════════════════════════════════ -->
+<div class="doc-footer">
+  <div><strong>SubDocs</strong> &nbsp;·&nbsp; Websage Inc. &nbsp;·&nbsp; getsubdocs.com</div>
+  <div>Confidential &nbsp;·&nbsp; March 2026 &nbsp;·&nbsp; Not for distribution without consent</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Websage Mission Control</title>
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --card: #13132a;
+      --border: #1e1e40;
+      --accent: #4f8ef7;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --gray: #6b7280;
+      --text: #e2e8f0;
+      --subtext: #94a3b8;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+    .status-pill {
+      background: rgba(79,142,247,0.12);
+      border: 1px solid rgba(79,142,247,0.3);
+      color: var(--accent);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .timestamp { color: var(--subtext); font-size: 12px; margin-top: 4px; text-align: right; }
+
+    /* Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--subtext); margin-bottom: 10px; }
+    .card-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+    .card-value.green { color: var(--green); }
+    .card-value.yellow { color: var(--yellow); }
+    .card-value.red { color: var(--red); }
+    .card-sub { font-size: 12px; color: var(--subtext); margin-top: 4px; }
+
+    /* Progress bar */
+    .progress-wrap { margin-top: 10px; background: rgba(255,255,255,0.06); border-radius: 99px; height: 6px; }
+    .progress-bar { height: 6px; border-radius: 99px; background: var(--accent); transition: width 0.5s ease; }
+
+    /* Two-col layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .three-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+    /* Section headers */
+    h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--subtext); margin-bottom: 14px; }
+
+    /* Tasks */
+    .task-list { list-style: none; }
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 4px;
+    }
+    .dot-blocked { background: var(--red); }
+    .dot-done { background: var(--green); }
+    .dot-progress { background: var(--accent); }
+    .dot-queued { background: var(--gray); }
+    .task-name { flex: 1; color: var(--text); }
+    .task-due { color: var(--subtext); font-size: 11px; white-space: nowrap; }
+    .task-badge {
+      font-size: 10px; padding: 2px 7px; border-radius: 4px;
+      font-weight: 600; letter-spacing: 0.3px;
+    }
+    .badge-blocked { background: rgba(248,113,113,0.15); color: var(--red); }
+    .badge-progress { background: rgba(79,142,247,0.15); color: var(--accent); }
+    .badge-done { background: rgba(52,211,153,0.15); color: var(--green); }
+    .badge-queued { background: rgba(107,114,128,0.15); color: var(--gray); }
+
+    /* Experiments */
+    .experiment-card {
+      background: rgba(79,142,247,0.05);
+      border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .experiment-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .experiment-meta { font-size: 12px; color: var(--subtext); margin-bottom: 8px; }
+    .experiment-status { font-size: 12px; }
+
+    /* Activity feed */
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-time { color: var(--subtext); white-space: nowrap; min-width: 44px; }
+    .activity-text { color: var(--text); }
+
+    /* Ideas inbox */
+    .idea-item {
+      background: rgba(251,191,36,0.06);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .idea-tag { font-size: 10px; color: var(--yellow); font-weight: 600; text-transform: uppercase; margin-bottom: 3px; }
+
+    /* News */
+    .news-empty { color: var(--subtext); font-size: 13px; font-style: italic; }
+    .news-item {
+      background: rgba(248,113,113,0.06);
+      border-left: 3px solid var(--red);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    /* Platform status */
+    .platform-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .platform-row:last-child { border-bottom: none; }
+    .platform-name { font-weight: 500; }
+    .platform-status { font-size: 12px; }
+
+    /* Calendar mini */
+    .schedule-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .schedule-item:last-child { border-bottom: none; }
+    .schedule-time { color: var(--accent); font-weight: 600; min-width: 60px; }
+    .schedule-desc { color: var(--text); }
+    .schedule-day { color: var(--subtext); font-size: 11px; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    footer { text-align: center; color: var(--subtext); font-size: 11px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Websage <span>Mission Control</span></div>
+    <div style="font-size:12px;color:var(--subtext);margin-top:2px;">Operated by Mint · Autonomous Growth Agent</div>
+  </div>
+  <div style="text-align:right">
+    <div class="status-pill" id="statusPill">🟡 Building — Day 1</div>
+    <div class="timestamp" id="lastUpdated">Last updated: loading...</div>
+  </div>
+</header>
+
+<!-- KPI Row -->
+<div class="grid" id="kpiGrid">
+  <div class="card">
+    <div class="card-title">Revenue MTD</div>
+    <div class="card-value green" id="revenueMtd">$0</div>
+    <div class="card-sub">Target: <span id="revenueTarget">$200</span></div>
+    <div class="progress-wrap"><div class="progress-bar" id="revenueBar" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Expenses MTD</div>
+    <div class="card-value" id="expensesMtd">$0</div>
+    <div class="card-sub">Daily limit: $15</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Products Live</div>
+    <div class="card-value yellow" id="productsLive">0</div>
+    <div class="card-sub">1 ready to publish</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Phase</div>
+    <div class="card-value" style="font-size:20px;padding-top:4px" id="phase">Survival</div>
+    <div class="card-sub">Day <span id="dayCount">1</span> of operations</div>
+  </div>
+</div>
+
+<div class="three-col">
+  <!-- Tasks -->
+  <div class="card">
+    <h2>Active Tasks</h2>
+    <ul class="task-list" id="taskList">
+      <li class="task-item"><div class="task-dot dot-progress"></div><div class="task-name">Loading...</div></li>
+    </ul>
+  </div>
+
+  <!-- Platform Status -->
+  <div class="card">
+    <h2>Platform Status</h2>
+    <div class="platform-row">
+      <div class="platform-name">Gumroad</div>
+      <div class="platform-status" id="gumroadStatus">✅ Live</div>
+    </div>
+    <div class="platform-row">
+      <div class="platform-name">Upwork</div>
+      <div class="platform-status" id="upworkStatus">⏳ Verifying</div>
+    </div>
+    <div class="platform-row">
+      <div class="platform-name">Stripe</div>
+      <div class="platform-status">✅ Connected</div>
+    </div>
+    <div class="platform-row">
+      <div class="platform-name">Brave Search</div>
+      <div class="platform-status">⚙️ Setup needed</div>
+    </div>
+  </div>
+
+  <!-- Activity Feed -->
+  <div class="card">
+    <h2>Recent Activity</h2>
+    <div id="activityFeed"></div>
+  </div>
+</div>
+
+<div class="two-col">
+  <!-- Experiments -->
+  <div class="card">
+    <h2>Active Experiments</h2>
+    <div id="experiments"></div>
+  </div>
+
+  <!-- Today's Schedule -->
+  <div class="card">
+    <h2>Today's Schedule</h2>
+    <div class="schedule-day">Wednesday, March 18</div>
+    <div class="schedule-item"><div class="schedule-time">8:50 PM</div><div class="schedule-desc">Session started, research phase launched</div></div>
+    <div class="schedule-item"><div class="schedule-time">9:00 PM</div><div class="schedule-desc">12 opportunities researched, top 5 selected</div></div>
+    <div class="schedule-item"><div class="schedule-time">9:36 PM</div><div class="schedule-desc">Cold Email Vault PDF created (50 prompts)</div></div>
+    <div class="schedule-item"><div class="schedule-time">9:41 PM</div><div class="schedule-desc">6 infrastructure tasks assigned</div></div>
+    <div class="schedule-item" style="border-left:2px solid var(--accent);padding-left:10px">
+      <div class="schedule-time">Now</div><div class="schedule-desc">Building Mission Control + infrastructure</div>
+    </div>
+    <div class="schedule-item"><div class="schedule-time">2:00 AM</div><div class="schedule-desc">Nightly backup</div></div>
+  </div>
+</div>
+
+<div class="two-col">
+  <!-- Idea Inbox -->
+  <div class="card">
+    <h2>💡 Idea Inbox <span style="color:var(--subtext);font-weight:400;font-size:11px;text-transform:none;">(Drop ideas here — they won't interrupt)</span></h2>
+    <div id="ideaInbox">
+      <div class="news-empty">No ideas yet — see IDEA.md on your Desktop to drop new ones</div>
+    </div>
+  </div>
+
+  <!-- News Alerts -->
+  <div class="card">
+    <h2>📡 News Alerts <span style="color:var(--subtext);font-weight:400;font-size:11px;text-transform:none;">(Relevant breaking news only)</span></h2>
+    <div id="newsAlerts">
+      <div class="news-empty">No alerts — monitoring active</div>
+    </div>
+  </div>
+</div>
+
+<footer>Mint · Websage Inc. · Refreshes every 30 seconds · Data from workspace/data/dashboard.json</footer>
+
+<script>
+async function loadData() {
+  try {
+    const res = await fetch('../data/dashboard.json?t=' + Date.now());
+    const d = await res.json();
+
+    // KPIs
+    document.getElementById('revenueMtd').textContent = '$' + (d.revenue?.mtd ?? 0);
+    document.getElementById('revenueTarget').textContent = '$' + (d.revenue?.target ?? 200);
+    document.getElementById('expensesMtd').textContent = '$' + (d.expenses?.mtd ?? 0);
+    document.getElementById('phase').textContent = d.phase ?? 'Survival';
+    const pct = Math.min(100, Math.round(((d.revenue?.mtd ?? 0) / (d.revenue?.target ?? 200)) * 100));
+    document.getElementById('revenueBar').style.width = pct + '%';
+    document.getElementById('statusPill').textContent = d.status ?? '';
+    document.getElementById('gumroadStatus').textContent = d.gumroadStatus ?? '—';
+    document.getElementById('upworkStatus').textContent = d.upworkStatus ?? '—';
+
+    // Last updated
+    if (d.lastUpdated) {
+      const dt = new Date(d.lastUpdated);
+      document.getElementById('lastUpdated').textContent = 'Last updated: ' + dt.toLocaleTimeString();
+    }
+
+    // Products live
+    const live = (d.experiments ?? []).filter(e => e.status === 'live').length;
+    document.getElementById('productsLive').textContent = live;
+
+    // Day count
+    const launch = new Date('2026-03-18');
+    const now = new Date();
+    const days = Math.floor((now - launch) / 86400000) + 1;
+    document.getElementById('dayCount').textContent = days;
+
+    // Tasks
+    const tl = document.getElementById('taskList');
+    tl.innerHTML = '';
+    (d.tasks ?? []).forEach(t => {
+      const dotClass = t.status === 'blocked' ? 'dot-blocked' : t.status === 'done' ? 'dot-done' : t.status === 'in_progress' ? 'dot-progress' : 'dot-queued';
+      const badgeClass = t.status === 'blocked' ? 'badge-blocked' : t.status === 'done' ? 'badge-done' : t.status === 'in_progress' ? 'badge-progress' : 'badge-queued';
+      const badgeLabel = t.status === 'blocked' ? 'Blocked' : t.status === 'done' ? 'Done' : t.status === 'in_progress' ? 'In Progress' : 'Queued';
+      tl.innerHTML += `<li class="task-item">
+        <div class="task-dot ${dotClass}"></div>
+        <div class="task-name">${t.title}${t.blockedBy ? '<br><span style="font-size:10px;color:var(--red)">Blocked: '+t.blockedBy+'</span>' : ''}</div>
+        <span class="task-badge ${badgeClass}">${badgeLabel}</span>
+      </li>`;
+    });
+
+    // Activity
+    const af = document.getElementById('activityFeed');
+    af.innerHTML = '';
+    (d.recentActivity ?? []).slice(0, 8).forEach(a => {
+      af.innerHTML += `<div class="activity-item"><div class="activity-time">${a.time}</div><div class="activity-text">${a.event}</div></div>`;
+    });
+
+    // Experiments
+    const ef = document.getElementById('experiments');
+    ef.innerHTML = '';
+    if ((d.experiments ?? []).length === 0) {
+      ef.innerHTML = '<div class="news-empty">No active experiments yet</div>';
+    } else {
+      d.experiments.forEach(e => {
+        ef.innerHTML += `<div class="experiment-card">
+          <div class="experiment-name">${e.name}</div>
+          <div class="experiment-meta">${e.platform} · $${e.price} · Day ${e.daysActive}</div>
+          <div class="experiment-status">${e.statusLabel}</div>
+          <div style="margin-top:8px;font-size:11px;color:var(--subtext)">
+            Goal: ${e.successTarget} sales · Kill date: ${e.killDate}
+          </div>
+        </div>`;
+      });
+    }
+
+    // Ideas
+    const ii = document.getElementById('ideaInbox');
+    ii.innerHTML = '';
+    if (!d.ideas || d.ideas.length === 0) {
+      ii.innerHTML = '<div class="news-empty">No ideas yet — drop them in IDEA.md on your Desktop</div>';
+    } else {
+      d.ideas.slice(0, 5).forEach(idea => {
+        ii.innerHTML += `<div class="idea-item"><div class="idea-tag">💡 Idea</div>${idea}</div>`;
+      });
+    }
+
+    // News
+    const na = document.getElementById('newsAlerts');
+    na.innerHTML = '';
+    if (!d.newsAlerts || d.newsAlerts.length === 0) {
+      na.innerHTML = '<div class="news-empty">No alerts — monitoring active</div>';
+    } else {
+      d.newsAlerts.slice(0, 5).forEach(n => {
+        na.innerHTML += `<div class="news-item"><b>${n.headline}</b><br><span style="color:var(--subtext);font-size:11px">${n.summary}</span></div>`;
+      });
+    }
+
+  } catch(e) {
+    console.warn('Dashboard load error:', e);
+  }
+}
+
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>

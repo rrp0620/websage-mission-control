@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Splitt. — Pay with every card at once.</title>
+  <meta name="description" content="Splitt automatically splits any online purchase across multiple cards — stipend, rewards, personal — in one tap. No more choosing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:     #0a0a0a;
+      --white:     #f5f3ee;
+      --surface:   #141414;
+      --dark:      #1c1c1c;
+      --overlay:   #242424;
+      --lime:      #c8ff57;
+      --cyan:      #57c8ff;
+      --gray:      #888880;
+      --muted:     #555555;
+      --limetint:  rgba(200,255,87,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ── GLOW BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(200,255,87,0.10), transparent 70%);
+      top: -200px; right: -100px;
+      animation: drift1 14s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(87,200,255,0.07), transparent 70%);
+      bottom: 200px; left: -150px;
+      animation: drift2 18s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px,80px) scale(1.1); } }
+    @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(80px,-40px) scale(1.15); } }
+
+    /* ── PAGE WRAPPER ── */
+    .page { position: relative; z-index: 1; }
+
+    /* ── NAV ── */
+    nav {
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .logo span { color: var(--lime); }
+
+    .badge {
+      background: rgba(200,255,87,0.1);
+      border: 1px solid rgba(200,255,87,0.25);
+      color: var(--lime);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 60px 24px 80px;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s 0.35s ease both;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--lime);
+      position: relative;
+      display: inline-block;
+    }
+    h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; left: 0; right: 0;
+      height: 4px;
+      background: var(--lime);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: underlineIn 0.6s 1.2s ease forwards;
+    }
+    @keyframes underlineIn { to { transform: scaleX(1); } }
+
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 300;
+      color: var(--gray);
+      max-width: 500px;
+      line-height: 1.65;
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    /* ── EMAIL FORM ── */
+    .form-wrap {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp 0.8s 0.65s ease both;
+    }
+    .form-wrap input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 14px 22px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-wrap input::placeholder { color: var(--muted); }
+    .form-wrap input:focus { border-color: rgba(200,255,87,0.4); }
+    .form-wrap button {
+      background: var(--lime);
+      color: var(--black);
+      border: none;
+      border-radius: 100px;
+      padding: 14px 26px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .form-wrap button:hover { transform: scale(1.03); opacity: 0.9; }
+    .form-wrap button:active { transform: scale(0.97); }
+
+    .form-note {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      animation: fadeUp 0.8s 0.8s ease both;
+    }
+    .success-msg {
+      display: none;
+      color: var(--lime);
+      font-size: 0.9rem;
+      margin-top: 14px;
+      font-weight: 500;
+    }
+
+    /* ── FEATURE PILLS ── */
+    .feature-pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 24px;
+      margin-top: 56px;
+      animation: fadeUp 0.8s 0.75s ease both;
+    }
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 100px;
+      padding: 9px 16px;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    .pill-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--lime);
+      flex-shrink: 0;
+    }
+
+    /* ── TRANSACTION VISUAL ── */
+    .tx-visual {
+      width: 100%;
+      max-width: 440px;
+      margin: 72px auto 0;
+      animation: fadeUp 0.9s 0.9s ease both;
+    }
+    .tx-card {
+      background: linear-gradient(135deg, var(--surface), var(--dark));
+      border: 1px solid rgba(200,255,87,0.12);
+      border-radius: 20px;
+      padding: 24px;
+    }
+    .tx-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .tx-merchant {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--white);
+    }
+    .tx-merchant-sub {
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 3px;
+    }
+    .tx-total {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.03em;
+      color: var(--white);
+    }
+    .tx-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .tx-leg {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .tx-leg:last-child { border-bottom: none; }
+    .tx-leg-name {
+      font-size: 0.88rem;
+      color: var(--white);
+      font-weight: 400;
+    }
+    .tx-leg-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .tx-leg-amount {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+    .tx-leg-amount.lime  { color: var(--lime); }
+    .tx-leg-amount.cyan  { color: var(--cyan); }
+    .tx-leg-amount.white { color: var(--white); }
+    .tx-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.78rem;
+      color: var(--lime);
+      font-weight: 500;
+    }
+    .tx-status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* ── SECTION SHARED ── */
+    section { position: relative; z-index: 1; }
+
+    .section-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 96px 48px;
+    }
+
+    .section-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--lime);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.65;
+      max-width: 560px;
+      margin-bottom: 56px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover { border-color: rgba(200,255,87,0.2); }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      letter-spacing: -0.05em;
+      color: rgba(200,255,87,0.2);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .step-desc {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ── VALUE PROPS ── */
+    .props-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .prop-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .prop-card:hover { border-color: rgba(200,255,87,0.15); transform: translateY(-2px); }
+    .prop-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+    .prop-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .prop-desc {
+      font-size: 0.87rem;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.65;
+    }
+    .prop-desc strong {
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    /* ── WORKS WITH ── */
+    .cards-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .card-type {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 0.85rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-type-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+      flex-shrink: 0;
+    }
+
+    /* ── BOTTOM CTA ── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--surface), var(--dark));
+      border: 1px solid rgba(200,255,87,0.1);
+      border-radius: 24px;
+      padding: 64px 48px;
+      text-align: center;
+      margin: 0 48px 96px;
+    }
+    .cta-section h2 { margin-bottom: 16px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
+    .cta-form-wrap {
+      display: flex;
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .cta-form-wrap input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 14px 22px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cta-form-wrap input::placeholder { color: var(--muted); }
+    .cta-form-wrap input:focus { border-color: rgba(200,255,87,0.4); }
+    .cta-form-wrap button {
+      background: var(--lime);
+      color: var(--black);
+      border: none;
+      border-radius: 100px;
+      padding: 14px 26px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .cta-form-wrap button:hover { transform: scale(1.03); opacity: 0.9; }
+    .cta-note {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .cta-success {
+      display: none;
+      color: var(--lime);
+      font-size: 0.9rem;
+      margin-top: 14px;
+      font-weight: 500;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { color: #444; font-size: 0.78rem; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 24px; }
+      .section-inner { padding: 72px 24px; }
+      .steps { grid-template-columns: 1fr; }
+      .props-grid { grid-template-columns: 1fr; }
+      .cta-section { padding: 48px 24px; margin: 0 24px 72px; }
+      .cta-form-wrap { flex-direction: column; }
+      footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 600px) {
+      .form-wrap { flex-direction: column; }
+      .form-wrap button { width: 100%; padding: 16px; }
+      .tx-visual { display: none; }
+      .cta-form-wrap button { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="logo">splitt<span>.</span></a>
+    <span class="badge">Coming Soon</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="eyebrow">The future of checkout</p>
+
+    <h1>Pay with<br /><em>every card</em><br />at once.</h1>
+
+    <p class="subtitle">
+      Splitt. automatically splits any online purchase across multiple cards — stipend, rewards, personal — in one tap. No more choosing.
+    </p>
+
+    <div class="form-wrap">
+      <input type="email" id="heroEmail" placeholder="your@email.com" />
+      <button onclick="submitWaitlist('heroEmail', 'heroSuccess', 'heroNote')">Get early access</button>
+    </div>
+    <p class="form-note" id="heroNote">Be first to know when we launch. No spam.</p>
+    <p class="success-msg" id="heroSuccess">✓ You're on the list. We'll be in touch.</p>
+
+    <!-- FEATURE PILLS -->
+    <div class="feature-pills">
+      <div class="pill"><span class="pill-dot"></span>Up to 5 cards per purchase</div>
+      <div class="pill"><span class="pill-dot"></span>Works everywhere online</div>
+      <div class="pill"><span class="pill-dot"></span>Stipends, FSA, rewards — all work</div>
+    </div>
+
+    <!-- TRANSACTION VISUAL -->
+    <div class="tx-visual">
+      <div class="tx-card">
+        <div class="tx-header">
+          <div>
+            <div class="tx-merchant">Delta Air Lines</div>
+            <div class="tx-merchant-sub">Flight to New York · Today</div>
+          </div>
+          <div class="tx-total">$400.00</div>
+        </div>
+
+        <div class="tx-label">Split confirmed</div>
+
+        <div class="tx-leg">
+          <div>
+            <div class="tx-leg-name">Work Stipend</div>
+            <div class="tx-leg-sub">Chase Business Card</div>
+          </div>
+          <div class="tx-leg-amount lime">$25.00</div>
+        </div>
+        <div class="tx-leg">
+          <div>
+            <div class="tx-leg-name">Travel Rewards</div>
+            <div class="tx-leg-sub">Amex Platinum</div>
+          </div>
+          <div class="tx-leg-amount cyan">$200.00</div>
+        </div>
+        <div class="tx-leg">
+          <div>
+            <div class="tx-leg-name">Personal Visa</div>
+            <div class="tx-leg-sub">Chase Sapphire</div>
+          </div>
+          <div class="tx-leg-amount white">$175.00</div>
+        </div>
+
+        <div class="tx-status">
+          <div class="tx-status-dot"></div>
+          Split confirmed. 3 cards charged.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="section-inner">
+      <p class="section-eyebrow reveal">How it works</p>
+      <h2 class="reveal">Set up once.<br />Split forever.</h2>
+      <p class="section-sub reveal">Three steps and you're done. Splitt. handles every purchase automatically from there.</p>
+
+      <div class="steps">
+        <div class="step-card reveal">
+          <div class="step-num">01</div>
+          <div class="step-title">Link your cards</div>
+          <div class="step-desc">Add the cards you already use — Visa, Mastercard, Amex, prepaid stipend cards, FSA cards. Any card works.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">02</div>
+          <div class="step-title">Set your rules</div>
+          <div class="step-desc">Tell Splitt. how to divide each purchase. Fixed amounts, percentages, or just remainder — your rules, your way.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">03</div>
+          <div class="step-title">Pay normally</div>
+          <div class="step-desc">Use your Splitt. virtual card at any online checkout. We split the charge across your cards automatically — in seconds.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- VALUE PROPS -->
+  <section>
+    <div class="section-inner">
+      <p class="section-eyebrow reveal">Why Splitt.</p>
+      <h2 class="reveal">You already have<br />the money.</h2>
+      <p class="section-sub reveal">We just let you spend it the way you actually want to — without the workarounds.</p>
+
+      <div class="props-grid">
+        <div class="prop-card reveal">
+          <div class="prop-icon">🧾</div>
+          <div class="prop-title">Eliminate the workaround tax</div>
+          <div class="prop-desc">
+            Splitting an order today means two separate carts, two delivery fees ($5–8 each), two service charges, two tips.
+            <strong>Splitt. makes it one order.</strong> The eliminated fees are the real saving.
+          </div>
+        </div>
+        <div class="prop-card reveal">
+          <div class="prop-icon">🏆</div>
+          <div class="prop-title">Stack your rewards</div>
+          <div class="prop-desc">
+            For the first time, earn points or cashback from multiple cards on the same purchase.
+            <strong>A $400 flight can earn on your 3× travel card and your 2% cashback card — simultaneously.</strong>
+          </div>
+        </div>
+        <div class="prop-card reveal">
+          <div class="prop-icon">💼</div>
+          <div class="prop-title">Use your benefit cards freely</div>
+          <div class="prop-desc">
+            FSA, HSA, commuter benefits, employer stipends — now usable at any merchant, at any amount.
+            <strong>Spend the money you already have, where you actually want to spend it.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- WORKS WITH -->
+  <section>
+    <div class="section-inner">
+      <p class="section-eyebrow reveal">Works with</p>
+      <h2 class="reveal">Every card<br />you carry.</h2>
+      <p class="section-sub reveal">If it has a card number, Splitt. can use it.</p>
+
+      <div class="cards-row">
+        <div class="card-type reveal"><span class="card-type-dot"></span>Employer stipends</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>FSA / HSA cards</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Travel rewards cards</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Cashback cards</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Commuter benefits</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Personal Visa / Mastercard</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Amex</div>
+        <div class="card-type reveal"><span class="card-type-dot"></span>Business cards</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <div class="cta-section reveal">
+    <p class="section-eyebrow" style="margin-bottom:16px;">Early access</p>
+    <h2>One tap.<br />Every card.</h2>
+    <p class="section-sub">Join the waitlist. We're launching soon and spots are limited for our first cohort.</p>
+
+    <div class="cta-form-wrap">
+      <input type="email" id="ctaEmail" placeholder="your@email.com" />
+      <button onclick="submitWaitlist('ctaEmail', 'ctaSuccess', 'ctaNote')">Join waitlist</button>
+    </div>
+    <p class="cta-note" id="ctaNote">No spam. Unsubscribe anytime.</p>
+    <p class="cta-success" id="ctaSuccess">✓ You're on the list. We'll be in touch.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="mailto:hello@paysplitt.com">Contact</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+    <p class="footer-copy">© 2026 Splitt. All rights reserved.</p>
+  </footer>
+
+</div>
+
+<script>
+  const API = 'https://splitpay-backend-production-d0cf.up.railway.app';
+
+  async function submitWaitlist(inputId, successId, noteId) {
+    const input = document.getElementById(inputId);
+    const successEl = document.getElementById(successId);
+    const noteEl = document.getElementById(noteId);
+    const email = input.value.trim();
+
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'rgba(255,80,80,0.5)';
+      setTimeout(() => input.style.borderColor = '', 1500);
+      return;
+    }
+
+    const btn = input.nextElementSibling;
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${API}/waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        input.closest('.form-wrap, .cta-form-wrap').style.opacity = '0.4';
+        input.closest('.form-wrap, .cta-form-wrap').style.pointerEvents = 'none';
+        successEl.style.display = 'block';
+        if (noteEl) noteEl.style.display = 'none';
+      } else {
+        throw new Error(data.error || 'Something went wrong.');
+      }
+    } catch (err) {
+      btn.textContent = 'Join waitlist';
+      btn.disabled = false;
+      input.style.borderColor = 'rgba(255,80,80,0.5)';
+      setTimeout(() => input.style.borderColor = '', 1500);
+    }
+  }
+
+  // Enter key support
+  ['heroEmail', 'ctaEmail'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') el.nextElementSibling.click();
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

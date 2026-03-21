@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Splitt. Brand Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--white:#f5f3ee;--lime:#c8ff57;--cyan:#57c8ff;--muted:#888880;--surface:#141414;--border:rgba(255,255,255,0.08)}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;line-height:1.6}
+.doc-nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:16px 48px;display:flex;align-items:center;justify-content:space-between}
+.doc-nav .wm{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.03em}
+.doc-nav .wm span{color:var(--lime)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.82rem;transition:color 0.2s}
+.nav-links a:hover{color:var(--white)}
+.wrap{max-width:1100px;margin:0 auto}
+section{padding:80px 48px;border-bottom:1px solid var(--border)}
+.slabel{font-size:0.7rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.stitle{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3rem);letter-spacing:-0.03em;line-height:1;margin-bottom:16px}
+.sdesc{color:#999;font-size:1rem;max-width:600px;line-height:1.7;margin-bottom:48px}
+.hero{min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(200,255,87,0.07),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(87,200,255,0.05),transparent 50%)}
+.hero-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(4rem,10vw,8rem);letter-spacing:-0.05em;line-height:1;position:relative;z-index:1;margin-bottom:16px}
+.hero-logo .dot{color:var(--lime)}
+.hero-sub{color:var(--muted);font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;position:relative;z-index:1}
+.logo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2px}
+.logo-tile{padding:56px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:180px}
+.ltlabel{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.tile-dark{background:#0a0a0a;border:1px solid rgba(255,255,255,0.07)}
+.tile-light{background:#f5f3ee}
+.tile-lime{background:var(--lime)}
+.tile-mid{background:#1a1a1a;border:1px solid rgba(255,255,255,0.07)}
+.wmlg{font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;letter-spacing:-0.04em}
+.wmlg .dot{color:var(--lime)}
+.wmlg.onlight{color:#0a0a0a}.wmlg.onlight .dot{color:#0a0a0a}
+.wmlg.onlime{color:#0a0a0a}
+.lmark{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.05em}
+.lmark-dark{background:#0a0a0a;color:var(--lime);border:1px solid rgba(255,255,255,0.1)}
+.lmark-lime{background:var(--lime);color:#0a0a0a}
+.color-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.cswatch{border-radius:16px;overflow:hidden}
+.scolor{height:110px;width:100%}
+.sinfo{background:var(--surface);padding:18px;border:1px solid var(--border);border-top:none;border-radius:0 0 16px 16px}
+.sname{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:4px}
+.shex{color:var(--muted);font-size:0.78rem;font-family:monospace;margin-bottom:6px}
+.srole{font-size:0.76rem;color:#666;line-height:1.5}
+.tspecimen{margin-bottom:44px;padding-bottom:44px;border-bottom:1px solid var(--border)}
+.tspecimen:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.tmeta{display:flex;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.tmi{font-size:0.75rem;color:var(--muted);letter-spacing:0.04em}
+.tmi strong{color:#aaa;display:block;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px}
+.disp{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.5rem,6vw,5rem);letter-spacing:-0.04em;line-height:0.95;margin-bottom:12px}
+.bodyt{font-family:'DM Sans',sans-serif;font-weight:300;font-size:1.05rem;line-height:1.7;color:#999;max-width:540px}
+.rationale-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.ricon{width:40px;height:40px;border-radius:10px;background:rgba(200,255,87,0.1);border:1px solid rgba(200,255,87,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:18px}
+.rtitle{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:8px;letter-spacing:-0.02em}
+.rbody{font-size:0.85rem;color:#777;line-height:1.65}
+.voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.vcard{border-radius:12px;padding:24px}
+.vdo{background:rgba(200,255,87,0.06);border:1px solid rgba(200,255,87,0.15)}
+.vdont{background:rgba(255,80,80,0.05);border:1px solid rgba(255,80,80,0.12)}
+.vlabel{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px}
+.vdo .vlabel{color:var(--lime)}.vdont .vlabel{color:#ff5050}
+.vi{font-size:0.88rem;color:#bbb;margin-bottom:9px;padding-left:16px;position:relative;line-height:1.5}
+.vi::before{position:absolute;left:0}
+.vdo .vi::before{content:'✓';color:var(--lime)}.vdont .vi::before{content:'✗';color:#ff5050}
+.tagline-list{display:flex;flex-direction:column;gap:14px}
+.tli{padding:22px 28px;border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.tli:first-child{border-color:rgba(200,255,87,0.3);background:rgba(200,255,87,0.04)}
+.tltext{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-0.02em}
+.tlsub{font-size:0.78rem;color:#555;margin-top:4px}
+.tlctx{font-size:0.75rem;color:var(--muted);text-align:right;min-width:110px;white-space:nowrap}
+.primary-tag{color:var(--lime);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.ucard{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.uchead{padding:18px 22px;border-bottom:1px solid var(--border);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.ucbody{padding:22px}
+.app-screen{background:#0a0a0a;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:22px;font-size:0.85rem}
+.atopbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.atopbar .awm{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:-0.03em}
+.atopbar .awm span{color:var(--lime)}
+.abal{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.03em;margin-bottom:18px}
+.asplit{background:linear-gradient(135deg,#141414,#1c1c1c);border:1px solid rgba(200,255,87,0.15);border-radius:12px;padding:18px}
+.aslab{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:10px}
+.asrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.8rem}
+.asrow:last-child{border-bottom:none}
+.asrn{color:#999}.asra{color:var(--white)}
+@media(max-width:700px){section{padding:60px 24px}.doc-nav{padding:16px 24px}.voice-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="doc-nav">
+  <div class="wm">splitt<span>.</span></div>
+  <div class="nav-links">
+    <a href="#logo">Logo</a><a href="#color">Color</a><a href="#type">Type</a><a href="#voice">Voice</a><a href="#taglines">Taglines</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-logo">splitt<span class="dot">.</span></div>
+  <div class="hero-sub">Brand Identity System &nbsp;·&nbsp; 2026</div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="slabel">Brand Foundation</div>
+  <div class="stitle">Why Splitt.<br/>is built this way</div>
+  <div class="sdesc">Every design decision has a deliberate reason. Here's the thinking behind the brand.</div>
+  <div class="rationale-grid">
+    <div class="rcard"><div class="ricon" style="font-size:1.4rem;font-weight:900">.</div><div class="rtitle">The Dot Is the Brand</div><div class="rbody">The period at the end of Splitt. is intentional punctuation. It signals finality — the split is done, the purchase is handled. It's a confident full stop in a category full of vague, open-ended names. "Splitt." reads like a complete thought. That's the product promise: you tap, it's done, period.</div></div>
+    <div class="rcard"><div class="ricon" style="background:rgba(10,10,10,0.5);border-color:rgba(255,255,255,0.1)">&#9632;</div><div class="rtitle">Black as the Foundation</div><div class="rbody">Deep black (#0a0a0a) communicates trust, weight, and control — the language of premium cards, trading terminals, and Bloomberg. We're a product that touches your money. Black signals we take that seriously. Not pure #000 — slightly warm, slightly more refined.</div></div>
+    <div class="rcard"><div class="ricon">&#9733;</div><div class="rtitle">Electric Lime as the Action Color</div><div class="rbody">#c8ff57 is not a typical fintech color — that's exactly why we chose it. Every competitor uses blue. Lime signals energy, growth, and your money working harder. It's the color of "go." Every CTA, confirmation, and success state uses lime. Viscerally associated with action.</div></div>
+    <div class="rcard"><div class="ricon" style="background:rgba(87,200,255,0.1);border-color:rgba(87,200,255,0.2)">&#9671;</div><div class="rtitle">Cyan as the Second Voice</div><div class="rbody">#57c8ff plays the supporting role — used for secondary card highlights and informational states. It's the visual "second card" to lime's "first card." Together they create a palette that's unmistakably Splitt. and impossible to confuse with any existing fintech brand.</div></div>
+    <div class="rcard"><div class="ricon" style="font-family:'Syne',sans-serif;font-weight:800">A</div><div class="rtitle">Syne for Display</div><div class="rbody">Syne is a geometric display typeface with unusual letter proportions that feel distinctly modern without being trendy. Its heavy weight at large sizes has real personality — designed for posters and headlines, which is exactly how we use it. Every big number, every brand moment, every heading.</div></div>
+    <div class="rcard"><div class="ricon" style="font-family:'DM Sans',sans-serif;font-weight:300;font-size:1rem">a</div><div class="rtitle">DM Sans for Readability</div><div class="rbody">DM Sans was designed for small-size usage on screen — optimized for legibility in interfaces. Where Syne grabs attention, DM Sans delivers information cleanly. Its light weight at body sizes creates elegant contrast with Syne's heavy display presence.</div></div>
+  </div>
+</section>
+
+<section id="logo">
+  <div class="slabel">Logo</div>
+  <div class="stitle">The Wordmark</div>
+  <div class="sdesc">Always set in Syne ExtraBold (800 weight). The dot is always present — it's not decorative punctuation, it's core to the brand identity. Never remove it.</div>
+  <div class="logo-grid">
+    <div class="logo-tile tile-dark"><div class="wmlg">splitt<span class="dot">.</span></div><div class="ltlabel">Primary · On Black</div></div>
+    <div class="logo-tile tile-light"><div class="wmlg onlight">splitt.</div><div class="ltlabel" style="color:#aaa">On White/Cream</div></div>
+    <div class="logo-tile tile-lime"><div class="wmlg onlime">splitt.</div><div class="ltlabel" style="color:rgba(0,0,0,0.5)">On Lime</div></div>
+    <div class="logo-tile tile-mid"><div style="display:flex;gap:14px"><div class="lmark lmark-lime">S.</div><div class="lmark lmark-dark">S.</div></div><div class="ltlabel">App Icon / Avatar</div></div>
+  </div>
+  <div style="margin-top:28px;padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+    <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Logo Rules</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;font-size:0.82rem;color:#777">
+      <div>&#10003; Always use Syne ExtraBold (800)</div>
+      <div>&#10003; The dot is always present</div>
+      <div>&#10003; Minimum size: 120px wide</div>
+      <div>&#10003; Clear space = height of the "S" on all sides</div>
+      <div>&#10007; Never stretch or compress</div>
+      <div>&#10007; Never remove the dot</div>
+      <div>&#10007; Never use on a busy background</div>
+      <div>&#10007; Never use gray or muted color versions</div>
+    </div>
+  </div>
+</section>
+
+<section id="color">
+  <div class="slabel">Color System</div>
+  <div class="stitle">The Palette</div>
+  <div class="sdesc">Six colors. Each has a defined role. Consistency in color usage is what makes the brand feel intentional rather than assembled.</div>
+  <div class="color-grid">
+    <div class="cswatch"><div class="scolor" style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.08)"></div><div class="sinfo"><div class="sname">Splitt Black</div><div class="shex">#0a0a0a</div><div class="srole">Primary background. The foundation of every screen. Never pure #000000.</div></div></div>
+    <div class="cswatch"><div class="scolor" style="background:#c8ff57"></div><div class="sinfo"><div class="sname">Action Lime</div><div class="shex">#c8ff57</div><div class="srole">CTAs, confirmations, active states, success, and the dot in the wordmark.</div></div></div>
+    <div class="cswatch"><div class="scolor" style="background:#f5f3ee"></div><div class="sinfo"><div class="sname">Off White</div><div class="shex">#f5f3ee</div><div class="srole">Primary text. Slightly warm — never pure white. Keeps the palette human.</div></div></div>
+    <div class="cswatch"><div class="scolor" style="background:#57c8ff"></div><div class="sinfo"><div class="sname">Info Cyan</div><div class="shex">#57c8ff</div><div class="srole">Secondary card highlights, informational states, second-card visuals.</div></div></div>
+    <div class="cswatch"><div class="scolor" style="background:#141414;border:1px solid rgba(255,255,255,0.06)"></div><div class="sinfo"><div class="sname">Surface</div><div class="shex">#141414</div><div class="srole">Cards, modals, elevated surfaces. Depth without harsh contrast.</div></div></div>
+    <div class="cswatch"><div class="scolor" style="background:#888880"></div><div class="sinfo"><div class="sname">Muted</div><div class="shex">#888880</div><div class="srole">Secondary text, labels, metadata, placeholder copy.</div></div></div>
+  </div>
+</section>
+
+<section id="type">
+  <div class="slabel">Typography</div>
+  <div class="stitle">Type System</div>
+  <div class="sdesc">Two typefaces. One relationship: Syne commands. DM Sans delivers.</div>
+  <div class="tspecimen">
+    <div class="tmeta">
+      <div class="tmi"><strong>Family</strong>Syne</div>
+      <div class="tmi"><strong>Weight</strong>ExtraBold 800</div>
+      <div class="tmi"><strong>Role</strong>Display, Headlines, Logo, Numbers</div>
+      <div class="tmi"><strong>Tracking</strong>-0.03em to -0.05em</div>
+    </div>
+    <div class="disp">Pay with<br/>every card.</div>
+    <div style="display:flex;gap:28px;margin-top:20px;flex-wrap:wrap;align-items:baseline">
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;letter-spacing:-0.04em">$1,200</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:-0.03em">Splitt.</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:1.2rem;letter-spacing:-0.02em">Split confirmed.</span>
+    </div>
+  </div>
+  <div class="tspecimen">
+    <div class="tmeta">
+      <div class="tmi"><strong>Family</strong>DM Sans</div>
+      <div class="tmi"><strong>Weight</strong>300 / 400 / 500</div>
+      <div class="tmi"><strong>Role</strong>Body, UI labels, Descriptions</div>
+      <div class="tmi"><strong>Tracking</strong>0 to +0.06em for uppercase labels</div>
+    </div>
+    <div class="bodyt">Splitt automatically splits any purchase across your cards — your work stipend, travel rewards, and personal Visa — in the exact amounts you configure. One tap. No math. No manual splitting.</div>
+    <div style="display:flex;gap:20px;margin-top:18px;flex-wrap:wrap;align-items:center">
+      <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.9rem">Work Stipend Card</span>
+      <span style="font-family:'DM Sans',sans-serif;font-weight:300;font-size:0.85rem;color:#999">Transaction completed</span>
+      <span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Card linked</span>
+    </div>
+  </div>
+  <div style="padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+    <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Type Scale</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:3rem;letter-spacing:-0.04em;line-height:1;min-width:60px">Aa</span><span style="font-size:0.72rem;color:var(--muted)">Display · Syne 800 · 48px · -4% tracking</span></div>
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:-0.03em;line-height:1;min-width:60px">Aa</span><span style="font-size:0.72rem;color:var(--muted)">Heading · Syne 800 · 32px · -3% tracking</span></div>
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;letter-spacing:-0.02em;line-height:1;min-width:60px">Aa</span><span style="font-size:0.72rem;color:var(--muted)">Subheading · Syne 700 · 20px · -2% tracking</span></div>
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'DM Sans',sans-serif;font-weight:400;font-size:1rem;line-height:1;min-width:60px">Aa</span><span style="font-size:0.72rem;color:var(--muted)">Body · DM Sans 400 · 16px · 0 tracking</span></div>
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'DM Sans',sans-serif;font-weight:300;font-size:0.875rem;line-height:1;min-width:60px">Aa</span><span style="font-size:0.72rem;color:var(--muted)">Small · DM Sans 300 · 14px · 0 tracking</span></div>
+      <div style="display:flex;align-items:baseline;gap:20px"><span style="font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;line-height:1;min-width:60px">LABEL</span><span style="font-size:0.72rem;color:var(--muted)">Label · DM Sans 500 · 11px · +10% tracking · all caps</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="voice">
+  <div class="slabel">Voice and Tone</div>
+  <div class="stitle">How Splitt. talks</div>
+  <div class="sdesc">Direct, smart, and never condescending. We're not a bank. We're not a startup trying to sound like one either. We're the product that finally solved something everyone assumed was impossible.</div>
+  <div class="voice-grid">
+    <div class="vcard vdo"><div class="vlabel">Do say</div>
+      <div class="vi">Short sentences. Punchy. Done.</div>
+      <div class="vi">Your $25 stipend just covered lunch.</div>
+      <div class="vi">One tap. Multiple cards. Zero math.</div>
+      <div class="vi">Split confirmed. You're all set.</div>
+      <div class="vi">Finally. Online splitting that works.</div>
+    </div>
+    <div class="vcard vdont"><div class="vlabel">Don't say</div>
+      <div class="vi">Leverage your payment ecosystem synergistically.</div>
+      <div class="vi">Our proprietary multi-card disbursement solution.</div>
+      <div class="vi">Please review your transaction details carefully.</div>
+      <div class="vi">We are thrilled to introduce our platform.</div>
+      <div class="vi">Empowering consumers through financial technology.</div>
+    </div>
+  </div>
+  <div style="padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+    <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Brand Personality</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;font-size:0.85rem">
+      <div><span style="color:var(--lime);font-weight:600">Confident</span><div style="color:#666;font-size:0.78rem;margin-top:4px">Not arrogant. We solved something hard.</div></div>
+      <div><span style="color:var(--lime);font-weight:600">Direct</span><div style="color:#666;font-size:0.78rem;margin-top:4px">No fluff. Say what it does.</div></div>
+      <div><span style="color:var(--lime);font-weight:600">Precise</span><div style="color:#666;font-size:0.78rem;margin-top:4px">We deal in exact amounts. Cents matter.</div></div>
+      <div><span style="color:var(--lime);font-weight:600">Human</span><div style="color:#666;font-size:0.78rem;margin-top:4px">Real people have real card situations.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="taglines">
+  <div class="slabel">Taglines</div>
+  <div class="stitle">The lines that sell it</div>
+  <div class="sdesc">Approved taglines for different contexts. Use the primary everywhere unless a specific situation calls for a focused variant.</div>
+  <div class="tagline-list">
+    <div class="tli"><div><div class="tltext">Pay with every card at once.</div><div class="tlsub">Homepage hero, app store, pitch deck opener.</div></div><div class="tlctx"><span class="primary-tag">Primary</span></div></div>
+    <div class="tli"><div><div class="tltext">Your stipend. Your rewards. Your Visa. One tap.</div><div class="tlsub">Best for social ads and stipend-focused onboarding.</div></div><div class="tlctx">Stipend</div></div>
+    <div class="tli"><div><div class="tltext">Stop choosing which card to use.</div><div class="tlsub">Problem-led. Good for top-of-funnel awareness ads.</div></div><div class="tlctx">Problem-led</div></div>
+    <div class="tli"><div><div class="tltext">Online splitting. Finally.</div><div class="tlsub">Ultra short. Works as subheader or ad headline.</div></div><div class="tlctx">Ultra short</div></div>
+    <div class="tli"><div><div class="tltext">Every card, every purchase, every time.</div><div class="tlsub">Investor materials and partnership decks.</div></div><div class="tlctx">B2B / Investor</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="slabel">In Practice</div>
+  <div class="stitle">Brand in context</div>
+  <div class="sdesc">How the brand system comes together in real product and marketing contexts.</div>
+  <div class="usage-grid">
+    <div class="ucard"><div class="uchead">Mobile App · Home Screen</div><div class="ucbody">
+      <div class="app-screen">
+        <div class="atopbar"><div class="awm">splitt<span>.</span></div><div style="width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:1px solid rgba(255,255,255,0.1)"></div></div>
+        <div style="color:#555;font-size:0.75rem;margin-bottom:4px">Good morning, Rishi</div>
+        <div class="abal">$400 <span style="font-size:0.85rem;font-weight:300;color:#555">today</span></div>
+        <div class="asplit"><div class="aslab">Active split rule</div>
+          <div class="asrow"><span class="asrn">Work Stipend</span><span class="asra" style="color:#c8ff57">$25.00</span></div>
+          <div class="asrow"><span class="asrn">Travel Visa</span><span class="asra" style="color:#57c8ff">$200.00</span></div>
+          <div class="asrow"><span class="asrn">Personal Card</span><span class="asra">Remainder</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="ucard"><div class="uchead">Physical Card Design</div><div class="ucbody">
+      <div style="background:linear-gradient(135deg,#0f0f0f,#1c1c1c);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px;aspect-ratio:1.586;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,87,0.1),transparent)"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-0.03em">splitt<span style="color:#c8ff57">.</span></div>
+          <div style="font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:#444">debit</div>
+        </div>
+        <div>
+          <div style="width:34px;height:26px;background:linear-gradient(135deg,#c8a84b,#e8cc6a);border-radius:4px;margin-bottom:18px"></div>
+          <div style="font-size:0.75rem;letter-spacing:0.18em;color:#444;margin-bottom:8px">**** **** **** 4721</div>
+          <div style="display:flex;justify-content:space-between"><div style="font-size:0.68rem;color:#444">RISHI PATEL</div><div style="font-size:0.68rem;color:#444">12/28</div></div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:0.72rem;color:#444;text-align:center">Issued via Stripe Issuing · Matte black finish</div>
+    </div></div>
+    <div class="ucard"><div class="uchead">Social Ad</div><div class="ucbody">
+      <div style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:32px;text-align:center;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at center,rgba(200,255,87,0.06),transparent 70%)"></div>
+        <div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);position:relative;z-index:1">Your $25 stipend</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:-0.04em;line-height:1;position:relative;z-index:1">Finally works<br/><span style="color:#c8ff57">online.</span></div>
+        <div style="margin-top:8px;background:#c8ff57;color:#0a0a0a;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;padding:10px 22px;border-radius:100px;position:relative;z-index:1">Get Splitt.</div>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+</div>
+
+<div style="padding:36px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto">
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.03em">splitt<span style="color:#c8ff57">.</span></div>
+  <div style="font-size:0.75rem;color:#333">Brand Identity System &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; 2026</div>
+</div>
+</body>
+</html>

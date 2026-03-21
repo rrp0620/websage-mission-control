@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Splitt. Brand Kit — Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#0a0a0a;color:#f0ede8;font-family:'Outfit',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+:root{
+  --black:#0a0a0a;--lime:#c8ff57;--offwhite:#f5f3ee;
+  --surface:#111111;--surface2:#161616;--surface3:#1c1c1c;
+  --muted:#888880;--cyan:#57c8ff;
+  --text:#f0ede8;--sub:#666660;--faint:#333330;
+  --border:rgba(255,255,255,0.07);--border-strong:rgba(255,255,255,0.13);
+  --lime-dim:rgba(200,255,87,0.08);--lime-border:rgba(200,255,87,0.2);
+}
+
+.wm{font-family:'Exo 2',sans-serif;font-weight:800;letter-spacing:-0.04em;line-height:1}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(10,10,10,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  height:56px;display:flex;align-items:center;padding:0 48px;gap:2px;overflow-x:auto;
+}
+.nav-wm{font-family:'Exo 2',sans-serif;font-weight:800;letter-spacing:-0.04em;font-size:1.05rem;color:var(--offwhite);margin-right:24px;flex-shrink:0}
+.nav-wm b{color:var(--lime)}
+.nav a{color:#333;text-decoration:none;font-size:0.78rem;font-weight:500;padding:5px 14px;border-radius:6px;white-space:nowrap;transition:color .15s}
+.nav a:hover{color:#888}.nav a.on{color:var(--offwhite);font-weight:600}
+
+/* ── SECTIONS ── */
+.sec{padding:72px 48px;border-bottom:1px solid var(--border);max-width:1120px;margin:0 auto}
+.alt{background:var(--surface);max-width:none;padding:72px max(48px,calc((100% - 1120px)/2 + 48px));border-bottom:1px solid var(--border)}
+
+/* ── HERO ── */
+.hero{
+  padding:100px 48px 80px;border-bottom:1px solid var(--border);
+  background:var(--black);position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 70% at 5% 90%,rgba(200,255,87,0.08),transparent),
+    radial-gradient(ellipse 45% 55% at 90% 15%,rgba(87,200,255,0.06),transparent),
+    radial-gradient(ellipse 80% 40% at 50% 50%,rgba(200,255,87,0.03),transparent);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:0.035;
+  background-image:linear-gradient(rgba(200,255,87,0.8) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,87,0.8) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.hero-content{position:relative;z-index:1}
+.hero-eyebrow{font-size:0.68rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#333;margin-bottom:24px}
+.hero-wm-wrap{line-height:0.88;margin-bottom:20px}
+.hero-tagline{font-size:1.15rem;font-weight:300;color:#444;max-width:480px;line-height:1.6;margin-bottom:32px}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:0.72rem;font-weight:500}
+.pill-lime{background:var(--lime);color:var(--black)}
+.pill-outline{border:1px solid var(--border-strong);color:#555}
+
+/* ── LABELS & HEADINGS ── */
+.slbl{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#333;margin-bottom:6px}
+.sh1{font-family:'Outfit',sans-serif;font-weight:700;font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px;color:var(--text)}
+.sdesc{font-weight:300;font-size:0.92rem;color:var(--sub);max-width:560px;line-height:1.75;margin-bottom:44px}
+
+/* ── LOGO GRID ── */
+.logo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:40px}
+@media(max-width:800px){.logo-grid{grid-template-columns:repeat(2,1fr)}}
+.logo-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:44px 20px;min-height:160px}
+.cell-lbl{font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;font-family:'Outfit',sans-serif;font-weight:500;color:#333}
+
+.icon-row{display:flex;gap:14px;flex-wrap:wrap}
+.icon-cell{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:22px 28px;display:flex;flex-direction:column;align-items:center;gap:12px}
+
+.rules-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;font-size:0.78rem;color:#444}
+
+/* ── COLORS ── */
+.color-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
+.swatch .block{height:84px;border-radius:10px 10px 0 0}
+.swatch .info{background:var(--surface2);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:14px}
+.swatch .cname{font-size:0.86rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.swatch .chex{font-size:0.7rem;font-family:'Outfit',monospace;color:#444;margin-bottom:5px;letter-spacing:0.04em}
+.swatch .cuse{font-size:0.7rem;color:#555;line-height:1.4}
+
+/* ── TYPE ── */
+.type-demo-hed{font-family:'Exo 2',sans-serif;font-weight:800;font-size:clamp(2.8rem,6vw,5.5rem);letter-spacing:-0.05em;line-height:0.95;color:var(--text);margin-bottom:6px}
+.type-demo-sub{font-weight:700;font-size:clamp(1.3rem,2.5vw,1.9rem);letter-spacing:-0.03em;color:var(--text);margin-bottom:16px}
+.type-demo-body{font-weight:300;font-size:1rem;line-height:1.75;color:#555;max-width:520px;margin-bottom:14px}
+.type-demo-label{font-size:0.68rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#333}
+
+.tbl{width:100%;border-collapse:collapse;font-size:0.85rem}
+.tbl th{padding:10px 14px;text-align:left;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#444;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03);color:#555}
+.tbl td:first-child{color:var(--text);font-weight:500}
+.tbl tr:last-child td{border:none}
+.tbl-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:32px}
+
+/* ── TAGLINES ── */
+.tl-stack{display:flex;flex-direction:column;gap:10px}
+.tl{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);transition:border-color .2s}
+.tl:hover{border-color:var(--border-strong)}
+.tl.primary{background:var(--surface3);border-color:var(--border-strong)}
+.tl-text{font-weight:600;font-size:0.95rem;color:var(--text);letter-spacing:-0.01em}
+.tl-badge{font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--lime);color:var(--black);padding:4px 11px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+
+/* ── VOICE ── */
+.voice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.voice-grid{grid-template-columns:1fr}}
+.vbox{border-radius:12px;padding:24px}
+.vdo{background:var(--lime-dim);border:1px solid var(--lime-border)}
+.vno{background:rgba(220,50,50,0.04);border:1px solid rgba(220,50,50,0.1)}
+.vlbl{font-size:0.63rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px}
+.vdo .vlbl{color:var(--lime)}.vno .vlbl{color:#cc4444}
+.vline{font-size:0.85rem;color:#555;margin-bottom:9px;padding-left:20px;position:relative;line-height:1.5}
+.vdo .vline::before{content:'✓';position:absolute;left:0;color:var(--lime);font-weight:700}
+.vno .vline::before{content:'✗';position:absolute;left:0;color:#cc4444;font-weight:700}
+
+/* ── USAGE ── */
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+.usage-card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.usage-card-lbl{padding:12px 20px;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#333;border-bottom:1px solid var(--border)}
+.usage-card-inner{padding:24px}
+
+.app-frame{background:var(--surface3);border:1px solid var(--border);border-radius:16px;padding:24px}
+.app-amt{font-family:'Exo 2',sans-serif;font-weight:800;font-size:2.2rem;letter-spacing:-0.04em;color:var(--text);margin:12px 0 18px}
+.split-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:0.82rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.split-row:last-child{border:none}
+
+.pcard{
+  background:linear-gradient(135deg,#0d0d0d,#1a1a1a);
+  border:1px solid rgba(200,255,87,0.12);
+  border-radius:20px;padding:24px;
+  aspect-ratio:1.586;display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;max-width:320px;
+}
+.pcard-glow{position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,87,0.1),transparent)}
+.pcard-chip{width:38px;height:28px;background:linear-gradient(135deg,#c8a84b,#e8cc6a);border-radius:5px;margin-bottom:18px}
+.pcard-num{font-size:0.72rem;letter-spacing:0.15em;color:#2a2a2a;margin-bottom:8px;font-family:'Outfit',sans-serif}
+.pcard-foot{display:flex;justify-content:space-between;font-size:0.64rem;color:#2a2a2a;font-family:'Outfit',sans-serif}
+
+.btn-stack{display:flex;flex-direction:column;gap:10px}
+.btn{width:100%;padding:13px 24px;border-radius:100px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:600;letter-spacing:-0.01em}
+.btn-primary{background:var(--lime);color:var(--black)}
+.btn-secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border-strong)}
+.btn-ghost{background:transparent;color:#444;border:1px solid var(--border)}
+
+.notif{display:flex;gap:12px;align-items:flex-start;background:var(--surface3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
+.notif-icon{width:38px;height:38px;background:var(--lime);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notif-title{font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:3px}
+.notif-body{font-size:0.78rem;color:#555}
+
+.status-success{background:rgba(200,255,87,0.1);color:var(--lime);border:1px solid var(--lime-border);padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:600}
+.status-pending{background:rgba(136,136,128,0.1);color:#555;border:1px solid rgba(136,136,128,0.15);padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:600}
+
+@media(max-width:600px){
+  .sec,.hero{padding:52px 20px}
+  .alt{padding:52px 20px}
+  .nav{padding:0 20px}
+  .logo-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-wm">splitt<b>.</b></div>
+  <a href="#logo" class="on">Logo</a>
+  <a href="#color">Color</a>
+  <a href="#type">Type</a>
+  <a href="#taglines">Taglines</a>
+  <a href="#voice">Voice</a>
+  <a href="#usage">Usage</a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Brand Identity System · Dark Mode · Exo 2 ExtraBold</div>
+    <div class="hero-wm-wrap"><span class="wm" style="font-size:clamp(5rem,13vw,9.5rem);color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></span></div>
+    <div class="hero-tagline">Pay with every card at once.</div>
+    <div class="hero-pills">
+      <span class="pill pill-lime">Exo 2 ExtraBold · Logo</span>
+      <span class="pill pill-outline">Outfit · UI &amp; Body</span>
+      <span class="pill pill-outline">Dark Mode</span>
+      <span class="pill pill-outline">paysplitt.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ LOGO ═══════════════════════════ -->
+<div class="sec" id="logo">
+  <div class="slbl">01 — Logo System</div>
+  <div class="sh1">The Wordmark</div>
+  <div class="sdesc">Exo 2 ExtraBold (800). The dot is the brand — a confident full stop. The split is done. The transaction is handled. Never remove it. Never use a different font.</div>
+
+  <div class="logo-grid">
+    <div class="logo-cell" style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.07)"><span class="wm" style="font-size:2.8rem;color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></span><span class="cell-lbl">Primary — On Black</span></div>
+    <div class="logo-cell" style="background:#ffffff"><span class="wm" style="font-size:2.8rem;color:#0a0a0a">splitt.</span><span class="cell-lbl" style="color:#aaa">On White</span></div>
+    <div class="logo-cell" style="background:#c8ff57"><span class="wm" style="font-size:2.8rem;color:#0a0a0a">splitt.</span><span class="cell-lbl" style="color:rgba(0,0,0,0.3)">On Lime</span></div>
+    <div class="logo-cell" style="background:#161616;border:1px solid rgba(255,255,255,0.07)"><span class="wm" style="font-size:2rem;color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></span><span class="cell-lbl">Compact / Small</span></div>
+  </div>
+
+  <div class="slbl">App Icons</div>
+  <div class="icon-row" style="margin-bottom:36px">
+    <div class="icon-cell"><div style="width:72px;height:72px;background:#c8ff57;border-radius:calc(72px * 0.22);display:flex;align-items:center;justify-content:center"><span class="wm" style="font-size:calc(72px * 0.42);color:#0a0a0a;letter-spacing:-0.02em">S.</span></div><span class="cell-lbl">Lime · Primary</span></div>
+    <div class="icon-cell"><div style="width:72px;height:72px;background:#0a0a0a;border-radius:calc(72px * 0.22);display:flex;align-items:center;justify-content:center"><span class="wm" style="font-size:calc(72px * 0.42);color:#c8ff57;letter-spacing:-0.02em">S.</span></div><span class="cell-lbl">Dark · Alt</span></div>
+    <div class="icon-cell"><div style="width:72px;height:72px;background:#f5f3ee;border-radius:calc(72px * 0.22);display:flex;align-items:center;justify-content:center"><span class="wm" style="font-size:calc(72px * 0.42);color:#0a0a0a;letter-spacing:-0.02em">S.</span></div><span class="cell-lbl">Light · Alt</span></div>
+  </div>
+
+  <div class="rules-box">
+    <span>✓ Font: Exo 2, weight 800</span>
+    <span>✓ Dot is always present</span>
+    <span>✓ Minimum width: 120px</span>
+    <span>✓ Clear space = cap-height on all sides</span>
+    <span>✗ Never remove the dot</span>
+    <span>✗ Never stretch, skew, or rotate</span>
+    <span>✗ Never use on busy backgrounds</span>
+    <span>✗ Never change the font</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ COLOR ═══════════════════════════ -->
+<div class="alt" id="color">
+  <div class="slbl">02 — Color System</div>
+  <div class="sh1">The Palette</div>
+  <div class="sdesc">Six colors. Each with a fixed role. The lime pops hardest on dark — it's the brand's energy in motion. Every CTA, confirmation, and the logo dot.</div>
+
+  <div class="color-grid">
+    <div class="swatch">
+      <div class="block" style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.08);border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Black</div><div class="chex">#0a0a0a</div><div class="cuse">Primary canvas. Every dark surface.</div></div>
+    </div>
+    <div class="swatch">
+      <div class="block" style="background:#c8ff57;border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Lime</div><div class="chex">#c8ff57</div><div class="cuse">Action. CTAs. Success. The dot.</div></div>
+    </div>
+    <div class="swatch">
+      <div class="block" style="background:#f5f3ee;border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Off-White</div><div class="chex">#f5f3ee</div><div class="cuse">Primary text on dark. Warm, not pure white.</div></div>
+    </div>
+    <div class="swatch">
+      <div class="block" style="background:#57c8ff;border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Cyan</div><div class="chex">#57c8ff</div><div class="cuse">Secondary card highlights. Info states.</div></div>
+    </div>
+    <div class="swatch">
+      <div class="block" style="background:#141414;border:1px solid rgba(255,255,255,0.06);border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Surface</div><div class="chex">#141414</div><div class="cuse">Cards, modals, elevated surfaces.</div></div>
+    </div>
+    <div class="swatch">
+      <div class="block" style="background:#888880;border-radius:10px 10px 0 0"></div>
+      <div class="info"><div class="cname">Muted</div><div class="chex">#888880</div><div class="cuse">Secondary text, labels, metadata.</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:44px;background:var(--surface2);border:1px solid var(--lime-border);border-radius:14px;padding:28px">
+    <div class="slbl" style="color:var(--lime);margin-bottom:16px">Dark mode depth layers</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+      <div style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:14px;text-align:center;font-size:0.75rem;color:#333">Base<br/><span style="color:#444;font-size:0.7rem">#0a0a0a</span></div>
+      <div style="background:#111111;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;text-align:center;font-size:0.75rem;color:#444">Surface<br/><span style="color:#333;font-size:0.7rem">#111111</span></div>
+      <div style="background:#161616;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;text-align:center;font-size:0.75rem;color:#555">Elevated<br/><span style="color:#444;font-size:0.7rem">#161616</span></div>
+      <div style="background:#1c1c1c;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;text-align:center;font-size:0.75rem;color:#666">Modal / Active<br/><span style="color:#444;font-size:0.7rem">#1c1c1c</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TYPE ═══════════════════════════ -->
+<div class="sec" id="type">
+  <div class="slbl">03 — Typography</div>
+  <div class="sh1">Type System</div>
+  <div class="sdesc">Exo 2 for the logo and display numbers — sharp and geometric, reads with authority on black. Outfit for all UI text — readable, never stiff.</div>
+
+  <div class="type-demo-hed">Pay with<br/>every card<br/>at once.</div>
+  <div class="type-demo-sub" style="margin-top:8px;color:#333">Exo 2 ExtraBold — logo and large display numbers only</div>
+  <div style="width:60px;height:3px;background:var(--lime);margin:16px 0 24px"></div>
+  <div class="type-demo-body">Splitt. automatically splits any purchase across your linked cards — work stipend, travel rewards, personal Visa — in the exact amounts you configure. One tap. No manual math. No double fees.</div>
+  <div class="type-demo-label">Outfit 300 — body copy · descriptive text · secondary labels</div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr><th>Role</th><th>Family</th><th>Weight</th><th>Size</th><th>Tracking</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Logo / Display</td><td>Exo 2</td><td>800</td><td>48px+</td><td>-0.04em to -0.05em</td><td>Wordmark, hero numbers</td></tr>
+        <tr><td>Heading 1</td><td>Outfit</td><td>700</td><td>28–40px</td><td>-0.03em</td><td>Page titles, screen headers</td></tr>
+        <tr><td>Heading 2</td><td>Outfit</td><td>600</td><td>20–24px</td><td>-0.02em</td><td>Section headers, card titles</td></tr>
+        <tr><td>Body</td><td>Outfit</td><td>300–400</td><td>15–16px</td><td>0</td><td>All descriptive copy</td></tr>
+        <tr><td>Small</td><td>Outfit</td><td>300</td><td>13–14px</td><td>0</td><td>Timestamps, metadata</td></tr>
+        <tr><td>Label</td><td>Outfit</td><td>500–600</td><td>10–11px</td><td>+0.1em, uppercase</td><td>UI labels, category tags</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TAGLINES ═══════════════════════════ -->
+<div class="alt" id="taglines">
+  <div class="slbl">04 — Taglines</div>
+  <div class="sh1">The Lines That Sell It</div>
+  <div class="sdesc">The primary tagline goes everywhere. Use focused variants when the audience has a specific pain — stipend users, rewards maximizers, or shared purchase scenarios.</div>
+
+  <div class="tl-stack">
+    <div class="tl primary">
+      <div class="tl-text" style="font-size:1.05rem">Pay with every card at once.</div>
+      <span class="tl-badge">Primary</span>
+    </div>
+    <div class="tl">
+      <div class="tl-text">Stop paying two delivery fees to use money your employer already gave you.</div>
+      <span class="tl-badge">Stipend</span>
+    </div>
+    <div class="tl">
+      <div class="tl-text">For the first time, earn points on every card — on the same purchase.</div>
+      <span class="tl-badge">Rewards</span>
+    </div>
+    <div class="tl">
+      <div class="tl-text">Your stipend. Your travel card. Your Visa. One tap.</div>
+      <span class="tl-badge">Cards</span>
+    </div>
+    <div class="tl">
+      <div class="tl-text">Online splitting. Finally.</div>
+      <span class="tl-badge">Ultra short</span>
+    </div>
+    <div class="tl">
+      <div class="tl-text">One tap. Every card.</div>
+      <span class="tl-badge">CTA</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ VOICE ═══════════════════════════ -->
+<div class="sec" id="voice">
+  <div class="slbl">05 — Voice &amp; Tone</div>
+  <div class="sh1">How Splitt. Talks</div>
+  <div class="sdesc">Direct. Specific. Confident. Name the actual problem. Use exact dollar amounts. Short sentences. Never corporate, never vague, never "empowering."</div>
+
+  <div class="voice-grid">
+    <div class="vbox vdo">
+      <div class="vlbl">Say this</div>
+      <div class="vline">Split confirmed.</div>
+      <div class="vline">$25 to stipend. $35 to Visa. Done.</div>
+      <div class="vline">One order. One fee. Both cards charged.</div>
+      <div class="vline">Stop paying two delivery fees.</div>
+      <div class="vline">Online splitting. Finally.</div>
+      <div class="vline">You're on the list. We'll reach out personally.</div>
+    </div>
+    <div class="vbox vno">
+      <div class="vlbl">Never say this</div>
+      <div class="vline">Leverage your payment ecosystem.</div>
+      <div class="vline">Empowering consumers financially.</div>
+      <div class="vline">Our innovative, revolutionary platform.</div>
+      <div class="vline">Please review your transaction details carefully.</div>
+      <div class="vline">We are thrilled to introduce...</div>
+      <div class="vline">Splitt. saves you $100/month.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:28px;background:var(--lime-dim);border:1px solid var(--lime-border);border-radius:12px;padding:24px">
+    <div class="slbl" style="color:var(--lime);margin-bottom:10px">The correct value framing</div>
+    <div style="font-size:0.9rem;color:#555;line-height:1.7;font-weight:400">
+      Splitt. does <strong style="color:var(--text)">not</strong> "save users money." Users with a $25 stipend will spend that $25 regardless.
+      The real value: <strong style="color:var(--lime)">(1)</strong> eliminating the workaround tax — no more double delivery fees.
+      <strong style="color:var(--lime)">(2)</strong> Rewards optimization — earn from multiple cards on the same purchase.
+      <strong style="color:var(--lime)">(3)</strong> Benefit card freedom — spend FSA, HSA, and stipend balances anywhere, at any amount.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ USAGE ═══════════════════════════ -->
+<div class="alt" id="usage">
+  <div class="slbl">06 — Brand in Context</div>
+  <div class="sh1">Usage</div>
+  <div class="sdesc">How the system comes together across every surface a user touches — app, card, notifications, and onboarding.</div>
+
+  <div class="usage-grid">
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">App — Split confirmed</div>
+      <div class="usage-card-inner">
+        <div class="app-frame">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span class="wm" style="font-size:1rem;color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></span>
+            <span class="status-success">✓ Confirmed</span>
+          </div>
+          <div style="font-size:0.7rem;color:#333;margin-bottom:2px;font-family:'Outfit',sans-serif">DoorDash · just now</div>
+          <div class="app-amt">$50.00</div>
+          <div style="background:#111;border-radius:10px;padding:14px">
+            <div class="split-row"><span style="color:#444">Work Stipend</span><span style="color:#c8ff57;font-weight:600">$25.00</span></div>
+            <div class="split-row"><span style="color:#444">Personal Visa</span><span style="color:#f5f3ee;font-weight:500">$25.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">Physical Card</div>
+      <div class="usage-card-inner">
+        <div class="pcard">
+          <div class="pcard-glow"></div>
+          <div class="wm" style="font-size:1.1rem;color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></div>
+          <div>
+            <div class="pcard-chip"></div>
+            <div class="pcard-num">•••• •••• •••• 4721</div>
+            <div class="pcard-foot"><span>RISHI PATEL</span><span>12/28</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">Button System</div>
+      <div class="usage-card-inner">
+        <div class="btn-stack">
+          <button class="btn btn-primary">Get Splitt. — It's free</button>
+          <button class="btn btn-secondary">Join the waitlist</button>
+          <button class="btn btn-ghost">Learn how it works</button>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="status-success">✓ Confirmed</span>
+          <span class="status-pending">⏳ Pending</span>
+          <span style="background:rgba(220,50,50,0.1);color:#cc4444;border:1px solid rgba(220,50,50,0.2);padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:600">✗ Failed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">Push Notifications</div>
+      <div class="usage-card-inner">
+        <div class="notif">
+          <div class="notif-icon"><span class="wm" style="font-size:0.9rem;color:#0a0a0a">S.</span></div>
+          <div>
+            <div class="notif-title">✓ Split confirmed</div>
+            <div class="notif-body">$50.00 at DoorDash — Stipend $25 · Visa $25</div>
+          </div>
+        </div>
+        <div class="notif">
+          <div class="notif-icon"><span class="wm" style="font-size:0.9rem;color:#0a0a0a">S.</span></div>
+          <div>
+            <div class="notif-title">✓ Split confirmed</div>
+            <div class="notif-body">$400.00 at Delta — Travel $200 · Cashback $200</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">Landing Page CTA</div>
+      <div class="usage-card-inner">
+        <div style="background:#111;border:1px solid var(--lime-border);border-radius:16px;padding:28px;text-align:center;font-family:'Outfit',sans-serif;position:relative;overflow:hidden">
+          <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 100%,rgba(200,255,87,0.06),transparent);pointer-events:none"></div>
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#333;margin-bottom:16px;position:relative">Limited early access</div>
+          <div class="wm" style="font-size:2.2rem;color:#f5f3ee;margin-bottom:14px;display:block;position:relative">splitt<span style="color:#c8ff57">.</span></div>
+          <div style="font-weight:600;font-size:1.1rem;letter-spacing:-0.02em;color:#f5f3ee;line-height:1.3;margin-bottom:8px;position:relative">Pay with every<br/>card at once.</div>
+          <div style="font-size:0.82rem;color:#444;margin-bottom:22px;font-weight:300;position:relative">One tap. Your stipend + your Visa.<br/>No double orders. No double fees.</div>
+          <button style="background:#c8ff57;color:#0a0a0a;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.88rem;padding:13px 28px;border-radius:100px;border:none;cursor:pointer;width:100%;position:relative">Join the waitlist →</button>
+          <div style="font-size:0.7rem;color:#333;margin-top:10px;position:relative">Free to start · No credit card required</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-card">
+      <div class="usage-card-lbl">Split Rule Display</div>
+      <div class="usage-card-inner">
+        <div style="background:#111;border:1px solid var(--border);border-radius:14px;padding:20px;font-family:'Outfit',sans-serif">
+          <div style="font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#c8ff57;margin-bottom:12px">Default Rule · Active</div>
+          <div style="font-size:0.82rem;color:#f5f3ee;font-weight:600;margin-bottom:14px">Food &amp; Dining</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="background:#161616;border:1px solid rgba(200,255,87,0.1);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.72rem;color:#c8ff57;font-weight:600;margin-bottom:2px">① Work Stipend</div>
+                <div style="font-size:0.7rem;color:#333">First $25.00</div>
+              </div>
+              <div style="background:rgba(200,255,87,0.1);color:#c8ff57;padding:4px 10px;border-radius:6px;font-size:0.7rem;font-weight:600">Fixed</div>
+            </div>
+            <div style="background:#161616;border:1px solid rgba(87,200,255,0.1);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.72rem;color:#57c8ff;font-weight:600;margin-bottom:2px">② Personal Visa</div>
+                <div style="font-size:0.7rem;color:#333">Remainder</div>
+              </div>
+              <div style="background:rgba(87,200,255,0.1);color:#57c8ff;padding:4px 10px;border-radius:6px;font-size:0.7rem;font-weight:600">Remainder</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer style="padding:32px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:var(--black)">
+  <div class="wm" style="font-size:1.2rem;color:#f5f3ee">splitt<span style="color:#c8ff57">.</span></div>
+  <div style="font-size:0.78rem;color:#333">Brand Identity System · Dark Mode · Exo 2 ExtraBold · 2026</div>
+  <div style="font-size:0.78rem;color:#333">paysplitt.com · Confidential</div>
+</footer>
+
+</body>
+</html>

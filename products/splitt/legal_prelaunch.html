@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Splitt — Launch Readiness</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: #1e1e2e;
+    --accent: #00e5a0;
+    --accent2: #ff6b35;
+    --warn: #f5c542;
+    --text: #e8e8f0;
+    --muted: #5a5a7a;
+    --danger: #ff4466;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .logo-block {}
+
+  .logo {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+
+  .logo span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Overall progress */
+  .progress-block {
+    text-align: right;
+  }
+
+  .overall-pct {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .overall-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .master-bar-wrap {
+    width: 200px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    margin-left: auto;
+  }
+
+  .master-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #00c4ff);
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(.16,1,.3,1);
+  }
+
+  /* Priority callout */
+  .priority-banner {
+    background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,68,102,0.05));
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .priority-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    background: rgba(255,107,53,0.12);
+    border: 1px solid rgba(255,107,53,0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .priority-text {
+    font-size: 13px;
+    color: rgba(232,232,240,0.7);
+    line-height: 1.5;
+  }
+
+  .priority-text strong {
+    color: var(--text);
+  }
+
+  /* Pillars */
+  .pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .pillar:hover {
+    border-color: rgba(0,229,160,0.15);
+  }
+
+  .pillar-header {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px;
+    cursor: pointer;
+    gap: 14px;
+    user-select: none;
+  }
+
+  .pillar-icon {
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .pillar-meta {
+    flex: 1;
+  }
+
+  .pillar-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .pillar-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .pillar-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .pillar-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .pillar-count .done {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .pillar-bar-wrap {
+    width: 80px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  .pillar-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .pillar.open .chevron {
+    transform: rotate(180deg);
+  }
+
+  .pillar-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
+  }
+
+  .pillar.open .pillar-body {
+    display: block;
+  }
+
+  /* Checklist items */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 0;
+  }
+
+  .item:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .item.critical .item-label::after {
+    content: 'CRITICAL';
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--danger);
+    background: rgba(255,68,102,0.1);
+    border: 1px solid rgba(255,68,102,0.2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 500;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: var(--surface2);
+  }
+
+  .item.checked .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkmark {
+    display: none;
+    color: #0a0a0f;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .item.checked .checkmark {
+    display: block;
+  }
+
+  .item-text {
+    flex: 1;
+  }
+
+  .item-label {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .item.checked .item-label {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(90,90,122,0.4);
+  }
+
+  .item-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  /* Priority levels mapped to color */
+  .p0 .pillar-bar { background: var(--danger); }
+  .p1 .pillar-bar { background: var(--accent2); }
+  .p2 .pillar-bar { background: var(--warn); }
+  .p3 .pillar-bar { background: var(--accent); }
+  .p4 .pillar-bar { background: #00c4ff; }
+  .p5 .pillar-bar { background: #a78bfa; }
+  .p6 .pillar-bar { background: #34d399; }
+  .p7 .pillar-bar { background: var(--accent); }
+
+  /* Footer */
+  footer {
+    margin-top: 48px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Completion state */
+  .launch-ready {
+    display: none;
+    text-align: center;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(0,196,255,0.04));
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 14px;
+    margin-bottom: 24px;
+  }
+
+  .launch-ready h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .launch-ready p {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 600px) {
+    .pillar-bar-wrap { display: none; }
+    .overall-pct { font-size: 32px; }
+    .master-bar-wrap { width: 140px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-block">
+      <div class="logo">splitt<span>.</span></div>
+      <div class="subtitle">Pre-Launch Readiness Tracker</div>
+    </div>
+    <div class="progress-block">
+      <div class="overall-pct" id="overall-pct">0%</div>
+      <div class="overall-label">Launch Ready</div>
+      <div class="master-bar-wrap">
+        <div class="master-bar" id="master-bar" style="width:0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="priority-banner">
+    <div class="priority-badge">⚡ DO FIRST</div>
+    <div class="priority-text">
+      <strong>3 things that kill Splitt before it starts:</strong> (1) Legal clarity on money transmission — get a fintech lawyer consult before building. (2) Split-failure atomicity — bulletproof rollback if one card fails mid-split. (3) Processor freeze risk — document expected volume to Stripe before launch.
+    </div>
+  </div>
+
+  <div class="launch-ready" id="launch-ready">
+    <h2>🚀 Splitt is Launch Ready</h2>
+    <p>All pillars cleared. Time to ship.</p>
+  </div>
+
+  <div class="pillars" id="pillars"></div>
+
+  <footer>paysplitt.com — pre-launch ops tracker</footer>
+</div>
+
+<script>
+const PILLARS = [
+  {
+    id: 'legal',
+    icon: '⚖️',
+    name: 'Legal & Regulatory',
+    desc: 'The area most non-technical founders underestimate',
+    colorClass: 'p0',
+    items: [
+      { label: 'Legal opinion on money transmission', note: 'Are you a money transmitter? 1hr fintech lawyer consult ~$300-500. Critical before anything else.', critical: true },
+      { label: 'Processor handles MTL (not you)', note: 'Stripe holds the Money Transmitter License. Lithic is a program manager under Evolve Bank. No state-by-state licensing needed.', done: true },
+      { label: 'Terms of Service — lawyer-reviewed', note: '15-section ToS live at /terms. Covers disputes, failed splits, refunds, termination. Needs lawyer sign-off.', critical: true },
+      { label: 'Privacy Policy — CCPA & GDPR compliant', note: 'Live at /privacy. 11 sections covering data collection, retention, deletion, user rights, CCPA/GDPR provisions.', done: true },
+      { label: 'Refund & dispute policy documented publicly', note: 'Live at /refunds. 7 sections: transaction refunds, split failures, disputes, billing, retry policy, how to request, timeline. Linked from landing footer.', done: true },
+      { label: 'UDAP compliance review (if consumer-facing)', note: 'Unfair/Deceptive Acts & Practices — your marketing and UX copy must not mislead.' },
+    ]
+  },
+  {
+    id: 'payments',
+    icon: '💳',
+    name: 'Payment Infrastructure',
+    desc: 'The plumbing that can silently fail',
+    colorClass: 'p1',
+    items: [
+      { label: 'Processor agreement reviewed — freeze triggers identified', note: 'Know exactly what activity triggers account review. Surprise volume on new accounts is a common cause.', critical: true },
+      { label: 'Backup processor identified (Braintree, Adyen)', note: 'Have a fallback before launch, not after a freeze.' },
+      { label: 'Webhook failure handling implemented', note: 'Lithic ASA webhook approves on catch, retries via 60s cron, Sentry captures errors. Stripe billing webhook verified.', done: true },
+      { label: 'Idempotency keys on all payment endpoints', note: 'chargeService uses tx:pm:hold idempotency keys. Webhook has dedup check + UNIQUE constraint on lithic_authorization_token.', critical: true, done: true },
+      { label: 'Split-failure atomic rollback tested', note: 'Two-phase commit: hold all cards → capture all or cancel all. If any card fails during hold, ALL holds released. 64/64 regression tests pass.', critical: true, done: true },
+      { label: 'Payment retry logic documented', note: 'Auto-retry up to 3x with exponential backoff (5s, 1m, 5m). Documented in /refunds page and RUNBOOK.md.', done: true },
+      { label: 'Full refund flow tested end-to-end', note: 'Lithic refund webhook handler with proportional refunds to secondary cards. Handles partial refunds. Tested in regression suite.', done: true },
+    ]
+  },
+  {
+    id: 'security',
+    icon: '🔒',
+    name: 'Security',
+    desc: 'The one where a mistake makes headlines',
+    colorClass: 'p2',
+    items: [
+      { label: 'No raw card data ever stored in your database', note: 'Stripe Elements for tokenization. PAN never touches backend. Lithic handles card issuing. Only last4/brand stored.', critical: true, done: true },
+      { label: 'All API keys in environment variables', note: 'validateEnv.js checks 13+ required vars at startup. Exits on missing vars. .gitignore excludes .env. Still need git history scrub.', critical: true, done: true },
+      { label: 'HTTPS enforced + HSTS headers set', note: 'HSTS, X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, CSP, Referrer-Policy, Permissions-Policy all set in index.js.', done: true },
+      { label: 'Rate limiting on all payment endpoints', note: 'IP-level 120/60s, user-level 60/60s, sensitive routes capped (edit-split 3/60s, card-details 10/60s). Card creation 5/24hr.', done: true },
+      { label: 'Authentication sessions expire correctly', note: 'Supabase handles session management with built-in expiry. ProtectedRoute checks both session AND dbUser.', done: true },
+      { label: 'SQL injection & XSS protection verified', note: 'Supabase client uses parameterized queries. CSP headers block inline scripts. Input validation on all API endpoints.', done: true },
+      { label: 'Dependency vulnerability scan run', note: 'npm audit: backend 0 vulnerabilities. Web has 2 moderate (esbuild dev-server only, no production impact). No critical/high.', done: true },
+      { label: 'PCI DSS scope confirmed with processor', note: 'Stripe Elements = SAQ-A eligible. No raw card data on servers. SSN passed directly to Lithic, not stored.', done: true },
+    ]
+  },
+  {
+    id: 'fraud',
+    icon: '🛡️',
+    name: 'Fraud & Risk',
+    desc: 'Fintech-specific risks that crush unit economics',
+    colorClass: 'p3',
+    items: [
+      { label: 'Velocity limits implemented', note: 'IP + user rate limiting in fraudProtection.js. Card creation 5/24hr in issuing.js. Tier-based Lithic spend limits (Free $1.5K, Plus $5K, Pro $25K/mo).', critical: true, done: true },
+      { label: 'Stripe Radar rules configured', note: 'Or equivalent fraud scoring tool. Set rules for new accounts, high-value splits, mismatched geo.' },
+      { label: 'Chargeback ratio monitored', note: 'GET /admin/chargeback-stats shows 30-day dispute rate. Auto-evidence submitted on disputes. Sentry alerts on new disputes.', critical: true, done: true },
+      { label: 'Friendly fraud / dispute process documented', note: 'Dispute handler auto-submits evidence. Triage process in RUNBOOK.md. Refund policy at /refunds explains user-facing process.', done: true },
+      { label: 'Test accounts flagged in system', note: 'POST /admin/flag-test-account sets _test_account flag in user notification_preferences JSONB.', done: true },
+      { label: 'Account takeover protections in place', note: 'Rate limiting on auth endpoints. Fraud velocity logging. Phase 2: add device fingerprinting and anomaly detection.' },
+    ]
+  },
+  {
+    id: 'infra',
+    icon: '⚙️',
+    name: 'Infrastructure Reliability',
+    desc: 'The "works on my laptop" trap',
+    colorClass: 'p4',
+    items: [
+      { label: 'Database transactions atomic for concurrent splits', note: 'check_and_increment_splits RPC with SELECT ... FOR UPDATE. UNIQUE constraint on lithic_authorization_token. Verified in regression suite.', critical: true, done: true },
+      { label: 'Load test run (50+ concurrent users)', note: 'Stress tests for 50, 200, 500 concurrent auths exist in tests/. All pass. stress-test-v2.js and v3.js available.', done: true },
+      { label: 'Error logging in place (Sentry or equivalent)', note: 'Sentry integrated with context (userId, transactionId), breadcrumbs, header scrubbing. Captures webhook errors, charge failures.', done: true },
+      { label: 'Uptime monitoring with phone alerts', note: '/health and /health/deep endpoints ready. Set up UptimeRobot or Better Uptime for api.paysplitt.com/health.' },
+      { label: 'Database backups tested and restorable', note: 'Supabase provides automatic PITR. Need to verify restore process works.' },
+      { label: 'Third-party API failure handling', note: 'Webhook approves on catch (never blocks user). Email is fire-and-forget. Charge failures retry 3x. Admin /system-health pings all services.', done: true },
+      { label: 'Runbook documented', note: 'RUNBOOK.md created: 10 sections covering payment failures, chargebacks, DB issues, webhook errors, credential rotation, staged rollout, daily monitoring.', done: true },
+    ]
+  },
+  {
+    id: 'trust',
+    icon: '🤝',
+    name: 'User Trust & Transparency',
+    desc: 'Fintech users are paranoid — rightfully',
+    colorClass: 'p5',
+    items: [
+      { label: 'Clear charge explanation at checkout', note: 'Onboarding flow explains split mechanics. Landing page 4-step flow describes process. ToS section 6 details transaction processing.' },
+      { label: 'Confirmation email for every transaction', note: 'emailService.js sends branded split confirmation with per-card leg breakdown. Failed legs highlighted in red. Fire-and-forget.', done: true },
+      { label: 'Customer support channel publicly listed', note: 'info@paysplitt.com in landing page footer, /support page, /terms, /privacy, /refunds. Support page linked from footer.', done: true },
+      { label: 'Support response SLA defined internally', note: '/support page: 48hr general, 24hr payment/billing, 4hr transaction failures (business hours). RUNBOOK.md has daily monitoring checklist.', done: true },
+      { label: 'Human-readable error messages for failed splits', note: 'classifyStripeError() maps decline codes to user-friendly messages. ErrorBoundary prevents white screen crashes. No raw errors exposed.', done: true },
+      { label: 'Refund/cancellation process on website', note: '/refunds page linked from landing footer. 7 sections covering all refund scenarios. Not buried in ToS.', done: true },
+    ]
+  },
+  {
+    id: 'business',
+    icon: '📊',
+    name: 'Business & Financial Controls',
+    desc: 'The operational layer founders skip',
+    colorClass: 'p6',
+    items: [
+      { label: 'Separate business bank account open', note: 'Never commingle personal and business funds.' },
+      { label: 'Accounting software set up from day 1', note: 'QuickBooks, Xero, or even Wave. Revenue tracking from first transaction.' },
+      { label: 'Revenue reconciliation process defined', note: 'Does your database match what Stripe shows? Verify daily at launch.' },
+      { label: 'Unit economics stress-tested at low volume', note: 'Does your fee structure work at 10 transactions/day? 100? Know your breakeven.' },
+      { label: 'Processor fees modeled exactly', note: 'Know your exact margin after Stripe fees on every transaction type.' },
+      { label: 'Tax obligations researched', note: 'Sales tax on SaaS/fintech fees varies by state. Get a CPA opinion.' },
+    ]
+  },
+  {
+    id: 'launch',
+    icon: '🚀',
+    name: 'Launch Readiness',
+    desc: 'The final gate before you go live',
+    colorClass: 'p7',
+    items: [
+      { label: '$1 real-money end-to-end transaction completed', note: 'Not test mode. Real card. Verify the charge appears on a bank statement.', critical: true },
+      { label: 'All unhappy paths tested', note: 'Card decline, partial failure, timeout, network error mid-transaction.', critical: true },
+      { label: 'External user successfully transacted', note: 'Someone outside your company completed a split without help from you.' },
+      { label: 'Kill switch implemented', note: 'POST /admin/kill-switch freezes ALL Lithic cards instantly. Also per-card freeze via PATCH /issuing/card/status. Documented in RUNBOOK.md.', critical: true, done: true },
+      { label: 'Staged rollout plan defined', note: 'RUNBOOK.md: Phase 1 (10 users, 1 week) → Phase 2 (50 users, 1 week) → Phase 3 (200 users, 2 weeks) → Phase 4 (public). Kill criteria defined.', done: true },
+      { label: 'Processor notified of expected launch volume', note: 'Tell Stripe what to expect. Surprise volume on new accounts triggers freezes.' },
+    ]
+  }
+];
+
+// Load state from localStorage
+function getState() {
+  try {
+    return JSON.parse(localStorage.getItem('splitt-checklist') || '{}');
+  } catch { return {}; }
+}
+
+function saveState(state) {
+  try { localStorage.setItem('splitt-checklist', JSON.stringify(state)); } catch {}
+}
+
+let state = getState();
+
+// Auto-check items marked as done in PILLARS data
+PILLARS.forEach(pillar => {
+  pillar.items.forEach((item, i) => {
+    const key = `${pillar.id}-${i}`;
+    if (item.done) state[key] = true;
+  });
+});
+saveState(state);
+
+function getItemKey(pillarId, idx) {
+  return `${pillarId}-${idx}`;
+}
+
+function renderPillars() {
+  const container = document.getElementById('pillars');
+  container.innerHTML = '';
+
+  PILLARS.forEach((pillar, pi) => {
+    const total = pillar.items.length;
+    const done = pillar.items.filter((_, i) => state[getItemKey(pillar.id, i)]).length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    const el = document.createElement('div');
+    el.className = `pillar ${pillar.colorClass}`;
+    el.dataset.id = pillar.id;
+
+    el.innerHTML = `
+      <div class="pillar-header">
+        <div class="pillar-icon">${pillar.icon}</div>
+        <div class="pillar-meta">
+          <div class="pillar-name">${pillar.name}</div>
+          <div class="pillar-desc">${pillar.desc}</div>
+        </div>
+        <div class="pillar-stats">
+          <div class="pillar-count"><span class="done">${done}</span>/${total}</div>
+          <div class="pillar-bar-wrap">
+            <div class="pillar-bar" style="width:${pct}%"></div>
+          </div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="pillar-body">
+        ${pillar.items.map((item, i) => {
+          const key = getItemKey(pillar.id, i);
+          const checked = !!state[key];
+          return `
+            <div class="item ${checked ? 'checked' : ''} ${item.critical ? 'critical' : ''}" data-key="${key}">
+              <div class="checkbox"><span class="checkmark">✓</span></div>
+              <div class="item-text">
+                <div class="item-label">${item.label}</div>
+                ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    // Toggle open/close
+    el.querySelector('.pillar-header').addEventListener('click', () => {
+      el.classList.toggle('open');
+    });
+
+    // Item click
+    el.querySelectorAll('.item').forEach(itemEl => {
+      itemEl.addEventListener('click', () => {
+        const key = itemEl.dataset.key;
+        state[key] = !state[key];
+        saveState(state);
+        itemEl.classList.toggle('checked', state[key]);
+        updateOverall();
+        updatePillarStats(el, pillar);
+      });
+    });
+
+    container.appendChild(el);
+  });
+
+  updateOverall();
+}
+
+function updatePillarStats(el, pillar) {
+  const total = pillar.items.length;
+  const done = pillar.items.filter((_, i) => state[getItemKey(pillar.id, i)]).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  el.querySelector('.pillar-count').innerHTML = `<span class="done">${done}</span>/${total}`;
+  el.querySelector('.pillar-bar').style.width = pct + '%';
+}
+
+function updateOverall() {
+  const total = PILLARS.reduce((a, p) => a + p.items.length, 0);
+  const done = PILLARS.reduce((a, p) =>
+    a + p.items.filter((_, i) => state[getItemKey(p.id, i)]).length, 0);
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('overall-pct').textContent = pct + '%';
+  document.getElementById('master-bar').style.width = pct + '%';
+
+  const launchEl = document.getElementById('launch-ready');
+  launchEl.style.display = pct === 100 ? 'block' : 'none';
+}
+
+renderPillars();
+</script>
+</body>
+</html>

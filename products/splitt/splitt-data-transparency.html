@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Data & Privacy — Splitt.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --lime: #c8ff57;
+    --cyan: #57c8ff;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: #242424;
+    --text: #efefef;
+    --muted: #777;
+    --muted2: #555;
+    --red: #ff5757;
+    --yellow: #ffd657;
+    --green: #57ff9a;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(16px);
+  }
+
+  .wordmark {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--lime);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 160px 48px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 28px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--lime);
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    max-width: 700px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--lime);
+  }
+
+  .hero-body {
+    max-width: 560px;
+    color: #aaa;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 48px;
+  }
+
+  .hero-commitment {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(200,255,87,0.06);
+    border: 1px solid rgba(200,255,87,0.18);
+    border-radius: 12px;
+    padding: 20px 24px;
+    max-width: 520px;
+  }
+
+  .commitment-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .commitment-text {
+    font-size: 13px;
+    color: #bbb;
+    line-height: 1.7;
+  }
+
+  .commitment-text strong { color: var(--lime); }
+
+  /* ── QUICK SUMMARY STRIP ── */
+  .summary-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .summary-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    divide-x: var(--border);
+  }
+
+  .summary-item {
+    padding: 28px 24px 28px 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .summary-item:last-child { border-right: none; padding-right: 0; }
+  .summary-item:not(:first-child) { padding-left: 24px; }
+
+  .summary-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .summary-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .summary-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .page-body {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 48px 100px;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* ── STICKY SIDEBAR NAV ── */
+  .sidebar {
+    position: sticky;
+    top: 88px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted2);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    transition: all 0.18s ease;
+    line-height: 1.4;
+  }
+
+  .sidebar-nav a:hover {
+    color: var(--lime);
+    border-left-color: var(--lime);
+    background: rgba(200,255,87,0.05);
+    padding-left: 16px;
+  }
+
+  /* ── CONTENT SECTIONS ── */
+  .content { min-width: 0; }
+
+  .data-section {
+    margin-bottom: 64px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-emoji {
+    font-size: 28px;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .section-meta { flex: 1; }
+
+  .section-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tag-required { background: rgba(255,87,87,0.12); color: #ff8888; border: 1px solid rgba(255,87,87,0.2); }
+  .tag-functional { background: rgba(87,200,255,0.1); color: var(--cyan); border: 1px solid rgba(87,200,255,0.2); }
+  .tag-security { background: rgba(200,255,87,0.08); color: var(--lime); border: 1px solid rgba(200,255,87,0.18); }
+  .tag-optional { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .section-intro {
+    color: #999;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+    max-width: 640px;
+  }
+
+  /* ── DATA ITEM CARDS ── */
+  .data-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .data-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .data-item:hover { border-color: #333; }
+
+  .data-item-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    padding: 18px 20px 14px;
+    cursor: pointer;
+    gap: 16px;
+  }
+
+  .data-item-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .data-item-example {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: monospace;
+  }
+
+  .data-item-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  .mini-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .mb-encrypted { background: rgba(200,255,87,0.1); color: #a8e03a; }
+  .mb-never-sold { background: rgba(87,255,154,0.08); color: #57ff9a; }
+  .mb-deleted { background: rgba(87,200,255,0.08); color: var(--cyan); }
+  .mb-shared { background: rgba(255,214,87,0.1); color: var(--yellow); }
+  .mb-anonymized { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+  .data-item-why {
+    padding: 0 20px 18px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    margin-top: 0;
+  }
+
+  .why-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted2);
+    margin-bottom: 8px;
+    margin-top: 14px;
+  }
+
+  .why-text {
+    font-size: 13px;
+    color: #999;
+    line-height: 1.75;
+  }
+
+  .why-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── WHAT WE NEVER DO ── */
+  .never-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .never-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+
+  .never-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .never-item-title::before {
+    content: '✕';
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .never-item-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── YOUR RIGHTS ── */
+  .rights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .right-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .right-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--lime), transparent);
+  }
+
+  .right-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .right-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .right-action {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--lime);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── THIRD PARTIES ── */
+  .party-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .party-item {
+    display: grid;
+    grid-template-columns: 120px 80px 1fr;
+    align-items: start;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+  }
+
+  .party-name {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .party-role {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .party-data {
+    color: #999;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* ── CONTACT BOX ── */
+  .contact-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-top: 48px;
+  }
+
+  .contact-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .contact-text p {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 400px;
+    line-height: 1.7;
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--lime);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 14px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .contact-link:hover { opacity: 0.88; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1, .hero-body, .hero-commitment {
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-body { animation-delay: 0.1s; }
+  .hero-commitment { animation-delay: 0.2s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav, footer { padding: 18px 24px; }
+    .hero { padding: 120px 24px 60px; }
+    .summary-strip { padding: 0 24px; }
+    .summary-inner { grid-template-columns: 1fr 1fr; }
+    .summary-item:nth-child(2) { border-right: none; }
+    .page-body { grid-template-columns: 1fr; padding: 48px 24px 80px; gap: 0; }
+    .sidebar { display: none; }
+    .never-grid, .rights-grid { grid-template-columns: 1fr; }
+    .party-item { grid-template-columns: 1fr; gap: 4px; }
+    .contact-box { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="wordmark">Splitt.</a>
+  <span class="nav-label">Data & Privacy</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Transparency</div>
+  <h1>We handle your<br>money. You deserve<br>to know <em>everything.</em></h1>
+  <p class="hero-body">Splitt. touches your bank cards. That's a serious responsibility. This page explains, in plain English, exactly what data we collect, why we collect it, who sees it, and how you can control it — no legal jargon, no buried clauses.</p>
+  <div class="hero-commitment">
+    <div class="commitment-icon">🔒</div>
+    <div class="commitment-text">
+      <strong>Our commitment:</strong> We collect only what we need to operate the product and protect you from fraud. We do not sell your data. We do not use your data for advertising. We never will.
+    </div>
+  </div>
+</section>
+
+<!-- QUICK SUMMARY STRIP -->
+<div class="summary-strip">
+  <div class="summary-inner">
+    <div class="summary-item">
+      <div class="summary-icon">💳</div>
+      <div class="summary-title">Card numbers</div>
+      <div class="summary-desc">Never stored by us. Handled by Stripe & Lithic directly.</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-icon">📍</div>
+      <div class="summary-title">Location data</div>
+      <div class="summary-desc">Used only for fraud detection. Never shared or sold.</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-icon">🚫</div>
+      <div class="summary-title">No ads. Ever.</div>
+      <div class="summary-desc">Your data is never used to target or serve advertising.</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-icon">🗑️</div>
+      <div class="summary-title">Right to delete</div>
+      <div class="summary-desc">Request full account deletion anytime. We act within 30 days.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="page-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">On this page</div>
+    <ul class="sidebar-nav">
+      <li><a href="#identity">Identity & Account</a></li>
+      <li><a href="#payment">Payment Information</a></li>
+      <li><a href="#transaction">Transaction Data</a></li>
+      <li><a href="#security">Fraud & Security Data</a></li>
+      <li><a href="#device">Device & Technical Data</a></li>
+      <li><a href="#never">What We Never Do</a></li>
+      <li><a href="#third-parties">Third Parties</a></li>
+      <li><a href="#rights">Your Rights</a></li>
+      <li><a href="#contact">Contact Us</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- IDENTITY -->
+    <div class="data-section" id="identity">
+      <div class="section-header">
+        <div class="section-emoji">👤</div>
+        <div class="section-meta">
+          <span class="section-tag tag-required">Required to use Splitt.</span>
+          <div class="section-title">Identity & Account Data</div>
+        </div>
+      </div>
+      <p class="section-intro">To create your account and comply with financial regulations, we need to know who you are. Payment products are required by law to verify user identities — this is called KYC (Know Your Customer) and it protects both you and the financial system from fraud.</p>
+
+      <div class="data-items">
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Email address</div>
+              <div class="data-item-example">e.g. you@gmail.com</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Your email is your account login and how we send you split receipts and security alerts. We do not use it for marketing unless you opt in. <strong>You can change or delete it at any time in Settings.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Full legal name</div>
+              <div class="data-item-example">e.g. Jane Marie Smith</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Required by federal law (Bank Secrecy Act) to issue you a payment card. Your name appears on your Splitt. card and is verified against your government ID during onboarding. <strong>This is a legal requirement — we cannot issue cards without it.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Date of birth</div>
+              <div class="data-item-example">e.g. January 15, 1990</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Required to verify you are 18 or older and to confirm your identity during KYC. We store only the date — not a copy of your ID document. <strong>This data is never used for anything beyond identity verification.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Mailing address</div>
+              <div class="data-item-example">e.g. 123 Main St, Austin TX 78701</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Required for KYC compliance and to ship your physical Splitt. card. Also used for billing address verification when your card is used at merchants that check AVS (Address Verification System). <strong>We do not use your address for any marketing.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Last 4 digits of SSN</div>
+              <div class="data-item-example">e.g. ••••••••• 4821</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Required by federal law for identity verification when issuing payment cards. We collect only the last 4 digits — <strong>never your full SSN.</strong> This is passed directly to our card issuing partner (Lithic) over an encrypted connection and is never stored in our own database.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="data-section" id="payment">
+      <div class="section-header">
+        <div class="section-emoji">💳</div>
+        <div class="section-meta">
+          <span class="section-tag tag-required">Required to use Splitt.</span>
+          <div class="section-title">Payment Information</div>
+        </div>
+      </div>
+      <p class="section-intro">The whole point of Splitt. is splitting purchases across your cards. Here's exactly what we see — and critically, what we don't.</p>
+
+      <div class="data-items">
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Card brand, last 4 digits, expiry</div>
+              <div class="data-item-example">e.g. Visa •••• 4242, expires 12/27</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">We store only this summary so you can identify your cards in the app (e.g. "Visa ending in 4242"). <strong>Your full 16-digit card number is never stored by Splitt.</strong> It is tokenized by Stripe at the moment you enter it and we receive only a token reference.</div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Stripe payment method token</div>
+              <div class="data-item-example">e.g. pm_1ABC23def456GHI</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">This is a Stripe-generated reference ID for your card — not the card number itself. It's how we tell Stripe which card to charge for your split without ever handling your actual card details. <strong>This token is useless to anyone who doesn't also control your Stripe account.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Card nickname & split configuration</div>
+              <div class="data-item-example">e.g. "Work Stipend — 40%, Chase Sapphire — 60%"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Your split rules are the core of the product — we store them so your preferences are applied automatically at every purchase. <strong>You can change, pause, or delete any split rule at any time.</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION -->
+    <div class="data-section" id="transaction">
+      <div class="section-header">
+        <div class="section-emoji">📋</div>
+        <div class="section-meta">
+          <span class="section-tag tag-required">Required to use Splitt.</span>
+          <div class="section-title">Transaction Data</div>
+        </div>
+      </div>
+      <p class="section-intro">Every split generates a record so you can see exactly what happened, retry failed charges, and have evidence if there's ever a dispute with a merchant.</p>
+
+      <div class="data-items">
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Merchant name & category</div>
+              <div class="data-item-example">e.g. "Whole Foods Market — Grocery"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+              <span class="mini-badge mb-deleted">Deleted on request</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Shown in your transaction history so you know where each split occurred. Also used by the Rewards Optimizer to identify which of your cards earns the most for a given merchant category (e.g. 3x at grocery stores). <strong>We do not sell this to advertisers or data brokers.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Transaction amount & split breakdown</div>
+              <div class="data-item-example">e.g. "$87.50 total — $25 from Stipend, $62.50 from Visa"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-encrypted">Encrypted</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">The exact amounts charged to each card are logged per split leg. This is your record of what happened and our evidence if a secondary charge is disputed. <strong>If a charge fails, this record enables our automatic retry logic.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Transaction timestamp & status</div>
+              <div class="data-item-example">e.g. "March 9, 2026 at 2:14 PM — Completed"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+              <span class="mini-badge mb-deleted">Deleted on request</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Timestamps create an audit trail. If you dispute a charge with your bank, the timestamp proves when the transaction occurred. Status tracking (completed, failed, partially failed) is how we know whether to notify you of a problem and trigger a retry.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURITY / FRAUD -->
+    <div class="data-section" id="security">
+      <div class="section-header">
+        <div class="section-emoji">🛡️</div>
+        <div class="section-meta">
+          <span class="section-tag tag-security">Fraud & Security</span>
+          <div class="section-title">Fraud Detection Data</div>
+        </div>
+      </div>
+      <p class="section-intro">This is the category that surprises most people — and the one worth explaining most carefully. Splitt. sits in a uniquely vulnerable position: we approve a transaction at the merchant before we've confirmed the secondary card will pay. Without fraud signals, bad actors could game this gap. Here's what we collect and exactly why.</p>
+
+      <div class="data-items">
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Merchant location at time of purchase</div>
+              <div class="data-item-example">e.g. "Austin, TX, United States"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+              <span class="mini-badge mb-anonymized">Not your GPS</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">
+              <strong>This is the merchant's location, not yours.</strong> When a card authorization fires, the payment network tells us where the merchant terminal is located — this is standard data in every card transaction worldwide. We use it to detect impossible travel (e.g. a purchase in Austin and one in Tokyo 10 minutes apart), which is one of the clearest signals of card fraud. <strong>We do not use your phone's GPS. We do not track where you physically are.</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Merchant Category Code (MCC)</div>
+              <div class="data-item-example">e.g. MCC 5411 — Grocery Stores</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Every merchant in the world has a 4-digit category code assigned by card networks. We use it to power your Rewards Optimizer (routing to the right card for maximum points) and to detect unusual patterns — for example, a sudden shift from normal grocery and dining spending to high-risk merchant categories like wire transfer services can indicate account takeover.</div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Transaction velocity & daily totals</div>
+              <div class="data-item-example">e.g. "4 transactions today, $312.50 total"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+              <span class="mini-badge mb-anonymized">Per-account only</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">We track how many transactions you make per day and the total dollar amount. This isn't to spy on your spending — it's to protect you. <strong>If someone steals your Splitt. card and tries to run 30 transactions in a day, our velocity limits catch it and freeze further charges</strong> before the damage compounds. New accounts have tighter limits that relax as we build a history of your normal patterns.</div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Secondary card decline rate</div>
+              <div class="data-item-example">e.g. "Card ending 9821: 0 failures in 23 charges"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">We track how often your linked secondary cards fail when charged. Legitimate cards occasionally fail (expired, temporarily blocked) but a card that fails consistently is a signal worth examining. <strong>High failure rates on a secondary card may indicate a stolen card was added to your account</strong> — we flag this to protect you and other users on our platform.</div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Cardholder verification method</div>
+              <div class="data-item-example">e.g. "Chip & PIN", "Contactless", "Online CNP"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Payment networks tell us how a transaction was verified — whether a chip was inserted, a PIN entered, or it was a tap. <strong>This is our primary dispute evidence.</strong> If you're ever wrongly charged for a transaction you didn't make, the verification method proves physical card possession at the time of purchase.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICE -->
+    <div class="data-section" id="device">
+      <div class="section-header">
+        <div class="section-emoji">📱</div>
+        <div class="section-meta">
+          <span class="section-tag tag-functional">Functional</span>
+          <div class="section-title">Device & Technical Data</div>
+        </div>
+      </div>
+      <p class="section-intro">Standard data collected by the app to make it work reliably and to diagnose problems when something breaks.</p>
+
+      <div class="data-items">
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Device type & operating system</div>
+              <div class="data-item-example">e.g. iPhone 15 Pro, iOS 18.2</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-anonymized">Anonymized</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">Used to diagnose app crashes and compatibility issues. If a bug only affects iPhone users on a specific iOS version, we need to know that to fix it. This is collected at the model level — <strong>we do not collect your device's unique serial number or IMEI.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">Push notification token</div>
+              <div class="data-item-example">e.g. ExponentPushToken[xxxxxxxxxxxx]</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-never-sold">Never sold</span>
+              <span class="mini-badge mb-deleted">Deleted on logout</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">The only way to send you an instant split confirmation or fraud alert is via push notification. This token is a device identifier used exclusively to route notifications to your phone. <strong>It is deleted when you log out and cannot be used to identify you across apps.</strong></div>
+          </div>
+        </div>
+
+        <div class="data-item">
+          <div class="data-item-header">
+            <div>
+              <div class="data-item-name">App crash logs & error reports</div>
+              <div class="data-item-example">e.g. "NullPointerException in chargeService.js line 84"</div>
+            </div>
+            <div class="data-item-badges">
+              <span class="mini-badge mb-anonymized">Anonymized</span>
+              <span class="mini-badge mb-never-sold">Never sold</span>
+            </div>
+          </div>
+          <div class="data-item-why">
+            <div class="why-label">Why we collect this</div>
+            <div class="why-text">When something goes wrong — a charge fails unexpectedly, the app crashes, a webhook misfires — we need to know about it immediately to fix it. Error logs are sent to Sentry (our monitoring tool) and contain the technical error, not your personal data. <strong>We strip any personal identifiers before errors are logged.</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHAT WE NEVER DO -->
+    <div class="data-section" id="never">
+      <div class="section-header">
+        <div class="section-emoji">🚫</div>
+        <div class="section-meta">
+          <span class="section-tag tag-security">Hard limits</span>
+          <div class="section-title">What We Never Do</div>
+        </div>
+      </div>
+      <p class="section-intro">These are not aspirations. They are hard technical and contractual constraints built into how Splitt. operates.</p>
+
+      <div class="never-grid">
+        <div class="never-item">
+          <div class="never-item-title">Sell your data</div>
+          <div class="never-item-desc">Your personal information and spending data are never sold to data brokers, advertisers, or any third party for any reason.</div>
+        </div>
+        <div class="never-item">
+          <div class="never-item-title">Store full card numbers</div>
+          <div class="never-item-desc">We never see or store your 16-digit card number, CVV, or PIN. Card data goes directly to Stripe's PCI-compliant vault — not our servers.</div>
+        </div>
+        <div class="never-item">
+          <div class="never-item-title">Track your GPS location</div>
+          <div class="never-item-desc">We do not request, access, or store your phone's real-time GPS coordinates. Location signals in fraud detection come from merchant terminal data, not your device.</div>
+        </div>
+        <div class="never-item">
+          <div class="never-item-title">Use data for advertising</div>
+          <div class="never-item-desc">We run no ad network integrations. Your spending patterns are never used to build advertising profiles or target you with third-party ads.</div>
+        </div>
+        <div class="never-item">
+          <div class="never-item-title">Share data without consent</div>
+          <div class="never-item-desc">Data is shared only with the infrastructure partners listed below that are required to operate the product. No exceptions without your explicit consent.</div>
+        </div>
+        <div class="never-item">
+          <div class="never-item-title">Store full SSN</div>
+          <div class="never-item-desc">We collect only the last 4 digits of your SSN for identity verification, passed directly to Lithic over an encrypted connection. Your full SSN is never stored anywhere by Splitt.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THIRD PARTIES -->
+    <div class="data-section" id="third-parties">
+      <div class="section-header">
+        <div class="section-emoji">🤝</div>
+        <div class="section-meta">
+          <span class="section-tag tag-functional">Infrastructure Partners</span>
+          <div class="section-title">Who Else Sees Your Data</div>
+        </div>
+      </div>
+      <p class="section-intro">We use a small set of carefully chosen infrastructure partners. Each one sees only the data they need to do their job — nothing more.</p>
+
+      <div class="party-list">
+        <div class="party-item">
+          <div class="party-name">Lithic</div>
+          <div class="party-role">Card issuing</div>
+          <div class="party-data">Issues your physical Splitt. card. Sees your name, address, date of birth, and last 4 of SSN for KYC compliance. Processes authorization webhooks. Governed by their own privacy policy and banking regulations.</div>
+        </div>
+        <div class="party-item">
+          <div class="party-name">Stripe</div>
+          <div class="party-role">Payment processing</div>
+          <div class="party-data">Tokenizes and charges your linked secondary cards. Stores your full card details in their PCI-compliant vault — Splitt. never accesses these. Also handles subscription billing.</div>
+        </div>
+        <div class="party-item">
+          <div class="party-name">Supabase</div>
+          <div class="party-role">Database</div>
+          <div class="party-data">Hosts your account data, split rules, and transaction history on encrypted servers. Based on PostgreSQL. Data is stored in the United States.</div>
+        </div>
+        <div class="party-item">
+          <div class="party-name">Sentry</div>
+          <div class="party-role">Error monitoring</div>
+          <div class="party-data">Receives anonymized error reports when the app or backend experiences a problem. Personal identifiers are stripped before errors are sent. Used only to diagnose and fix bugs.</div>
+        </div>
+        <div class="party-item">
+          <div class="party-name">Resend</div>
+          <div class="party-role">Email delivery</div>
+          <div class="party-data">Sends transactional emails: split receipts, security alerts, and account notifications. Sees your email address only. Does not have access to your financial data.</div>
+        </div>
+        <div class="party-item">
+          <div class="party-name">Intercom</div>
+          <div class="party-role">Customer support</div>
+          <div class="party-data">Powers the in-app help chat. When you contact support, we share your name, email, and account ID so agents can help you. Chat transcripts are retained for support quality purposes.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUR RIGHTS -->
+    <div class="data-section" id="rights">
+      <div class="section-header">
+        <div class="section-emoji">⚖️</div>
+        <div class="section-meta">
+          <span class="section-tag tag-security">Your Control</span>
+          <div class="section-title">Your Rights</div>
+        </div>
+      </div>
+      <p class="section-intro">You have real, actionable control over your data. These aren't buried form requests — most can be done directly in the app.</p>
+
+      <div class="rights-grid">
+        <div class="right-card">
+          <div class="right-title">Access your data</div>
+          <div class="right-desc">Request a complete export of everything we hold about you — account info, transaction history, split rules, fraud signals — in a readable format.</div>
+          <span class="right-action">Email privacy@paysplitt.com →</span>
+        </div>
+        <div class="right-card">
+          <div class="right-title">Delete your account</div>
+          <div class="right-desc">Delete your account from Settings at any time. All personal data is removed within 30 days. Transaction records required by law (7 years) are anonymized, not deleted.</div>
+          <span class="right-action">Settings → Delete Account →</span>
+        </div>
+        <div class="right-card">
+          <div class="right-title">Remove a linked card</div>
+          <div class="right-desc">Remove any secondary card instantly from the Cards screen. This detaches it from Stripe and removes it from all split rules immediately.</div>
+          <span class="right-action">Cards → Remove Card →</span>
+        </div>
+        <div class="right-card">
+          <div class="right-title">Correct your information</div>
+          <div class="right-desc">Update your email, address, or card nicknames in Settings. For legal name changes, contact support — identity data must be reverified.</div>
+          <span class="right-action">Settings → Account →</span>
+        </div>
+        <div class="right-card">
+          <div class="right-title">Freeze your card</div>
+          <div class="right-desc">Freeze your Splitt. card instantly if it's lost or you notice suspicious activity. No transaction can be approved while frozen.</div>
+          <span class="right-action">Virtual Card → Freeze →</span>
+        </div>
+        <div class="right-card">
+          <div class="right-title">Opt out of notifications</div>
+          <div class="right-desc">Turn off marketing emails or push notifications in Settings. Security alerts (fraud, failed charges) cannot be disabled as they protect your account.</div>
+          <span class="right-action">Settings → Preferences →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="contact">
+      <div class="contact-box">
+        <div class="contact-text">
+          <h3>Questions about your data?</h3>
+          <p>We're a small team and we read every email. If something on this page is unclear or you want to exercise any of your data rights, reach out directly.</p>
+        </div>
+        <a href="mailto:privacy@paysplitt.com" class="contact-link">
+          privacy@paysplitt.com ↗
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <a href="/" class="wordmark" style="font-size:14px;">Splitt.</a>
+  <span>Last updated March 2026 · <a href="/privacy-policy" style="color:var(--muted); text-decoration:none;">Full Privacy Policy</a> · <a href="/terms" style="color:var(--muted); text-decoration:none;">Terms of Service</a></span>
+</footer>
+
+</body>
+</html>

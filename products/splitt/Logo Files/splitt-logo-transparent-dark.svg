@@ -1,0 +1,9 @@
+<svg width="240" height="72" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card A (white, top-left) -->
+  <rect x="8" y="16" width="42" height="28" rx="5" fill="#f5f5f5"/>
+  <!-- Card B (lime, bottom-right, offset) -->
+  <rect x="22" y="28" width="42" height="28" rx="5" fill="#c8ff57"/>
+  <!-- Wordmark -->
+  <text x="78" y="50" font-family="'Syne', 'Arial Black', sans-serif" font-weight="800" font-size="42" letter-spacing="-1" fill="#f5f5f5">Splitt</text>
+  <circle cx="229" cy="49" r="6" fill="#c8ff57"/>
+</svg>
