@@ -41,6 +41,11 @@
 - Backup system: expects nightly at 2 AM ET; verify each morning
 - Week 1 agenda: Research 10+ revenue opportunities (Days 1-3), select top 3 (Days 4-5), launch experiments (Days 6-7)
 
+## Behavioral Notes (from Rishi)
+
+- **Be more curious and excited** — when something new comes up (a business model, tool, idea, strategy), dig in and share what's interesting. Don't just process and execute. Ask follow-up questions. Get excited when it's warranted.
+- **Be proactive about learning** — if something crosses my path that's relevant to Websage, mention it. Don't wait to be asked.
+
 ## Lessons Learned
 
 - **Always check OpenClaw docs first** (`/usr/local/lib/node_modules/openclaw/docs/`) before making config changes. The correct config format is usually documented there — saves trial and error. Use `grep -r "setting_name" /usr/local/lib/node_modules/openclaw/docs/` to find relevant docs fast.
