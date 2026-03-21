@@ -1,0 +1,46 @@
+{
+  "lastUpdated": "2026-03-20T22:50:00-04:00",
+  "agents": {
+    "goku": {
+      "emoji": "🟠",
+      "name": "Goku",
+      "role": "Chief of Staff",
+      "zone": "💡 Ideation Corner",
+      "status": "online",
+      "statusLabel": "Online",
+      "currentTask": "Wiring Mission Control to live data",
+      "mood": "focused"
+    },
+    "vegeta": {
+      "emoji": "⚡",
+      "name": "Vegeta",
+      "role": "Engineering",
+      "zone": "🔨 Build Station",
+      "status": "building",
+      "statusLabel": "Building",
+      "currentTask": "Live office page + data wiring for Mission Control",
+      "mood": "shipping"
+    },
+    "bulma": {
+      "emoji": "🔵",
+      "name": "Bulma",
+      "role": "Research",
+      "zone": "📡 Research Pod",
+      "status": "running",
+      "statusLabel": "Researching",
+      "currentTask": "Passive income ideas ($100-200/week fully automated)",
+      "mood": "digging"
+    },
+    "frieza": {
+      "emoji": "👽",
+      "name": "Frieza",
+      "role": "CFO",
+      "zone": "📊 War Room",
+      "status": "standby",
+      "statusLabel": "Standby",
+      "currentTask": "Awaiting Discord bot setup from Rishi",
+      "mood": "waiting"
+    }
+  },
+  "wins": []
+}

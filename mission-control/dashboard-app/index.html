@@ -599,7 +599,7 @@ let _dashCache = null;
 let _dashTimer = null;
 
 async function loadDashboard() {
-  const data = await fetchData("../../data/dashboard.json");
+  const data = await fetchData("./data/dashboard.json");
   if (data) _dashCache = data;
   return data;
 }
@@ -737,7 +737,7 @@ let _projCache = null;
 let _projTimer = null;
 
 async function loadProjects() {
-  const data = await fetchData("../../data/projects.json");
+  const data = await fetchData("./data/projects.json");
   if (data) _projCache = data;
   return data;
 }
@@ -806,8 +806,8 @@ AGENTS_DATA.forEach(a => { AGENT_META[a.name.toLowerCase()] = a; });
 
 async function loadAgentsSection() {
   const [agentData, dashData] = await Promise.all([
-    fetchData("../../data/agent-status.json"),
-    fetchData("../../data/dashboard.json")
+    fetchData("./data/agent-status.json"),
+    fetchData("./data/dashboard.json")
   ]);
   if (agentData) _agentStatusCache = agentData;
   if (dashData) _agentsCostCache = dashData.expenses;
@@ -1228,7 +1228,7 @@ let _agentStatusFetchedAt = null;
 
 async function loadAgentStatus() {
   try {
-    const r = await fetch("../../data/agent-status.json?t=" + Date.now());
+    const r = await fetch("./data/agent-status.json?t=" + Date.now());
     if (!r.ok) throw new Error("no data");
     const data = await r.json();
     _agentStatusCache = data;

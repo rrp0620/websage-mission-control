@@ -1,0 +1,122 @@
+{
+  "lastUpdated": "2026-03-20T22:50:00-04:00",
+  "projects": [
+    {
+      "id": "subdocs",
+      "name": "SubDocs",
+      "emoji": "📋",
+      "pct": 75,
+      "status": "inprogress",
+      "statusLabel": "🟡 Launch Prep",
+      "owners": "Rishi",
+      "updated": "Mar 20, 2026",
+      "desc": "SaaS for small general contractors. Automates subcontractor compliance doc collection — COIs, W-9s, licenses. Tracks expiry dates, sends auto-alerts. Live at getsubdocs.com (not yet deployed). Free / Pro $29/mo / Business $79/mo.",
+      "tasks": [
+        { "done": true, "text": "App fully built (Next.js + Supabase)" },
+        { "done": true, "text": "Supabase configured + connected" },
+        { "done": true, "text": "GitHub repo: rrp0620/subdocs" },
+        { "done": true, "text": "Facebook group outreach live — inbound coming in" },
+        { "done": true, "text": "Calculator lead magnet built + deployed" },
+        { "done": false, "text": "Deploy to Vercel" },
+        { "done": false, "text": "Add Stripe keys (Stripe setup)" },
+        { "done": false, "text": "Add Resend API key (email reminders)" },
+        { "done": false, "text": "Run DB migration 004" },
+        { "done": false, "text": "Buy domain + point to Vercel" },
+        { "done": false, "text": "Build post-calculator follow-up flow" },
+        { "done": false, "text": "Convert first Facebook inbound to paid" }
+      ],
+      "milestones": [
+        { "date": "Mar 21", "label": "Deploy to Vercel (morning)" },
+        { "date": "Mar 21", "label": "Post-calculator flow live" },
+        { "date": "Mar 22", "label": "First free signup" },
+        { "date": "Mar 26", "label": "🎯 First paid customer" }
+      ],
+      "blockers": ["Vercel not yet connected", "Stripe keys not added", "Resend domain not verified"],
+      "resources": [
+        { "label": "App Repo", "url": "https://github.com/rrp0620/subdocs" },
+        { "label": "Calculator", "url": "https://docs.google.com/spreadsheets/d/18NZ9OjIILna7-7m43sAQ5hqrlYRftebd6Eo9vATL_hg/edit" },
+        { "label": "Business Overview", "url": "file:///Users/mint/.openclaw/workspace/products/subdocs/SubDocs_Business_Overview.html" },
+        { "label": "Sales Playbook", "url": "file:///Users/mint/.openclaw/workspace/products/subdocs/sales-playbook.md" }
+      ]
+    },
+    {
+      "id": "realestate",
+      "name": "Real Estate Lead Bot",
+      "emoji": "🏠",
+      "pct": 60,
+      "status": "inprogress",
+      "statusLabel": "🟡 Outreach Active",
+      "owners": "Rishi + Goku",
+      "updated": "Mar 20, 2026",
+      "desc": "SMS-powered AI lead bot for real estate agents. Qualifies leads, books appointments, follows up automatically. $500 setup + $350/month.",
+      "tasks": [
+        { "done": true, "text": "Build bot (SMS + Twilio)" },
+        { "done": true, "text": "Write sales playbook" },
+        { "done": true, "text": "Set up Gumroad payment links" },
+        { "done": true, "text": "10 LinkedIn DMs sent (Mar 20)" },
+        { "done": "blocked", "text": "Twilio A2P campaign approval" },
+        { "done": false, "text": "Send 20 more LinkedIn DMs" },
+        { "done": false, "text": "Book first demo call" },
+        { "done": false, "text": "Close first client ($500/mo)" }
+      ],
+      "milestones": [
+        { "date": "~Mar 21", "label": "Twilio A2P approved" },
+        { "date": "Mar 22-23", "label": "First demo calls" },
+        { "date": "Mar 26", "label": "🎯 First client signed" }
+      ],
+      "blockers": ["Twilio A2P campaign under carrier review — SMS cannot be sent until approved (~24-48h from Mar 19)"],
+      "resources": [
+        { "label": "Sales Playbook", "url": "file:///Users/mint/.openclaw/workspace/sales/outreach-playbook.md" },
+        { "label": "Gumroad Setup", "url": "https://websageai.gumroad.com/l/nmyzxg" },
+        { "label": "Gumroad Monthly", "url": "https://websageai.gumroad.com/l/vkavk" }
+      ]
+    },
+    {
+      "id": "splitt",
+      "name": "Splitt Fintech App",
+      "emoji": "💳",
+      "pct": 30,
+      "status": "blocked",
+      "statusLabel": "🔴 Economics Review",
+      "owners": "Rishi + Frieza",
+      "updated": "Mar 20, 2026",
+      "desc": "Virtual Lithic card that splits charges across multiple credit cards to maximize rewards/cashback. ~85% built, blocked on unit economics viability.",
+      "tasks": [
+        { "done": true, "text": "Core app built (~85%)" },
+        { "done": true, "text": "Frieza briefed on economics problem" },
+        { "done": false, "text": "Frieza builds unit economics model" },
+        { "done": false, "text": "Decision: launch / adjust pricing / pivot" },
+        { "done": false, "text": "Wire up web + mobile frontend" }
+      ],
+      "milestones": [
+        { "date": "Mar 22", "label": "Frieza unit economics memo" },
+        { "date": "Mar 23", "label": "Go/no-go decision" }
+      ],
+      "blockers": ["Lithic + Stripe fees may make unit economics negative — awaiting Frieza analysis", "Frieza Discord bot not set up yet"],
+      "resources": [
+        { "label": "Product Folder", "url": "file:///Users/mint/.openclaw/workspace/products/splitt/" }
+      ]
+    },
+    {
+      "id": "openclaw-setup",
+      "name": "Agent-as-a-Service",
+      "emoji": "🤖",
+      "pct": 10,
+      "status": "planning",
+      "statusLabel": "🟢 Planning",
+      "owners": "Rishi + Goku + Vegeta",
+      "updated": "Mar 20, 2026",
+      "desc": "Productized service: scope, build, and deploy custom OpenClaw AI agent stacks for businesses. $500 setup + $350/month. Vertical packages: Real Estate, HVAC, General SMB.",
+      "tasks": [
+        { "done": false, "text": "Build starter kit template" },
+        { "done": false, "text": "Build 3 vertical packages" },
+        { "done": false, "text": "Close first 3 pilot clients" }
+      ],
+      "milestones": [
+        { "date": "Apr 3", "label": "🎯 First paid pilot closed" }
+      ],
+      "blockers": [],
+      "resources": []
+    }
+  ]
+}
