@@ -317,6 +317,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','I
       Websage HQ
     </div>
     <div class="header-right">
+      <button class="header-btn" onclick="openSkillsStore()" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d1e35;font-weight:700;border-color:transparent">⚡ Skills Store</button>
       <button class="header-btn" onclick="openModal()">💡 Submit Idea</button>
       <div class="clock" id="clock"></div>
       <div class="mrr-badge" id="mrr-badge">$0 MRR</div>
@@ -1185,6 +1186,209 @@ setInterval(tick,1000); tick();
 
 // Init
 render('dashboard');
+
+// ============================================================
+// ⚡ SKILLS STORE
+// ============================================================
+const SKILLS_API = 'http://localhost:4243';
+
+function openSkillsStore() {
+  document.getElementById('skills-store-overlay').style.display = 'grid';
+  loadPopularSkills();
+}
+function closeSkillsStore() {
+  document.getElementById('skills-store-overlay').style.display = 'none';
+}
+function switchSkillsTab(tab) {
+  document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ss-tab-' + tab).classList.add('active');
+  document.getElementById('ss-popular-controls').style.display = tab === 'popular' ? 'flex' : 'none';
+  if (tab === 'popular') loadPopularSkills();
+}
+async function loadPopularSkills() {
+  const sort = document.getElementById('ss-sort').value;
+  const grid = document.getElementById('ss-grid');
+  grid.innerHTML = '<div class="ss-loading">⟳ Loading skills…</div>';
+  try {
+    const res = await fetch(`${SKILLS_API}/api/skills/popular?sort=${sort}&limit=30`);
+    const items = await res.json();
+    renderSkillCards(items);
+  } catch(e) {
+    grid.innerHTML = '<div class="ss-loading" style="color:var(--red)">⚠ Backend offline — run: node clawhub-server.js</div>';
+  }
+}
+async function searchSkills() {
+  const q = document.getElementById('ss-search-input').value.trim();
+  if (!q) return;
+  document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ss-tab-search').classList.add('active');
+  document.getElementById('ss-popular-controls').style.display = 'none';
+  const grid = document.getElementById('ss-grid');
+  grid.innerHTML = '<div class="ss-loading">⟳ Searching…</div>';
+  try {
+    const res = await fetch(`${SKILLS_API}/api/skills/search?q=${encodeURIComponent(q)}&limit=10`);
+    const results = await res.json();
+    const details = await Promise.all(results.map(r =>
+      fetch(`${SKILLS_API}/api/skills/inspect/${r.slug}`).then(x => x.json()).catch(() => null)
+    ));
+    renderSkillCards(details.filter(Boolean));
+  } catch(e) {
+    grid.innerHTML = '<div class="ss-loading" style="color:var(--red)">⚠ Search failed</div>';
+  }
+}
+function renderSkillCards(items) {
+  const grid = document.getElementById('ss-grid');
+  if (!items.length) { grid.innerHTML = '<div class="ss-loading">No skills found</div>'; return; }
+  window._ssSkillData = {};
+  grid.innerHTML = items.map(item => {
+    const s = item.skill || item;
+    const slug = s.slug || '';
+    const name = s.displayName || slug;
+    const summary = (s.summary || '').substring(0, 90) + ((s.summary||'').length > 90 ? '…' : '');
+    const stats = s.stats || {};
+    const downloads = stats.downloads ? `⬇ ${(stats.downloads/1000).toFixed(1)}k` : '';
+    const stars = stats.stars ? `★ ${stats.stars}` : '';
+    window._ssSkillData[slug] = item;
+    return `<div class="ss-card" onclick="selectSkill('${slug}')" id="sscard-${slug}">
+      <div class="ss-card-name">${name}</div>
+      <div class="ss-card-summary">${summary || 'No description'}</div>
+      <div class="ss-card-badges">${stars?`<span class="ss-badge ss-badge-gold">${stars}</span>`:''}${downloads?`<span class="ss-badge">${downloads}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+async function selectSkill(slug) {
+  document.querySelectorAll('.ss-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('sscard-' + slug);
+  if (card) card.classList.add('selected');
+  let data = window._ssSkillData && window._ssSkillData[slug];
+  if (!data) {
+    try { const res = await fetch(`${SKILLS_API}/api/skills/inspect/${slug}`); data = await res.json(); } catch(e) { return; }
+  }
+  const s = data.skill || data;
+  const owner = data.owner || {};
+  const ver = (data.latestVersion || {}).version || (s.tags && s.tags.latest) || '–';
+  const stats = s.stats || {};
+  const dn = (s.displayName||slug).replace(/'/g,"\\'");
+  const sm = (s.summary||'').substring(0,120).replace(/'/g,"\\'");
+  document.getElementById('ss-detail').innerHTML = `
+    <div class="ss-detail-header">
+      ${owner.image ? `<img src="${owner.image}" class="ss-owner-avatar" onerror="this.style.display='none'">` : ''}
+      <div><div class="ss-detail-name">${s.displayName||slug}</div><div class="ss-detail-owner">by ${owner.displayName||owner.handle||'–'} · v${ver}</div></div>
+    </div>
+    <div class="ss-detail-summary">${s.summary||'No description available.'}</div>
+    <div class="ss-detail-stats">
+      ${stats.downloads?`<div class="ss-stat"><span class="ss-stat-val">${stats.downloads.toLocaleString()}</span><span class="ss-stat-label">Downloads</span></div>`:''}
+      ${stats.installsCurrent?`<div class="ss-stat"><span class="ss-stat-val">${stats.installsCurrent.toLocaleString()}</span><span class="ss-stat-label">Installs</span></div>`:''}
+      ${stats.stars?`<div class="ss-stat"><span class="ss-stat-val">★ ${stats.stars}</span><span class="ss-stat-label">Stars</span></div>`:''}
+      ${stats.comments?`<div class="ss-stat"><span class="ss-stat-val">${stats.comments}</span><span class="ss-stat-label">Comments</span></div>`:''}
+    </div>
+    <div class="ss-actions">
+      <button class="ss-btn ss-btn-install" id="ssbtn-install" onclick="skillAction('install','${slug}','${dn}','${sm}')">🔽 Install</button>
+      <button class="ss-btn ss-btn-analyze" id="ssbtn-analyze" onclick="skillAction('analyze','${slug}','${dn}','${sm}')">🔍 Analyze</button>
+      <button class="ss-btn ss-btn-clone" id="ssbtn-clone" onclick="skillAction('clone','${slug}','${dn}','${sm}')">🛠️ Make My Version</button>
+    </div>`;
+}
+async function skillAction(action, slug, displayName, summary) {
+  const btnId = action === 'clone' ? 'ssbtn-clone' : action === 'analyze' ? 'ssbtn-analyze' : 'ssbtn-install';
+  const btn = document.getElementById(btnId);
+  const orig = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ …'; }
+  try {
+    const endpoint = action === 'install' ? 'install' : action === 'analyze' ? 'analyze' : 'clone';
+    const res = await fetch(`${SKILLS_API}/api/skills/${endpoint}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({slug, displayName, summary})
+    });
+    const d = await res.json();
+    if (btn) btn.textContent = action === 'install' ? (d.ok ? '✓ Installed!' : '✗ Failed') : '✓ Sent to Goku';
+    setTimeout(() => { if (btn) { btn.textContent = orig; btn.disabled = false; } }, 3000);
+  } catch(e) {
+    if (btn) { btn.textContent = '✗ Error'; setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000); }
+  }
+}
 </script>
+
+<!-- ⚡ Skills Store Overlay -->
+<div id="skills-store-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:var(--bg);grid-template-rows:56px 1fr;grid-template-columns:1fr 380px">
+  <style>
+    #skills-store-overlay{font-family:'SF Mono',SFMono-Regular,'Cascadia Code',Consolas,monospace}
+    .ss-header{grid-column:1/-1;background:var(--header);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+    .ss-title{font-size:13px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--gold)}
+    .ss-header-controls{display:flex;align-items:center;gap:10px}
+    .ss-search-bar{display:flex;gap:8px}
+    .ss-search-bar input{background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 12px;font-size:12px;font-family:inherit;outline:none;width:220px}
+    .ss-search-bar input:focus{border-color:var(--gold)}
+    .ss-search-bar button{background:var(--gold);color:#0d1e35;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px}
+    .ss-close{background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+    .ss-close:hover{border-color:var(--red);color:var(--red)}
+    .ss-body{grid-column:1;overflow-y:auto;display:flex;flex-direction:column}
+    .ss-body::-webkit-scrollbar{width:4px}.ss-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .ss-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding:0 20px;background:var(--bg2);padding-top:8px}
+    .ss-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:inherit;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;padding:8px 16px;cursor:pointer;margin-bottom:-1px}
+    .ss-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .ss-popular-controls{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--bg2);border-bottom:1px solid var(--border)}
+    .ss-popular-controls label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .ss-popular-controls select{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;outline:none}
+    .ss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:20px;align-content:start}
+    .ss-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s}
+    .ss-card:hover{border-color:var(--border2);background:var(--card2)}
+    .ss-card.selected{border-color:var(--gold);background:var(--card2)}
+    .ss-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+    .ss-card-summary{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+    .ss-card-badges{display:flex;gap:6px;flex-wrap:wrap}
+    .ss-badge{font-size:10px;color:var(--dim);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:2px 8px}
+    .ss-badge-gold{color:var(--gold);border-color:rgba(184,150,90,.3)}
+    .ss-loading{grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:13px}
+    .ss-detail{grid-column:2;background:var(--sidebar-bg,#091a2e);border-left:1px solid var(--border);overflow-y:auto;padding:24px}
+    .ss-detail::-webkit-scrollbar{width:4px}.ss-detail::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+    .ss-detail-empty{color:var(--dim);font-size:12px;text-align:center;margin-top:60px;line-height:1.8}
+    .ss-detail-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .ss-owner-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--border)}
+    .ss-detail-name{font-size:16px;font-weight:700;color:var(--text)}
+    .ss-detail-owner{font-size:11px;color:var(--muted);margin-top:3px}
+    .ss-detail-summary{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:8px}
+    .ss-detail-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+    .ss-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+    .ss-stat-val{display:block;font-size:14px;font-weight:700;color:var(--gold)}
+    .ss-stat-label{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+    .ss-actions{display:flex;flex-direction:column;gap:8px}
+    .ss-btn{width:100%;padding:11px;border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:opacity .2s}
+    .ss-btn:disabled{opacity:.5;cursor:default}
+    .ss-btn-install{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d1e35}
+    .ss-btn-analyze{background:rgba(77,166,255,.15);color:#4da6ff;border:1px solid rgba(77,166,255,.3)!important}
+    .ss-btn-clone{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)!important}
+    .ss-btn:hover:not(:disabled){opacity:.85}
+  </style>
+  <div class="ss-header">
+    <div class="ss-title">⚡ ClawHub Skills Store</div>
+    <div class="ss-header-controls">
+      <div class="ss-search-bar">
+        <input type="text" id="ss-search-input" placeholder="Search skills…" onkeydown="if(event.key==='Enter')searchSkills()">
+        <button onclick="searchSkills()">Search</button>
+      </div>
+      <button class="ss-close" onclick="closeSkillsStore()">✕ Close</button>
+    </div>
+  </div>
+  <div class="ss-body">
+    <div class="ss-tabs">
+      <button class="ss-tab active" id="ss-tab-popular" onclick="switchSkillsTab('popular')">Popular</button>
+      <button class="ss-tab" id="ss-tab-search" onclick="switchSkillsTab('search')">Search Results</button>
+    </div>
+    <div id="ss-popular-controls" class="ss-popular-controls" style="display:flex">
+      <label>Sort by</label>
+      <select id="ss-sort" onchange="loadPopularSkills()">
+        <option value="downloads">Downloads</option>
+        <option value="installs">Installs</option>
+        <option value="trending">Trending</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div id="ss-grid" class="ss-grid"><div class="ss-loading">Opening…</div></div>
+  </div>
+  <div id="ss-detail" class="ss-detail">
+    <div class="ss-detail-empty">← Select a skill<br>to see details</div>
+  </div>
+</div>
+
 </body>
 </html>
